@@ -100,12 +100,60 @@ public class AdminAccountTest {
     }
 
     @ParameterizedTest
-    @NullSource
     @EnumSource(value = AdminStatus.class)
     public void 스태프_관리자_계정의_상태는_변경할_수_있다(AdminStatus status) {
         AdminAccount staff = AdminFixture.builder().role(AdminRole.STAFF).build();
         staff.updateStatus(status);
         assertThat(staff.getStatus()).isEqualTo(status);
+    }
+
+    @Test
+    public void 관리자_계정_상태_변경시_null이면_예외가_발생한다() {
+        AdminAccount staff = AdminFixture.builder().role(AdminRole.STAFF).build();
+        assertThatThrownBy(() -> staff.updateStatus(null)).isInstanceOf(AdminException.class);
+    }
+
+    @Test
+    public void 관리자_계정을_소프트_삭제하면_deletedAt이_설정된다() {
+        AdminAccount staff = AdminFixture.builder().role(AdminRole.STAFF).build();
+        assertThat(staff.getDeletedAt()).isNull();
+        staff.softDelete();
+        assertThat(staff.getDeletedAt()).isNotNull();
+    }
+
+    @Test
+    public void 시스템_관리자_계정은_소프트_삭제할_수_없다() {
+        AdminAccount system = AdminFixture.system().build();
+        assertThatThrownBy(system::softDelete).isInstanceOf(AdminException.class);
+    }
+
+    @Test
+    public void 이미_삭제된_계정을_다시_삭제하면_예외가_발생한다() {
+        AdminAccount staff = AdminFixture.builder().role(AdminRole.STAFF).build();
+        staff.softDelete();
+        assertThatThrownBy(staff::softDelete).isInstanceOf(AdminException.class);
+    }
+
+    @Test
+    public void 비밀번호를_정상_변경한다() {
+        AdminAccount staff = AdminFixture.builder().role(AdminRole.STAFF).build();
+        staff.updatePasswordHash("newPassword");
+        assertThat(staff.getPasswordHash()).isEqualTo("newPassword");
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {""})
+    public void 비밀번호_변경시_유효하지_않으면_예외가_발생한다(String invalidPassword) {
+        AdminAccount staff = AdminFixture.builder().role(AdminRole.STAFF).build();
+        assertThatThrownBy(() -> staff.updatePasswordHash(invalidPassword)).isInstanceOf(AdminException.class);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = AdminStatus.class, names = {"ACTIVE"}, mode = EnumSource.Mode.EXCLUDE)
+    public void SYSTEM_계정을_ACTIVE_외_상태로_생성하면_예외가_발생한다(AdminStatus status) {
+        assertThatThrownBy(() -> AdminAccount.of(1L, AdminRole.SYSTEM, "system_user", "password", status, Instant.now(), null))
+                .isInstanceOf(AdminException.class);
     }
 
 }
