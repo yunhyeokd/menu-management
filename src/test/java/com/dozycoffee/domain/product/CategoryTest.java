@@ -1,6 +1,6 @@
 package com.dozycoffee.domain.product;
 
-import com.dozycoffee.domain.common.DomainException;
+import com.dozycoffee.domain.product.ProductException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
@@ -31,7 +31,7 @@ public class CategoryTest {
     })
     public void 카테고리_생성시_카테고리명이_유효하지_않으면_예외를_발생시킨다(String categoryName) {
         assertThatThrownBy(() -> Category.create(categoryName))
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(ProductException.class);
     }
 
     @Test
