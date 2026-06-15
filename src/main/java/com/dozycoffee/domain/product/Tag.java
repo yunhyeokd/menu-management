@@ -37,9 +37,7 @@ public class Tag {
         if (name.isBlank() || name.length() > NAME_MAX_LENGTH) {
             throw new ProductException("invalid name length");
         }
-        if (
-                !NAME_PATTERN.matcher(name).matches()
-        ) {
+        if (!NAME_PATTERN.matcher(name).matches()) {
             throw new ProductException("name does not match pattern");
         }
     }
