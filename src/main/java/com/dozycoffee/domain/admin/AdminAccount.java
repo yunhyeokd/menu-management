@@ -90,7 +90,7 @@ public class AdminAccount {
             throw new AdminException("username cannot be null");
         }
         if (username.length() < USERNAME_MIN_LENGTH || username.length() > USERNAME_MAX_LENGTH) {
-            throw new AdminException("username length must be between 3 and 19 characters");
+            throw new AdminException("username length must be between 4 and 20 characters");
         }
         if (!USERNAME_PATTERN.matcher(username).matches()) {
             throw new AdminException("Invalid username");
