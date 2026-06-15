@@ -20,6 +20,7 @@ public class AdminProfile {
             String phone,
             String email
     ) {
+        validateRequiredFields(employeeNo, name, phone, email);
         this.adminId = adminId;
         this.employeeNo = employeeNo;
         this.name = name;
@@ -28,10 +29,6 @@ public class AdminProfile {
     }
 
     public static AdminProfile of(long adminId, String employeeNo, String name, String phone, String email) {
-        Objects.requireNonNull(employeeNo);
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(phone);
-        Objects.requireNonNull(email);
         return new AdminProfile(adminId, employeeNo, name, phone, email);
     }
 
@@ -41,6 +38,13 @@ public class AdminProfile {
         validatePhone(phone);
         validateEmail(email);
         return new AdminProfile(adminId, employeeNo, name, phone, email);
+    }
+
+    private static void validateRequiredFields(String employeeNo, String name, String phone, String email) {
+        if (employeeNo == null) throw new DomainException("employeeNo cannot be null");
+        if (name == null) throw new DomainException("name cannot be null");
+        if (phone == null) throw new DomainException("phone cannot be null");
+        if (email == null) throw new DomainException("email cannot be null");
     }
 
     private static final Pattern PHONE_PATTERN =

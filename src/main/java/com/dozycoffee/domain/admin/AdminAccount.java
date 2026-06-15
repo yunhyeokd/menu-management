@@ -26,6 +26,7 @@ public class AdminAccount {
             Instant createdAt,
             Instant deletedAt
     ) {
+        validateRequiredFields(role, username, passwordHash, status, createdAt);
         this.id = id;
         this.role = role;
         this.username = username;
@@ -44,19 +45,10 @@ public class AdminAccount {
             Instant createdAt,
             Instant deletedAt
     ) {
-        Objects.requireNonNull(role, "role cannot be null");
-        Objects.requireNonNull(username, "username cannot be null");
-        Objects.requireNonNull(password,  "password cannot be null");
-        Objects.requireNonNull(status,  "status cannot be null");
-        Objects.requireNonNull(createdAt,  "createdAt cannot be null");
-
         return new AdminAccount(id, role, username, password, status, createdAt, deletedAt);
     }
 
     public static AdminAccount create(AdminRole role, String username, String password) {
-        if (role == null) {
-            throw new AdminException("role cannot be null");
-        }
         validateUsername(username);
         validatePasswordHash(password);
         AdminStatus status = role == AdminRole.SYSTEM ? AdminStatus.ACTIVE : AdminStatus.PENDING;
@@ -108,6 +100,14 @@ public class AdminAccount {
             throw new AdminException("system admin status cannot be updated");
         }
         this.status = status;
+    }
+
+    private static void validateRequiredFields(AdminRole role, String username, String passwordHash, AdminStatus status, Instant createdAt) {
+        if (role == null) throw new AdminException("role cannot be null");
+        if (username == null) throw new AdminException("username cannot be null");
+        if (passwordHash == null) throw new AdminException("password cannot be null");
+        if (status == null) throw new AdminException("status cannot be null");
+        if (createdAt == null) throw new AdminException("createdAt cannot be null");
     }
 
     private static void validateUsername(String username) {
