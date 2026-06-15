@@ -88,12 +88,49 @@ public class BranchTest {
                 .isInstanceOf(BranchException.class);
     }
 
+    @Test
+    public void 지점_생성시_주소가_255자를_초과하면_예외를_발생시킨다() {
+        String address = "a".repeat(256);
+        assertThatThrownBy(() -> BranchFixture.builder().address(address).build())
+                .isInstanceOf(BranchException.class);
+    }
+
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {"", " "})
     public void 지점_생성시_인증키가_유효하지_않으면_예외를_발생시킨다(String authKeyHash) {
         assertThatThrownBy(() -> BranchFixture.builder().authKeyHash(authKeyHash).build())
                 .isInstanceOf(BranchException.class);
+    }
+
+    @Test
+    public void 지점을_비활성화하면_상태가_INACTIVE로_변경된다() {
+        Branch branch = BranchFixture.builder().build();
+        branch.deactivate();
+        assertThat(branch.getStatus()).isEqualTo(BranchStatus.INACTIVE);
+    }
+
+    @Test
+    public void 지점을_활성화하면_상태가_ACTIVE로_변경된다() {
+        Branch branch = BranchFixture.builder().build();
+        branch.deactivate();
+        branch.activate();
+        assertThat(branch.getStatus()).isEqualTo(BranchStatus.ACTIVE);
+    }
+
+    @Test
+    public void 지점을_소프트_삭제하면_deletedAt이_설정된다() {
+        Branch branch = BranchFixture.builder().build();
+        assertThat(branch.getDeletedAt()).isNull();
+        branch.softDelete();
+        assertThat(branch.getDeletedAt()).isNotNull();
+    }
+
+    @Test
+    public void 이미_소프트_삭제된_지점을_다시_삭제하면_예외가_발생한다() {
+        Branch branch = BranchFixture.builder().build();
+        branch.softDelete();
+        assertThatThrownBy(branch::softDelete).isInstanceOf(BranchException.class);
     }
 
     @Test

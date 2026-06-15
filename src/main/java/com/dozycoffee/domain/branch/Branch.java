@@ -155,6 +155,9 @@ public class Branch {
     }
 
     public void softDelete() {
+        if (deletedAt != null) {
+            throw new BranchException("Branch is already deleted");
+        }
         this.deletedAt = Instant.now();
     }
 }
