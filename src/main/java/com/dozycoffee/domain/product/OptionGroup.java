@@ -12,6 +12,8 @@ public class OptionGroup {
     private Instant createdAt;
 
     private OptionGroup(Long id, String name, String description, Instant createdAt) {
+        if (name == null) throw new ProductException("name is null");
+        if (createdAt == null) throw new ProductException("createdAt is null");
         this.id = id;
         this.name = name;
         this.description = description;
@@ -19,8 +21,6 @@ public class OptionGroup {
     }
 
     public static OptionGroup of(long id, String name, String description, Instant createdAt) {
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(createdAt);
         return new OptionGroup(id, name, description, createdAt);
     }
 

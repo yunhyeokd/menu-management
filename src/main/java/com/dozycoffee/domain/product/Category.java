@@ -12,14 +12,14 @@ public class Category {
     private Instant createdAt;
 
     private Category(Long id, String name, Instant createdAt) {
+        if (name == null) throw new ProductException("name is null");
+        if (createdAt == null) throw new ProductException("createdAt is null");
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
     }
 
     public static Category of(long id, String name, Instant createdAt) {
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(createdAt);
         return new Category(id, name, createdAt);
     }
 

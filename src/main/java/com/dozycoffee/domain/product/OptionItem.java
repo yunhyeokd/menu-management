@@ -14,6 +14,9 @@ public class OptionItem {
     private Instant createdAt;
 
     private OptionItem(Long id, long optionGroupId, String name, String description, int price, Instant createdAt) {
+        if (name == null) throw new ProductException("name is null");
+        if (createdAt == null) throw new ProductException("createdAt is null");
+        if (price < 0) throw new ProductException("invalid price");
         this.id = id;
         this.optionGroupId = optionGroupId;
         this.name = name;
@@ -23,15 +26,12 @@ public class OptionItem {
     }
 
     public static OptionItem of(long id, long optionGroupId, String name, String description, int price, Instant createdAt) {
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(createdAt);
         return new OptionItem(id, optionGroupId, name, description, price, createdAt);
     }
 
     public static OptionItem create(long optionGroupId, String name, String description, int price) {
         validateName(name);
         validateDescription(description);
-        validatePrice(price);
         return new OptionItem(null, optionGroupId, name, description, price, Instant.now());
     }
 
