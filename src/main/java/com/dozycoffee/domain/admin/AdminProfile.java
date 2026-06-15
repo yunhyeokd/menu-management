@@ -115,4 +115,14 @@ public class AdminProfile {
         return email;
     }
 
+    public void updatePhoneNumber(String newPhone) {
+        validatePhone(newPhone);
+        this.phone = newPhone;
+    }
+
+    public void updateEmail(String newEmail) {
+        validateEmail(newEmail);
+        this.email = newEmail;
+    }
+
 }
