@@ -15,6 +15,7 @@ public class Branch {
     Instant createdAt;
     Instant deletedAt;
 
+
     private Branch(Long id, String code, String name, String address, String authKeyHash, BranchStatus status, Instant createdAt, Instant deletedAt) {
         validateRequiredFields(code, name, address, authKeyHash, status, createdAt);
         this.id = id;
@@ -25,6 +26,19 @@ public class Branch {
         this.status = status;
         this.createdAt = createdAt;
         this.deletedAt = deletedAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Branch branch)) return false;
+        if (id == null || branch.id == null) return false;
+        return id.equals(branch.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     public static Branch of(long id, String code, String name, String address, String authKeyHash, BranchStatus status, Instant createdAt, Instant deletedAt) {
@@ -58,26 +72,39 @@ public class Branch {
     }
 
     private static final Pattern NAME_PATTERN =
-            Pattern.compile("^[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ \\-()&.]{1,30}$");
+            Pattern.compile("^[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ \\-()&.]+$");
 
     private static final Pattern NAME_LETTER_PATTERN =
             Pattern.compile("[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ]");
 
+    private static final int NAME_MAX_LENGTH = 30;
+
     private static void validateName(String name) {
-        if (name == null || !NAME_PATTERN.matcher(name).matches()) {
+        if (name == null || name.isBlank()) {
             throw new BranchException("Invalid branch name");
         }
         if (!name.equals(name.strip())) {
             throw new BranchException("Branch name must not have leading or trailing whitespace");
+        }
+        if (name.length() > NAME_MAX_LENGTH) {
+            throw new BranchException("Branch name is too long");
+        }
+        if (!NAME_PATTERN.matcher(name).matches()) {
+            throw new BranchException("Invalid branch name");
         }
         if (!NAME_LETTER_PATTERN.matcher(name).find()) {
             throw new BranchException("Branch name must contain at least one letter or digit");
         }
     }
 
+    private static final int MAX_ADDRESS_LENGTH = 255;
+
     private static void validateAddress(String address) {
         if (address == null || address.isBlank() || !address.equals(address.strip())) {
             throw new BranchException("Invalid branch address");
+        }
+        if (address.length() > MAX_ADDRESS_LENGTH) {
+            throw new BranchException("Branch address is too long");
         }
     }
 
@@ -119,16 +146,18 @@ public class Branch {
         return deletedAt;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Branch branch)) return false;
-        if (id == null || branch.id == null) return false;
-        return id.equals(branch.id);
+    public void activate() {
+        this.status = BranchStatus.ACTIVE;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public void deactivate() {
+        this.status = BranchStatus.INACTIVE;
+    }
+
+    public void softDelete() {
+        if (deletedAt != null) {
+            throw new BranchException("Branch is already deleted");
+        }
+        this.deletedAt = Instant.now();
     }
 }
