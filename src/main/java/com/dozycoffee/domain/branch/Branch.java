@@ -1,0 +1,131 @@
+package com.dozycoffee.domain.branch;
+
+import java.time.Instant;
+import java.util.Objects;
+import java.util.regex.Pattern;
+
+public class Branch {
+
+    Long id;
+    String code;
+    String name;
+    String address;
+    String authKeyHash;
+    BranchStatus status;
+    Instant createdAt;
+    Instant deletedAt;
+
+    private Branch(Long id, String code, String name, String address, String authKeyHash, BranchStatus status, Instant createdAt, Instant deletedAt) {
+        this.id = id;
+        this.code = code;
+        this.name = name;
+        this.address = address;
+        this.authKeyHash = authKeyHash;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.deletedAt = deletedAt;
+    }
+
+    public static Branch of(long id, String code, String name, String address, String authKeyHash, BranchStatus status, Instant createdAt, Instant deletedAt) {
+        Objects.requireNonNull(code);
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(address);
+        Objects.requireNonNull(authKeyHash);
+        Objects.requireNonNull(status);
+        Objects.requireNonNull(createdAt);
+
+        return new Branch(id, code, name, address, authKeyHash, status, createdAt, deletedAt);
+    }
+
+    public static Branch create(String code, String name, String address, String authKeyHash) {
+        validateCode(code);
+        validateName(name);
+        validateAddress(address);
+        validateAuthKeyHash(authKeyHash);
+        return new Branch(null, code, name, address, authKeyHash, BranchStatus.ACTIVE, Instant.now(), null);
+    }
+
+    private static final Pattern CODE_PATTERN =
+            Pattern.compile("^[0-9]{8}$");
+
+    private static void validateCode(String code) {
+        if (code == null || !CODE_PATTERN.matcher(code).matches()) {
+            throw new BranchException("Invalid branch code");
+        }
+    }
+
+    private static final Pattern NAME_PATTERN =
+            Pattern.compile("^[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ \\-()&.]{1,30}$");
+
+    private static final Pattern NAME_LETTER_PATTERN =
+            Pattern.compile("[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ]");
+
+    private static void validateName(String name) {
+        if (name == null || !NAME_PATTERN.matcher(name).matches()) {
+            throw new BranchException("Invalid branch name");
+        }
+        if (!name.equals(name.strip())) {
+            throw new BranchException("Branch name must not have leading or trailing whitespace");
+        }
+        if (!NAME_LETTER_PATTERN.matcher(name).find()) {
+            throw new BranchException("Branch name must contain at least one letter or digit");
+        }
+    }
+
+    private static void validateAddress(String address) {
+        if (address == null || address.isBlank() || !address.equals(address.strip())) {
+            throw new BranchException("Invalid branch address");
+        }
+    }
+
+    private static void validateAuthKeyHash(String authKeyHash) {
+        if (authKeyHash == null || authKeyHash.isBlank()) {
+            throw new BranchException("Invalid branch address");
+        }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getAuthKeyHash() {
+        return authKeyHash;
+    }
+
+    public BranchStatus getStatus() {
+        return status;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getDeletedAt() {
+        return deletedAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Branch branch)) return false;
+        if (id == null || branch.id == null) return false;
+        return id.equals(branch.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+}
