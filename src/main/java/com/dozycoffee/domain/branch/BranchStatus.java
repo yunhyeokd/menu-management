@@ -1,22 +1,16 @@
 package com.dozycoffee.domain.branch;
 
 public enum BranchStatus {
-    ACTIVE("active"),
-    INACTIVE("inactive"),
+    ACTIVE,
+    INACTIVE,
     ;
 
-    private final String value;
-    BranchStatus(String value) {
-        this.value = value;
+    public static BranchStatus of(String code) {
+        for (BranchStatus status : BranchStatus.values()) {
+            if (status.name().equalsIgnoreCase(code)) {
+                return status;
+            }
+        }
+        throw new BranchException("Unknown branch status: " + code);
     }
-
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return value;
-    }
-
 }

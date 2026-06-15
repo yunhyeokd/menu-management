@@ -1,25 +1,16 @@
 package com.dozycoffee.domain.product;
 
 public enum ProductKind {
-    COMMON("common"),
-    BRANCH_EXCLUSIVE("branch_exclusive"),
+    COMMON,
+    BRANCH_EXCLUSIVE,
     ;
 
-    private final String value;
-    ProductKind(String value) {
-        this.value = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public static ProductKind of(String value) {
+    public static ProductKind of(String code) {
         for (ProductKind kind : ProductKind.values()) {
-            if (kind.value.equals(value)) {
+            if (kind.name().equalsIgnoreCase(code)) {
                 return kind;
             }
         }
-        return null;
+        throw new ProductException("Unknown product kind: " + code);
     }
 }

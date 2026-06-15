@@ -16,11 +16,13 @@ src
 │   └── domain
 │       ├── admin       # 관리자 계정 및 프로필
 │       ├── branch      # 지점
+│       ├── product     # 상품, 카테고리, 옵션, 태그, 알레르기
 │       └── common      # 공통 예외
 └── test/java/com/dozycoffee
     └── domain
         ├── admin
-        └── branch
+        ├── branch
+        └── product
 ```
 
 ## 브랜치 전략

@@ -16,6 +16,7 @@ public class Branch {
     Instant deletedAt;
 
     private Branch(Long id, String code, String name, String address, String authKeyHash, BranchStatus status, Instant createdAt, Instant deletedAt) {
+        validateRequiredFields(code, name, address, authKeyHash, status, createdAt);
         this.id = id;
         this.code = code;
         this.name = name;
@@ -27,13 +28,6 @@ public class Branch {
     }
 
     public static Branch of(long id, String code, String name, String address, String authKeyHash, BranchStatus status, Instant createdAt, Instant deletedAt) {
-        Objects.requireNonNull(code);
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(address);
-        Objects.requireNonNull(authKeyHash);
-        Objects.requireNonNull(status);
-        Objects.requireNonNull(createdAt);
-
         return new Branch(id, code, name, address, authKeyHash, status, createdAt, deletedAt);
     }
 
@@ -43,6 +37,15 @@ public class Branch {
         validateAddress(address);
         validateAuthKeyHash(authKeyHash);
         return new Branch(null, code, name, address, authKeyHash, BranchStatus.ACTIVE, Instant.now(), null);
+    }
+
+    private static void validateRequiredFields(String code, String name, String address, String authKeyHash, BranchStatus status, Instant createdAt) {
+        if (code == null) throw new BranchException("code cannot be null");
+        if (name == null) throw new BranchException("name cannot be null");
+        if (address == null) throw new BranchException("address cannot be null");
+        if (authKeyHash == null) throw new BranchException("authKeyHash cannot be null");
+        if (status == null) throw new BranchException("status cannot be null");
+        if (createdAt == null) throw new BranchException("createdAt cannot be null");
     }
 
     private static final Pattern CODE_PATTERN =

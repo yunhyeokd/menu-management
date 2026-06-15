@@ -1,27 +1,16 @@
 package com.dozycoffee.domain.product;
 
 public enum ProductStatus {
-    ACTIVE("active"),
-    INACTIVE("inactive"),
+    ACTIVE,
+    INACTIVE,
     ;
 
-    private final String value;
-    ProductStatus(String value) {
-        this.value = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public static ProductStatus of(String value) {
+    public static ProductStatus of(String code) {
         for (ProductStatus status : ProductStatus.values()) {
-            if (status.value.equals(value)) {
+            if (status.name().equalsIgnoreCase(code)) {
                 return status;
             }
         }
-        return null;
+        throw new ProductException("Unknown product status: " + code);
     }
-
-
 }

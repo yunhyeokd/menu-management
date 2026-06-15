@@ -1,20 +1,16 @@
 package com.dozycoffee.domain.admin;
 
 public enum AdminRole {
-    SYSTEM("system"),
-    STAFF("staff"),
+    SYSTEM,
+    STAFF,
     ;
 
-    private final String value;
-    AdminRole(String value) {
-        this.value = value;
-    }
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return value;
+    public static AdminRole of(String code) {
+        for (AdminRole role : AdminRole.values()) {
+            if (role.name().equalsIgnoreCase(code)) {
+                return role;
+            }
+        }
+        throw new AdminException("Unknown admin role: " + code);
     }
 }
