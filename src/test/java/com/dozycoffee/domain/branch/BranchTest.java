@@ -1,6 +1,5 @@
 package com.dozycoffee.domain.branch;
 
-import com.dozycoffee.domain.common.DomainException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
@@ -45,7 +44,7 @@ public class BranchTest {
     @MethodSource("invalidCodeTestSource")
     public void 지점_생성시_지점코드가_유효하지_않으면_예외를_발생시킨다(String code) {
         assertThatThrownBy(() -> BranchFixture.builder().code(code).build())
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(BranchException.class);
     }
 
     private static Stream<String> invalidNameTestSource() {
@@ -68,7 +67,7 @@ public class BranchTest {
     @MethodSource(value = "invalidNameTestSource")
     public void 지점_생성시_지점명이_유효하지_않으면_예외를_발생시킨다(String name) {
         assertThatThrownBy(() -> BranchFixture.builder().name(name).build())
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(BranchException.class);
     }
 
 
@@ -86,7 +85,7 @@ public class BranchTest {
     @ValueSource(strings = {"", " ", " aaa "})
     public void 지점_생성시_주소가_유효하지_않으면_예외를_발생시킨다(String address) {
         assertThatThrownBy(() -> BranchFixture.builder().address(address).build())
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(BranchException.class);
     }
 
     @ParameterizedTest
@@ -94,7 +93,7 @@ public class BranchTest {
     @ValueSource(strings = {"", " "})
     public void 지점_생성시_인증키가_유효하지_않으면_예외를_발생시킨다(String authKeyHash) {
         assertThatThrownBy(() -> BranchFixture.builder().authKeyHash(authKeyHash).build())
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(BranchException.class);
     }
 
     @Test

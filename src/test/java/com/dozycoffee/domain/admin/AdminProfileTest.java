@@ -1,6 +1,5 @@
 package com.dozycoffee.domain.admin;
 
-import com.dozycoffee.domain.common.DomainException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
@@ -41,7 +40,7 @@ public class AdminProfileTest {
     })
     public void 프로필_생성시_사원번호가_유효하지_않으면_예외가_발생한다(String employeeNo) {
         assertThatThrownBy(() -> AdminProfile.create(Mock.adminId, employeeNo, Mock.name, Mock.phone, Mock.email))
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(AdminException.class);
     }
 
     @ParameterizedTest
@@ -62,7 +61,7 @@ public class AdminProfileTest {
     })
     public void 프로필_생성시_이름이_유효하지_않으면_예외가_발생한다(String name) {
         assertThatThrownBy(() -> AdminProfile.create(Mock.adminId, Mock.employeeNo, name, Mock.phone, Mock.email))
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(AdminException.class);
     }
 
     @ParameterizedTest
@@ -89,7 +88,7 @@ public class AdminProfileTest {
     })
     public void 프로필_생성시_전화번호가_유효하지_않으면_예외가_발생한다(String phone) {
         assertThatThrownBy(() -> AdminProfile.create(Mock.adminId, Mock.employeeNo, Mock.name, phone, Mock.email))
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(AdminException.class);
     }
 
     @ParameterizedTest
@@ -114,7 +113,7 @@ public class AdminProfileTest {
     })
     public void 프로필_생성시_이메일이_유효하지_않으면_예외가_발생한다(String email) {
         assertThatThrownBy(() -> AdminProfile.create(Mock.adminId, Mock.employeeNo, Mock.name, Mock.phone, email))
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(AdminException.class);
     }
 
     @Test
@@ -123,7 +122,7 @@ public class AdminProfileTest {
         String domain = "b".repeat(200);
         String email = local + "@" + domain + ".com"; // 256자
         assertThatThrownBy(() -> AdminProfile.create(Mock.adminId, Mock.employeeNo, Mock.name, Mock.phone, email))
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(AdminException.class);
     }
 
     @Test

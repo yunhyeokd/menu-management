@@ -1,7 +1,5 @@
 package com.dozycoffee.domain.admin;
 
-import com.dozycoffee.domain.common.DomainException;
-
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -41,10 +39,10 @@ public class AdminProfile {
     }
 
     private static void validateRequiredFields(String employeeNo, String name, String phone, String email) {
-        if (employeeNo == null) throw new DomainException("employeeNo cannot be null");
-        if (name == null) throw new DomainException("name cannot be null");
-        if (phone == null) throw new DomainException("phone cannot be null");
-        if (email == null) throw new DomainException("email cannot be null");
+        if (employeeNo == null) throw new AdminException("employeeNo cannot be null");
+        if (name == null) throw new AdminException("name cannot be null");
+        if (phone == null) throw new AdminException("phone cannot be null");
+        if (email == null) throw new AdminException("email cannot be null");
     }
 
     private static final Pattern PHONE_PATTERN =
@@ -52,7 +50,7 @@ public class AdminProfile {
 
     private static void validatePhone(String phone) {
         if (phone == null || !PHONE_PATTERN.matcher(phone).matches()) {
-            throw new DomainException("Invalid phone number");
+            throw new AdminException("Invalid phone number");
         }
     }
 
@@ -61,7 +59,7 @@ public class AdminProfile {
 
     private static void validateEmail(String email) {
         if (email == null || email.length() > 255 || !EMAIL_PATTERN.matcher(email).matches()) {
-            throw new DomainException("Invalid email");
+            throw new AdminException("Invalid email");
         }
     }
 
@@ -70,10 +68,10 @@ public class AdminProfile {
 
     private static void validateName(String name) {
         if (name == null || !NAME_PATTERN.matcher(name).matches()) {
-            throw new DomainException("Invalid admin name");
+            throw new AdminException("Invalid admin name");
         }
         if (!name.equals(name.strip())) {
-            throw new DomainException("Admin name must not have leading or trailing whitespace");
+            throw new AdminException("Admin name must not have leading or trailing whitespace");
         }
     }
 
@@ -82,7 +80,7 @@ public class AdminProfile {
 
     private static void validateEmployeeNo(String employeeNo) {
         if (employeeNo == null || !EMPLOYEE_NO_PATTERN.matcher(employeeNo).matches()) {
-            throw new DomainException("Invalid employee number");
+            throw new AdminException("Invalid employee number");
         }
     }
 

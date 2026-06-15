@@ -1,6 +1,5 @@
 package com.dozycoffee.domain.admin;
 
-import com.dozycoffee.domain.common.DomainException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -29,7 +28,7 @@ public class AdminAccountTest {
 
     @Test
     public void 관리자_계정_생성시_역할이_null이면_안된다() {
-        assertThatThrownBy(() -> AdminFixture.builder().role(null).build()).isInstanceOf(DomainException.class);
+        assertThatThrownBy(() -> AdminFixture.builder().role(null).build()).isInstanceOf(AdminException.class);
     }
 
     @ParameterizedTest
@@ -44,7 +43,7 @@ public class AdminAccountTest {
     @ValueSource(strings = {"", "1234", "abcd@", "ab", "aaa", "aaaaaaaaaaaaaaaaaaaaa"})
     public void 관리자_계정_생성시_로그인아이디가_유효하지_않으면_예외가_발생한다(String invalidUsername) {
         assertThatThrownBy(() -> AdminFixture.builder().username(invalidUsername).build())
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(AdminException.class);
     }
 
     @ParameterizedTest
@@ -52,7 +51,7 @@ public class AdminAccountTest {
     @ValueSource(strings = {""})
     public void 관리자_계정_생성시_비밀번호가_유효하지_않으면_예외가_발생한다(String invalidPassword) {
         assertThatThrownBy(() -> AdminFixture.builder().password(invalidPassword).build())
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(AdminException.class);
     }
 
     @Test
@@ -97,7 +96,7 @@ public class AdminAccountTest {
     @EnumSource(value = AdminStatus.class, names = {"ACTIVE"}, mode = EnumSource.Mode.EXCLUDE)
     public void 시스템_관리자_계정의_상태는_변경할_수_없다(AdminStatus status) {
         AdminAccount system = AdminFixture.system().build();
-        assertThatThrownBy(() -> system.updateStatus(status)).isInstanceOf(DomainException.class);
+        assertThatThrownBy(() -> system.updateStatus(status)).isInstanceOf(AdminException.class);
     }
 
     @ParameterizedTest
