@@ -1,18 +1,23 @@
 package com.dozycoffee.application.common;
 
+import com.dozycoffee.domain.common.DomainCode;
+
 public class ServiceException extends RuntimeException {
 
-    private final ServiceCode serviceCode;
+    private final DomainCode domainCode;
     private final int errorCode;
 
-    public ServiceException(ServiceCode serviceCode, int errorCode, String message) {
+    public ServiceException(DomainCode domainCode, int errorCode, String message) {
         super(message);
-        this.serviceCode = serviceCode;
+        this.domainCode = domainCode;
         this.errorCode = errorCode;
     }
 
-    public String getServiceErrorCode() {
-        return serviceCode + "_" + errorCode;
+    public DomainCode getDomainCode() {
+        return domainCode;
     }
 
+    public int getErrorCode() {
+        return errorCode;
+    }
 }
