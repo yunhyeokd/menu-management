@@ -17,6 +17,18 @@ public class Tag {
         this.createdAt = createdAt;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Tag tag)) return false;
+        if (id == null || tag.id==null) return false;
+        return Objects.equals(id, tag.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
     public static Tag of(long id, String name, Instant createdAt) {
         return new Tag(id, name, createdAt);
     }
@@ -54,15 +66,8 @@ public class Tag {
         return createdAt;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Tag tag)) return false;
-        if (id == null || tag.id==null) return false;
-        return Objects.equals(id, tag.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
+    public void updateName(String newTagName) {
+        validateName(newTagName);
+        this.name = newTagName;
     }
 }
