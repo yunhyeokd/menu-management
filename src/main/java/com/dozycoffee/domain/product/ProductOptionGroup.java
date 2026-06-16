@@ -60,11 +60,11 @@ public class ProductOptionGroup {
         return optionGroupId;
     }
 
-    public boolean getIsRequired() {
+    public boolean isRequired() {
         return isRequired;
     }
 
-    public boolean getAllowMultiple() {
+    public boolean isAllowMultiple() {
         return allowMultiple;
     }
 

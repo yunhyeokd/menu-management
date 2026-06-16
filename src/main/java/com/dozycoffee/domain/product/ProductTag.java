@@ -38,7 +38,7 @@ public class ProductTag {
         return new ProductTag(null, productId, tagId, Instant.now());
     }
 
-    private void validateRequiredFields(Instant createdAt) {
+    private static void validateRequiredFields(Instant createdAt) {
         if (createdAt == null) {
             throw new ProductException("ProductTag createdAt must not be null");
         }

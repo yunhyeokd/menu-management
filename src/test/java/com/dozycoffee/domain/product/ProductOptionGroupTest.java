@@ -19,8 +19,8 @@ public class ProductOptionGroupTest {
 
         assertThat(productId).isEqualTo(productOptionGroup.getProductId());
         assertThat(optionGroupId).isEqualTo(productOptionGroup.getOptionGroupId());
-        assertThat(isRequired).isEqualTo(productOptionGroup.getIsRequired());
-        assertThat(allowMultiple).isEqualTo(productOptionGroup.getAllowMultiple());
+        assertThat(isRequired).isEqualTo(productOptionGroup.isRequired());
+        assertThat(allowMultiple).isEqualTo(productOptionGroup.isAllowMultiple());
         assertThat(productOptionGroup.getCreatedAt()).isNotNull();
     }
 

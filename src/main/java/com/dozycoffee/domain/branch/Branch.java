@@ -110,7 +110,7 @@ public class Branch {
 
     private static void validateAuthKeyHash(String authKeyHash) {
         if (authKeyHash == null || authKeyHash.isBlank()) {
-            throw new BranchException("Invalid branch address");
+            throw new BranchException("Invalid branch authKeyHash");
         }
     }
 
