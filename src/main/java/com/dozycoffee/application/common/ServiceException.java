@@ -1,22 +1,18 @@
 package com.dozycoffee.application.common;
 
 public class ServiceException extends RuntimeException {
-    public ServiceException() {
-    }
 
-    public ServiceException(String message) {
+    private final ServiceCode serviceCode;
+    private final int errorCode;
+
+    public ServiceException(ServiceCode serviceCode, int errorCode, String message) {
         super(message);
+        this.serviceCode = serviceCode;
+        this.errorCode = errorCode;
     }
 
-    public ServiceException(String message, Throwable cause) {
-        super(message, cause);
+    public String getServiceErrorCode() {
+        return serviceCode + "_" + errorCode;
     }
 
-    public ServiceException(Throwable cause) {
-        super(cause);
-    }
-
-    public ServiceException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }
