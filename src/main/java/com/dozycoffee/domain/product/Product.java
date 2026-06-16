@@ -65,7 +65,7 @@ public class Product {
                 allergenInfo,
                 ProductKind.COMMON,
                 null,
-                ProductStatus.ACTIVE,
+                ProductStatus.INACTIVE,
                 Instant.now()
         );
     }
@@ -95,7 +95,7 @@ public class Product {
                 allergenInfo,
                 ProductKind.BRANCH_EXCLUSIVE,
                 branchId,
-                ProductStatus.ACTIVE,
+                ProductStatus.INACTIVE,
                 Instant.now()
         );
     }

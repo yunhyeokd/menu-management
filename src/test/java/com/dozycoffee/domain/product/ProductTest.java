@@ -29,6 +29,7 @@ public class ProductTest {
         assertThat(product.getPrice()).isEqualTo(ProductFixture.Base.price);
         assertThat(product.getKcal()).isEqualTo(ProductFixture.Base.kcal);
         assertThat(product.getAllergenInfo()).isEqualTo(ProductFixture.Base.allergenInfo);
+        assertThat(product.getStatus()).isEqualTo(ProductStatus.INACTIVE);
     }
 
     @Test
@@ -52,6 +53,7 @@ public class ProductTest {
         assertThat(product.getKcal()).isEqualTo(ProductFixture.Base.kcal);
         assertThat(product.getAllergenInfo()).isEqualTo(ProductFixture.Base.allergenInfo);
         assertThat(product.getBranchId()).isEqualTo(ProductFixture.Base.branchId);
+        assertThat(product.getStatus()).isEqualTo(ProductStatus.INACTIVE);
     }
 
     @ParameterizedTest
