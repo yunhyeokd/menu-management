@@ -20,6 +20,7 @@ public class ProductSalesOverrideTest {
         assertThat(salesOverride.getProductId()).isEqualTo(productId);
         assertThat(salesOverride.getBranchId()).isEqualTo(branchId);
         assertThat(salesOverride.getStatus()).isEqualTo(status);
+        assertThat(salesOverride.getCreatedAt()).isNotNull();
     }
 
     @Test

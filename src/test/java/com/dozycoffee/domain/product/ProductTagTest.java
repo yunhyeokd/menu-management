@@ -17,6 +17,7 @@ public class ProductTagTest {
 
         assertThat(productId).isEqualTo(productTag.getProductId());
         assertThat(tagId).isEqualTo(productTag.getTagId());
+        assertThat(productTag.getCreatedAt()).isNotNull();
     }
 
     @Test

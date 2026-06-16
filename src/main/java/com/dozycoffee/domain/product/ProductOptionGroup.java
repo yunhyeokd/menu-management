@@ -42,7 +42,7 @@ public class ProductOptionGroup {
         return new ProductOptionGroup(null, productId, optionGroupId, isRequired, allowMultiple, Instant.now());
     }
 
-    public static void validateRequiredFields(Instant createdAt) {
+    private static void validateRequiredFields(Instant createdAt) {
         if (createdAt == null) {
             throw new ProductException("createdAt must not be null");
         }
