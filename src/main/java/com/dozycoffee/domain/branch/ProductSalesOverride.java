@@ -12,7 +12,7 @@ public class ProductSalesOverride {
     private Instant createdAt;
 
     private ProductSalesOverride(Long id, long productId, long branchId, ProductSalesOverrideStatus status, Instant createdAt) {
-        validateRequiredFields(status);
+        validateRequiredFields(status, createdAt);
         this.id = id;
         this.productId = productId;
         this.branchId = branchId;
@@ -40,9 +40,12 @@ public class ProductSalesOverride {
         return new ProductSalesOverride(null, productId, branchId, status, Instant.now());
     }
 
-    private static void validateRequiredFields(ProductSalesOverrideStatus status) {
+    private static void validateRequiredFields(ProductSalesOverrideStatus status, Instant createdAt) {
         if (status == null) {
             throw new BranchException("ProductSalesOverride status must not be null");
+        }
+        if (createdAt == null) {
+            throw new BranchException("ProductSalesOverride createdAt must not be null");
         }
     }
 
