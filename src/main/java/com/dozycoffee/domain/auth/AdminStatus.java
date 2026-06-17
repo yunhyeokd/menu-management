@@ -1,4 +1,4 @@
-package com.dozycoffee.domain.admin;
+package com.dozycoffee.domain.auth;
 
 public enum AdminStatus {
     PENDING,
@@ -12,6 +12,6 @@ public enum AdminStatus {
                 return status;
             }
         }
-        throw new AdminException("Unknown admin status: " + code);
+        throw new AuthException("Unknown admin status: " + code);
     }
 }

@@ -1,4 +1,4 @@
-package com.dozycoffee.domain.admin;
+package com.dozycoffee.domain.auth;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,7 +28,7 @@ public class AdminAccountTest {
 
     @Test
     public void 관리자_계정_생성시_역할이_null이면_안된다() {
-        assertThatThrownBy(() -> AdminFixture.builder().role(null).build()).isInstanceOf(AdminException.class);
+        assertThatThrownBy(() -> AdminFixture.builder().role(null).build()).isInstanceOf(AuthException.class);
     }
 
     @ParameterizedTest
@@ -43,7 +43,7 @@ public class AdminAccountTest {
     @ValueSource(strings = {"", "1234", "abcd@", "ab", "aaa", "aaaaaaaaaaaaaaaaaaaaa"})
     public void 관리자_계정_생성시_로그인아이디가_유효하지_않으면_예외가_발생한다(String invalidUsername) {
         assertThatThrownBy(() -> AdminFixture.builder().username(invalidUsername).build())
-                .isInstanceOf(AdminException.class);
+                .isInstanceOf(AuthException.class);
     }
 
     @ParameterizedTest
@@ -51,7 +51,7 @@ public class AdminAccountTest {
     @ValueSource(strings = {""})
     public void 관리자_계정_생성시_비밀번호가_유효하지_않으면_예외가_발생한다(String invalidPassword) {
         assertThatThrownBy(() -> AdminFixture.builder().password(invalidPassword).build())
-                .isInstanceOf(AdminException.class);
+                .isInstanceOf(AuthException.class);
     }
 
     @Test
@@ -96,7 +96,7 @@ public class AdminAccountTest {
     @EnumSource(value = AdminStatus.class, names = {"ACTIVE"}, mode = EnumSource.Mode.EXCLUDE)
     public void 시스템_관리자_계정의_상태는_변경할_수_없다(AdminStatus status) {
         AdminAccount system = AdminFixture.system().build();
-        assertThatThrownBy(() -> system.updateStatus(status)).isInstanceOf(AdminException.class);
+        assertThatThrownBy(() -> system.updateStatus(status)).isInstanceOf(AuthException.class);
     }
 
     @ParameterizedTest
@@ -110,7 +110,7 @@ public class AdminAccountTest {
     @Test
     public void 관리자_계정_상태_변경시_null이면_예외가_발생한다() {
         AdminAccount staff = AdminFixture.builder().role(AdminRole.STAFF).build();
-        assertThatThrownBy(() -> staff.updateStatus(null)).isInstanceOf(AdminException.class);
+        assertThatThrownBy(() -> staff.updateStatus(null)).isInstanceOf(AuthException.class);
     }
 
     @Test
@@ -124,14 +124,14 @@ public class AdminAccountTest {
     @Test
     public void 시스템_관리자_계정은_소프트_삭제할_수_없다() {
         AdminAccount system = AdminFixture.system().build();
-        assertThatThrownBy(system::softDelete).isInstanceOf(AdminException.class);
+        assertThatThrownBy(system::softDelete).isInstanceOf(AuthException.class);
     }
 
     @Test
     public void 이미_삭제된_계정을_다시_삭제하면_예외가_발생한다() {
         AdminAccount staff = AdminFixture.builder().role(AdminRole.STAFF).build();
         staff.softDelete();
-        assertThatThrownBy(staff::softDelete).isInstanceOf(AdminException.class);
+        assertThatThrownBy(staff::softDelete).isInstanceOf(AuthException.class);
     }
 
     @Test
@@ -146,14 +146,13 @@ public class AdminAccountTest {
     @ValueSource(strings = {""})
     public void 비밀번호_변경시_유효하지_않으면_예외가_발생한다(String invalidPassword) {
         AdminAccount staff = AdminFixture.builder().role(AdminRole.STAFF).build();
-        assertThatThrownBy(() -> staff.updatePasswordHash(invalidPassword)).isInstanceOf(AdminException.class);
+        assertThatThrownBy(() -> staff.updatePasswordHash(invalidPassword)).isInstanceOf(AuthException.class);
     }
 
     @ParameterizedTest
     @EnumSource(value = AdminStatus.class, names = {"ACTIVE"}, mode = EnumSource.Mode.EXCLUDE)
     public void SYSTEM_계정을_ACTIVE_외_상태로_생성하면_예외가_발생한다(AdminStatus status) {
         assertThatThrownBy(() -> AdminAccount.of(1L, AdminRole.SYSTEM, "system_user", "password", status, Instant.now(), null))
-                .isInstanceOf(AdminException.class);
+                .isInstanceOf(AuthException.class);
     }
-
 }
