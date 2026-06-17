@@ -1,7 +1,6 @@
-package com.dozycoffee.application.product;
+package com.dozycoffee.application.product.repository;
 
 import com.dozycoffee.application.common.RepositoryException;
-import com.dozycoffee.application.product.repository.CategoryRepository;
 import com.dozycoffee.domain.product.Category;
 
 import java.util.ArrayList;
