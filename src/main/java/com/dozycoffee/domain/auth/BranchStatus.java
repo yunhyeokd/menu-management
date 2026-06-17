@@ -1,4 +1,4 @@
-package com.dozycoffee.domain.branch;
+package com.dozycoffee.domain.auth;
 
 public enum BranchStatus {
     ACTIVE,
@@ -11,6 +11,6 @@ public enum BranchStatus {
                 return status;
             }
         }
-        throw new BranchException("Unknown branch status: " + code);
+        throw new AuthException("Unknown branch status: " + code);
     }
 }

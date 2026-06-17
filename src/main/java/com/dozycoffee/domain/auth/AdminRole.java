@@ -1,4 +1,4 @@
-package com.dozycoffee.domain.admin;
+package com.dozycoffee.domain.auth;
 
 public enum AdminRole {
     SYSTEM,
@@ -11,6 +11,6 @@ public enum AdminRole {
                 return role;
             }
         }
-        throw new AdminException("Unknown admin role: " + code);
+        throw new AuthException("Unknown admin role: " + code);
     }
 }
