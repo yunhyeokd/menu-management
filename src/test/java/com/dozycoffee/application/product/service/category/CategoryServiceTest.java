@@ -1,8 +1,7 @@
-package com.dozycoffee.application.product;
+package com.dozycoffee.application.product.service.category;
 
-import com.dozycoffee.application.product.service.category.CategoryErrors;
-import com.dozycoffee.application.product.service.category.CategoryService;
-import com.dozycoffee.application.product.service.category.CategoryServiceException;
+import com.dozycoffee.application.product.repository.FakeCategoryRepository;
+import com.dozycoffee.application.product.repository.FakeProductRepository;
 import com.dozycoffee.domain.product.Category;
 import com.dozycoffee.domain.product.ProductFixture;
 import com.dozycoffee.domain.product.ProductStatus;
