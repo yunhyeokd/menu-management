@@ -1,4 +1,6 @@
-package com.dozycoffee.domain.auth;
+package com.dozycoffee.domain.branch;
+
+
 
 import java.time.Instant;
 import java.util.Objects;
@@ -48,10 +50,10 @@ public class BranchAccount {
     }
 
     private static void validateRequiredFields(String code, String authKeyHash, BranchStatus status, Instant createdAt) {
-        if (code == null) throw new AuthException("code cannot be null");
-        if (authKeyHash == null) throw new AuthException("authKeyHash cannot be null");
-        if (status == null) throw new AuthException("status cannot be null");
-        if (createdAt == null) throw new AuthException("createdAt cannot be null");
+        if (code == null) throw new BranchException("code cannot be null");
+        if (authKeyHash == null) throw new BranchException("authKeyHash cannot be null");
+        if (status == null) throw new BranchException("status cannot be null");
+        if (createdAt == null) throw new BranchException("createdAt cannot be null");
     }
 
     private static final Pattern CODE_PATTERN =
@@ -59,13 +61,13 @@ public class BranchAccount {
 
     private static void validateCode(String code) {
         if (code == null || !CODE_PATTERN.matcher(code).matches()) {
-            throw new AuthException("Invalid branch code");
+            throw new BranchException("Invalid branch code");
         }
     }
 
     private static void validateAuthKeyHash(String authKeyHash) {
         if (authKeyHash == null || authKeyHash.isBlank()) {
-            throw new AuthException("Invalid branch authKeyHash");
+            throw new BranchException("Invalid branch authKeyHash");
         }
     }
 
@@ -103,7 +105,7 @@ public class BranchAccount {
 
     public void softDelete() {
         if (deletedAt != null) {
-            throw new AuthException("Branch is already deleted");
+            throw new BranchException("Branch is already deleted");
         }
         this.deletedAt = Instant.now();
     }

@@ -1,4 +1,4 @@
-package com.dozycoffee.domain.auth;
+package com.dozycoffee.domain.admin;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -66,16 +66,16 @@ public class AdminAccount {
 
     private static void validateRequiredFields(AdminRole role, String username, String passwordHash, AdminStatus status, Instant createdAt) {
         validateRoleAndStatus(role, status);
-        if (username == null) throw new AuthException("username cannot be null");
-        if (passwordHash == null) throw new AuthException("password cannot be null");
-        if (createdAt == null) throw new AuthException("createdAt cannot be null");
+        if (username == null) throw new AdminException("username cannot be null");
+        if (passwordHash == null) throw new AdminException("password cannot be null");
+        if (createdAt == null) throw new AdminException("createdAt cannot be null");
     }
 
     private static void validateRoleAndStatus(AdminRole role, AdminStatus status) {
-        if (role == null) throw new AuthException("role cannot be null");
-        if (status == null) throw new AuthException("status cannot be null");
+        if (role == null) throw new AdminException("role cannot be null");
+        if (status == null) throw new AdminException("status cannot be null");
         if (role == AdminRole.SYSTEM) {
-            if (status != AdminStatus.ACTIVE) throw new AuthException("status must be ACTIVE");
+            if (status != AdminStatus.ACTIVE) throw new AdminException("status must be ACTIVE");
         }
     }
 
@@ -87,19 +87,19 @@ public class AdminAccount {
 
     private static void validateUsername(String username) {
         if (username == null) {
-            throw new AuthException("username cannot be null");
+            throw new AdminException("username cannot be null");
         }
         if (username.length() < USERNAME_MIN_LENGTH || username.length() > USERNAME_MAX_LENGTH) {
-            throw new AuthException("username length must be between 4 and 20 characters");
+            throw new AdminException("username length must be between 4 and 20 characters");
         }
         if (!USERNAME_PATTERN.matcher(username).matches()) {
-            throw new AuthException("Invalid username");
+            throw new AdminException("Invalid username");
         }
     }
 
     private static void validatePasswordHash(String passwordHash) {
         if (passwordHash == null || passwordHash.isEmpty()) {
-            throw new AuthException("Password is required");
+            throw new AdminException("Password is required");
         }
     }
 
@@ -133,9 +133,9 @@ public class AdminAccount {
 
     public void updateStatus(AdminStatus status) {
         if (role == AdminRole.SYSTEM) {
-            throw new AuthException("system admin status cannot be updated");
+            throw new AdminException("system admin status cannot be updated");
         }
-        if (status == null) throw new AuthException("status cannot be null");
+        if (status == null) throw new AdminException("status cannot be null");
         this.status = status;
     }
 
@@ -146,10 +146,10 @@ public class AdminAccount {
 
     public void softDelete() {
         if (role == AdminRole.SYSTEM) {
-            throw new AuthException("system admin status cannot be deleted");
+            throw new AdminException("system admin status cannot be deleted");
         }
         if (deletedAt != null) {
-            throw new AuthException("admin account is already deleted");
+            throw new AdminException("admin account is already deleted");
         }
         deletedAt = Instant.now();
     }

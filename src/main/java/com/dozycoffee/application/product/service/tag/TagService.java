@@ -27,16 +27,16 @@ public class TagService {
         try {
             Tag tag = tagRepository.findByName(tagName);
             if (tag != null) {
-                throw TagServiceException.with(TagErrors.DUPLICATE_NAME_ERROR);
+                throw TagBusinessException.with(TagErrors.DUPLICATE_NAME_ERROR);
             }
             try {
                 Tag newTag = Tag.create(tagName);
                 return tagRepository.save(newTag);
             } catch (ProductException e) {
-                throw TagServiceException.with(TagErrors.INVALID_TAG_ERROR);
+                throw TagBusinessException.with(TagErrors.INVALID_TAG_ERROR);
             }
         } catch (RepositoryException e) {
-            throw TagServiceException.with(TagErrors.UNKNOWN_ERROR);
+            throw TagBusinessException.with(TagErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -44,20 +44,20 @@ public class TagService {
         try {
             Tag newTag = tagRepository.findByName(newTagName);
             if (newTag != null) {
-                throw TagServiceException.with(TagErrors.DUPLICATE_NAME_ERROR);
+                throw TagBusinessException.with(TagErrors.DUPLICATE_NAME_ERROR);
             }
             Tag tag = tagRepository.findById(tagId);
             if (tag == null) {
-                throw TagServiceException.with(TagErrors.NOT_FOUND_ERROR);
+                throw TagBusinessException.with(TagErrors.NOT_FOUND_ERROR);
             }
             try {
                 tag.updateName(newTagName);
             } catch (ProductException e) {
-                throw TagServiceException.with(TagErrors.INVALID_TAG_ERROR);
+                throw TagBusinessException.with(TagErrors.INVALID_TAG_ERROR);
             }
             tagRepository.save(tag);
         } catch (RepositoryException e) {
-            throw TagServiceException.with(TagErrors.UNKNOWN_ERROR);
+            throw TagBusinessException.with(TagErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -65,7 +65,7 @@ public class TagService {
         try {
             return tagRepository.findAll();
         } catch (RepositoryException e) {
-            throw TagServiceException.with(TagErrors.UNKNOWN_ERROR);
+            throw TagBusinessException.with(TagErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -73,7 +73,7 @@ public class TagService {
         try {
             return tagRepository.searchByName(tagName);
         } catch (RepositoryException e) {
-            throw TagServiceException.with(TagErrors.UNKNOWN_ERROR);
+            throw TagBusinessException.with(TagErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -81,7 +81,7 @@ public class TagService {
         try {
             Tag tag = tagRepository.findById(tagId);
             if (tag == null) {
-                throw TagServiceException.with(TagErrors.NOT_FOUND_ERROR);
+                throw TagBusinessException.with(TagErrors.NOT_FOUND_ERROR);
             }
             return productTagRepository
                     .findAllByTagId(tagId)
@@ -89,7 +89,7 @@ public class TagService {
                     .map(ProductTag::getProductId)
                     .collect(Collectors.toList());
         } catch (RepositoryException e) {
-            throw TagServiceException.with(TagErrors.UNKNOWN_ERROR);
+            throw TagBusinessException.with(TagErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -97,12 +97,12 @@ public class TagService {
         try {
             Tag tag = tagRepository.findById(tagId);
             if (tag == null) {
-                throw TagServiceException.with(TagErrors.NOT_FOUND_ERROR);
+                throw TagBusinessException.with(TagErrors.NOT_FOUND_ERROR);
             }
             productTagRepository.deleteAllByTagId(tagId);
             tagRepository.deleteById(tagId);
         } catch (RepositoryException e) {
-            throw TagServiceException.with(TagErrors.UNKNOWN_ERROR);
+            throw TagBusinessException.with(TagErrors.UNKNOWN_ERROR);
         }
     }
 

@@ -1,7 +1,5 @@
 package com.dozycoffee.domain.product;
 
-import com.dozycoffee.domain.common.DomainCode;
-
 import java.time.Instant;
 import java.util.Objects;
 import java.util.regex.Pattern;

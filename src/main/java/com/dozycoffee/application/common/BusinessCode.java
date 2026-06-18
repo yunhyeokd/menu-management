@@ -1,6 +1,6 @@
-package com.dozycoffee.domain.common;
+package com.dozycoffee.application.common;
 
-public enum DomainCode {
+public enum BusinessCode {
 
     AUTH,
     ADM,

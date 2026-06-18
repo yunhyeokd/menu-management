@@ -26,17 +26,17 @@ public class CategoryService {
         try {
             Category category = categoryRepository.findByName(categoryName);
             if (category != null) {
-                throw CategoryServiceException.with(CategoryErrors.DUPLICATE_NAME_ERROR);
+                throw CategoryBusinessException.with(CategoryErrors.DUPLICATE_NAME_ERROR);
             }
             try {
                 category = Category.create(categoryName);
                 category = categoryRepository.save(category);
                 return category;
             } catch (ProductException e) {
-                throw CategoryServiceException.with(CategoryErrors.INVALID_CATEGORY_ERROR);
+                throw CategoryBusinessException.with(CategoryErrors.INVALID_CATEGORY_ERROR);
             }
         } catch (RepositoryException e) {
-            throw CategoryServiceException.with(CategoryErrors.UNKNOWN_ERROR);
+            throw CategoryBusinessException.with(CategoryErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -44,20 +44,20 @@ public class CategoryService {
         try {
             Category category = categoryRepository.findById(id);
             if (category == null) {
-                throw CategoryServiceException.with(CategoryErrors.NOT_FOUND_ERROR);
+                throw CategoryBusinessException.with(CategoryErrors.NOT_FOUND_ERROR);
             }
             Category newCategory = categoryRepository.findByName(newName);
             if (newCategory != null) {
-                throw CategoryServiceException.with(CategoryErrors.DUPLICATE_NAME_ERROR);
+                throw CategoryBusinessException.with(CategoryErrors.DUPLICATE_NAME_ERROR);
             }
             try {
                 category.updateName(newName);
                 return categoryRepository.save(category);
             } catch (ProductException e) {
-                throw CategoryServiceException.with(CategoryErrors.INVALID_CATEGORY_ERROR);
+                throw CategoryBusinessException.with(CategoryErrors.INVALID_CATEGORY_ERROR);
             }
         } catch (RepositoryException e) {
-            throw CategoryServiceException.with(CategoryErrors.UNKNOWN_ERROR);
+            throw CategoryBusinessException.with(CategoryErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -65,7 +65,7 @@ public class CategoryService {
         try {
             return categoryRepository.findAll();
         } catch (RepositoryException e) {
-            throw CategoryServiceException.with(CategoryErrors.UNKNOWN_ERROR);
+            throw CategoryBusinessException.with(CategoryErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -73,7 +73,7 @@ public class CategoryService {
         try {
             return categoryRepository.searchByName(categoryName);
         } catch (RepositoryException e) {
-            throw CategoryServiceException.with(CategoryErrors.UNKNOWN_ERROR);
+            throw CategoryBusinessException.with(CategoryErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -81,7 +81,7 @@ public class CategoryService {
         try {
             Category category = categoryRepository.findById(categoryId);
             if (category == null) {
-                throw CategoryServiceException.with(CategoryErrors.NOT_FOUND_ERROR);
+                throw CategoryBusinessException.with(CategoryErrors.NOT_FOUND_ERROR);
             }
             List<Product> products = productRepository.findAllByCategoryId(categoryId);
             for (Product product : products) {
@@ -90,7 +90,7 @@ public class CategoryService {
             }
             categoryRepository.deleteById(categoryId);
         } catch (RepositoryException e) {
-            throw CategoryServiceException.with(CategoryErrors.UNKNOWN_ERROR);
+            throw CategoryBusinessException.with(CategoryErrors.UNKNOWN_ERROR);
         }
     }
 }
