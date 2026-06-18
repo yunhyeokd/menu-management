@@ -1,8 +1,5 @@
 package com.dozycoffee.domain.branch;
 
-import com.dozycoffee.domain.auth.BranchStatus;
-
-import java.time.Instant;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -94,5 +91,15 @@ public class BranchProfile {
 
     public String getAddress() {
         return address;
+    }
+
+    public void changeName(String newName) {
+        validateName(newName);
+        this.name = newName;
+    }
+
+    public void changeAddress(String newAddress) {
+        validateAddress(newAddress);
+        this.address = newAddress;
     }
 }

@@ -43,8 +43,8 @@ public class TagServiceTest {
         tagRepository.put(Tag.of(1L, tagName, Instant.now()));
 
         assertThatThrownBy(() -> tagService.create(tagName))
-                .isInstanceOf(TagServiceException.class)
-                .satisfies(e -> assertThat(((TagServiceException) e).getErrorCode())
+                .isInstanceOf(TagBusinessException.class)
+                .satisfies(e -> assertThat(((TagBusinessException) e).getErrorCode())
                         .isEqualTo(TagErrors.DUPLICATE_NAME_ERROR.errorCode));
     }
 
@@ -53,8 +53,8 @@ public class TagServiceTest {
         String invalidName = "";
 
         assertThatThrownBy(() -> tagService.create(invalidName))
-                .isInstanceOf(TagServiceException.class)
-                .satisfies(e -> assertThat(((TagServiceException) e).getErrorCode())
+                .isInstanceOf(TagBusinessException.class)
+                .satisfies(e -> assertThat(((TagBusinessException) e).getErrorCode())
                         .isEqualTo(TagErrors.INVALID_TAG_ERROR.errorCode));
     }
 
@@ -64,8 +64,8 @@ public class TagServiceTest {
         tagRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> tagService.create(tagName))
-                .isInstanceOf(TagServiceException.class)
-                .satisfies(e -> assertThat(((TagServiceException) e).getErrorCode())
+                .isInstanceOf(TagBusinessException.class)
+                .satisfies(e -> assertThat(((TagBusinessException) e).getErrorCode())
                         .isEqualTo(TagErrors.UNKNOWN_ERROR.errorCode));
     }
 
@@ -86,8 +86,8 @@ public class TagServiceTest {
         tagRepository.put(Tag.of(2L, duplicatedName, Instant.now()));
 
         assertThatThrownBy(() -> tagService.changeTagName(tag.getId(), duplicatedName))
-                .isInstanceOf(TagServiceException.class)
-                .satisfies(e -> assertThat(((TagServiceException) e).getErrorCode())
+                .isInstanceOf(TagBusinessException.class)
+                .satisfies(e -> assertThat(((TagBusinessException) e).getErrorCode())
                         .isEqualTo(TagErrors.DUPLICATE_NAME_ERROR.errorCode));
     }
 
@@ -96,8 +96,8 @@ public class TagServiceTest {
         long notExistTagId = 999L;
 
         assertThatThrownBy(() -> tagService.changeTagName(notExistTagId, "추천"))
-                .isInstanceOf(TagServiceException.class)
-                .satisfies(e -> assertThat(((TagServiceException) e).getErrorCode())
+                .isInstanceOf(TagBusinessException.class)
+                .satisfies(e -> assertThat(((TagBusinessException) e).getErrorCode())
                         .isEqualTo(TagErrors.NOT_FOUND_ERROR.errorCode));
     }
 
@@ -107,8 +107,8 @@ public class TagServiceTest {
         String invalidName = "";
 
         assertThatThrownBy(() -> tagService.changeTagName(tag.getId(), invalidName))
-                .isInstanceOf(TagServiceException.class)
-                .satisfies(e -> assertThat(((TagServiceException) e).getErrorCode())
+                .isInstanceOf(TagBusinessException.class)
+                .satisfies(e -> assertThat(((TagBusinessException) e).getErrorCode())
                         .isEqualTo(TagErrors.INVALID_TAG_ERROR.errorCode));
     }
 
@@ -118,8 +118,8 @@ public class TagServiceTest {
         tagRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> tagService.changeTagName(tag.getId(), "추천"))
-                .isInstanceOf(TagServiceException.class)
-                .satisfies(e -> assertThat(((TagServiceException) e).getErrorCode())
+                .isInstanceOf(TagBusinessException.class)
+                .satisfies(e -> assertThat(((TagBusinessException) e).getErrorCode())
                         .isEqualTo(TagErrors.UNKNOWN_ERROR.errorCode));
     }
 
@@ -145,8 +145,8 @@ public class TagServiceTest {
         tagRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> tagService.findAll())
-                .isInstanceOf(TagServiceException.class)
-                .satisfies(e -> assertThat(((TagServiceException) e).getErrorCode())
+                .isInstanceOf(TagBusinessException.class)
+                .satisfies(e -> assertThat(((TagBusinessException) e).getErrorCode())
                         .isEqualTo(TagErrors.UNKNOWN_ERROR.errorCode));
     }
 
@@ -174,8 +174,8 @@ public class TagServiceTest {
         tagRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> tagService.searchByName("신제품"))
-                .isInstanceOf(TagServiceException.class)
-                .satisfies(e -> assertThat(((TagServiceException) e).getErrorCode())
+                .isInstanceOf(TagBusinessException.class)
+                .satisfies(e -> assertThat(((TagBusinessException) e).getErrorCode())
                         .isEqualTo(TagErrors.UNKNOWN_ERROR.errorCode));
     }
 
@@ -204,8 +204,8 @@ public class TagServiceTest {
         long notExistTagId = 999L;
 
         assertThatThrownBy(() -> tagService.findLinkedProductIds(notExistTagId))
-                .isInstanceOf(TagServiceException.class)
-                .satisfies(e -> assertThat(((TagServiceException) e).getErrorCode())
+                .isInstanceOf(TagBusinessException.class)
+                .satisfies(e -> assertThat(((TagBusinessException) e).getErrorCode())
                         .isEqualTo(TagErrors.NOT_FOUND_ERROR.errorCode));
     }
 
@@ -215,8 +215,8 @@ public class TagServiceTest {
         productTagRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> tagService.findLinkedProductIds(tag.getId()))
-                .isInstanceOf(TagServiceException.class)
-                .satisfies(e -> assertThat(((TagServiceException) e).getErrorCode())
+                .isInstanceOf(TagBusinessException.class)
+                .satisfies(e -> assertThat(((TagBusinessException) e).getErrorCode())
                         .isEqualTo(TagErrors.UNKNOWN_ERROR.errorCode));
     }
 
@@ -236,8 +236,8 @@ public class TagServiceTest {
         long notExistTagId = 999L;
 
         assertThatThrownBy(() -> tagService.remove(notExistTagId))
-                .isInstanceOf(TagServiceException.class)
-                .satisfies(e -> assertThat(((TagServiceException) e).getErrorCode())
+                .isInstanceOf(TagBusinessException.class)
+                .satisfies(e -> assertThat(((TagBusinessException) e).getErrorCode())
                         .isEqualTo(TagErrors.NOT_FOUND_ERROR.errorCode));
     }
 
@@ -247,8 +247,8 @@ public class TagServiceTest {
         productTagRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> tagService.remove(tag.getId()))
-                .isInstanceOf(TagServiceException.class)
-                .satisfies(e -> assertThat(((TagServiceException) e).getErrorCode())
+                .isInstanceOf(TagBusinessException.class)
+                .satisfies(e -> assertThat(((TagBusinessException) e).getErrorCode())
                         .isEqualTo(TagErrors.UNKNOWN_ERROR.errorCode));
     }
 

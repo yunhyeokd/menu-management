@@ -43,16 +43,16 @@ public class CategoryServiceTest {
         categoryRepository.put(Category.of(1L, "커피", Instant.now()));
 
         assertThatThrownBy(() -> categoryService.create("커피"))
-                .isInstanceOf(CategoryServiceException.class)
-                .satisfies(e -> assertThat(((CategoryServiceException) e).getErrorCode())
+                .isInstanceOf(CategoryBusinessException.class)
+                .satisfies(e -> assertThat(((CategoryBusinessException) e).getErrorCode())
                         .isEqualTo(CategoryErrors.DUPLICATE_NAME_ERROR.errorCode));
     }
 
     @Test
     public void 카테고리_생성시_이름이_유효하지_않으면_INVALID_CATEGORY_ERROR를_던진다() {
         assertThatThrownBy(() -> categoryService.create(""))
-                .isInstanceOf(CategoryServiceException.class)
-                .satisfies(e -> assertThat(((CategoryServiceException) e).getErrorCode())
+                .isInstanceOf(CategoryBusinessException.class)
+                .satisfies(e -> assertThat(((CategoryBusinessException) e).getErrorCode())
                         .isEqualTo(CategoryErrors.INVALID_CATEGORY_ERROR.errorCode));
     }
 
@@ -61,8 +61,8 @@ public class CategoryServiceTest {
         categoryRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> categoryService.create("커피"))
-                .isInstanceOf(CategoryServiceException.class)
-                .satisfies(e -> assertThat(((CategoryServiceException) e).getErrorCode())
+                .isInstanceOf(CategoryBusinessException.class)
+                .satisfies(e -> assertThat(((CategoryBusinessException) e).getErrorCode())
                         .isEqualTo(CategoryErrors.UNKNOWN_ERROR.errorCode));
     }
 
@@ -80,8 +80,8 @@ public class CategoryServiceTest {
     @Test
     public void 카테고리_이름_변경시_대상이_존재하지_않으면_NOT_FOUND_ERROR를_던진다() {
         assertThatThrownBy(() -> categoryService.updateName(999L, "Coffee"))
-                .isInstanceOf(CategoryServiceException.class)
-                .satisfies(e -> assertThat(((CategoryServiceException) e).getErrorCode())
+                .isInstanceOf(CategoryBusinessException.class)
+                .satisfies(e -> assertThat(((CategoryBusinessException) e).getErrorCode())
                         .isEqualTo(CategoryErrors.NOT_FOUND_ERROR.errorCode));
     }
 
@@ -91,8 +91,8 @@ public class CategoryServiceTest {
         categoryRepository.put(Category.of(2L, "음료", Instant.now()));
 
         assertThatThrownBy(() -> categoryService.updateName(1L, "음료"))
-                .isInstanceOf(CategoryServiceException.class)
-                .satisfies(e -> assertThat(((CategoryServiceException) e).getErrorCode())
+                .isInstanceOf(CategoryBusinessException.class)
+                .satisfies(e -> assertThat(((CategoryBusinessException) e).getErrorCode())
                         .isEqualTo(CategoryErrors.DUPLICATE_NAME_ERROR.errorCode));
     }
 
@@ -101,8 +101,8 @@ public class CategoryServiceTest {
         categoryRepository.put(Category.of(1L, "커피", Instant.now()));
 
         assertThatThrownBy(() -> categoryService.updateName(1L, ""))
-                .isInstanceOf(CategoryServiceException.class)
-                .satisfies(e -> assertThat(((CategoryServiceException) e).getErrorCode())
+                .isInstanceOf(CategoryBusinessException.class)
+                .satisfies(e -> assertThat(((CategoryBusinessException) e).getErrorCode())
                         .isEqualTo(CategoryErrors.INVALID_CATEGORY_ERROR.errorCode));
     }
 
@@ -112,8 +112,8 @@ public class CategoryServiceTest {
         categoryRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> categoryService.updateName(1L, "Coffee"))
-                .isInstanceOf(CategoryServiceException.class)
-                .satisfies(e -> assertThat(((CategoryServiceException) e).getErrorCode())
+                .isInstanceOf(CategoryBusinessException.class)
+                .satisfies(e -> assertThat(((CategoryBusinessException) e).getErrorCode())
                         .isEqualTo(CategoryErrors.UNKNOWN_ERROR.errorCode));
     }
 
@@ -141,8 +141,8 @@ public class CategoryServiceTest {
         categoryRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> categoryService.findAll())
-                .isInstanceOf(CategoryServiceException.class)
-                .satisfies(e -> assertThat(((CategoryServiceException) e).getErrorCode())
+                .isInstanceOf(CategoryBusinessException.class)
+                .satisfies(e -> assertThat(((CategoryBusinessException) e).getErrorCode())
                         .isEqualTo(CategoryErrors.UNKNOWN_ERROR.errorCode));
     }
 
@@ -172,8 +172,8 @@ public class CategoryServiceTest {
         categoryRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> categoryService.searchByName("커피"))
-                .isInstanceOf(CategoryServiceException.class)
-                .satisfies(e -> assertThat(((CategoryServiceException) e).getErrorCode())
+                .isInstanceOf(CategoryBusinessException.class)
+                .satisfies(e -> assertThat(((CategoryBusinessException) e).getErrorCode())
                         .isEqualTo(CategoryErrors.UNKNOWN_ERROR.errorCode));
     }
 
@@ -203,8 +203,8 @@ public class CategoryServiceTest {
     @Test
     public void 카테고리_삭제시_대상이_존재하지_않으면_NOT_FOUND_ERROR를_던진다() {
         assertThatThrownBy(() -> categoryService.remove(999L))
-                .isInstanceOf(CategoryServiceException.class)
-                .satisfies(e -> assertThat(((CategoryServiceException) e).getErrorCode())
+                .isInstanceOf(CategoryBusinessException.class)
+                .satisfies(e -> assertThat(((CategoryBusinessException) e).getErrorCode())
                         .isEqualTo(CategoryErrors.NOT_FOUND_ERROR.errorCode));
     }
 
@@ -214,8 +214,8 @@ public class CategoryServiceTest {
         categoryRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> categoryService.remove(1L))
-                .isInstanceOf(CategoryServiceException.class)
-                .satisfies(e -> assertThat(((CategoryServiceException) e).getErrorCode())
+                .isInstanceOf(CategoryBusinessException.class)
+                .satisfies(e -> assertThat(((CategoryBusinessException) e).getErrorCode())
                         .isEqualTo(CategoryErrors.UNKNOWN_ERROR.errorCode));
     }
 }

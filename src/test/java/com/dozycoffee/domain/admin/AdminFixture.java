@@ -1,4 +1,4 @@
-package com.dozycoffee.domain.auth;
+package com.dozycoffee.domain.admin;
 
 public class AdminFixture {
 

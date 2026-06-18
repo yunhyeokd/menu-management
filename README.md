@@ -14,8 +14,9 @@
 src
 ├── main/java/com/dozycoffee
 │   └── domain
-│       ├── admin       # 관리자 계정 및 프로필
-│       ├── branch      # 지점
+│       ├── admin       # 관리자 프로필
+│       ├── auth        # 계정 관리 및 인증
+│       ├── branch      # 지점 프로필
 │       ├── product     # 상품, 카테고리, 옵션, 태그, 알레르기
 │       └── common      # 공통 예외
 └── test/java/com/dozycoffee
