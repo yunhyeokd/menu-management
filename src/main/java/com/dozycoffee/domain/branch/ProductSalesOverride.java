@@ -68,4 +68,11 @@ public class ProductSalesOverride {
     public Instant getCreatedAt() {
         return createdAt;
     }
+
+    public void updateStatus(ProductSalesOverrideStatus overrideStatus) {
+        if (overrideStatus == null) {
+            throw new BranchException("ProductSalesOverride status must not be null");
+        }
+        this.status = overrideStatus;
+    }
 }

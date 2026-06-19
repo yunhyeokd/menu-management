@@ -8,7 +8,6 @@ public enum BusinessCode {
     CAT,
     TAG,
     OPT,
-    PRD,
-    OPS
+    PRD
 
 }

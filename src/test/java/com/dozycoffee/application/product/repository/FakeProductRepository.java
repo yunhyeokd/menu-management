@@ -2,6 +2,8 @@ package com.dozycoffee.application.product.repository;
 
 import com.dozycoffee.application.common.RepositoryException;
 import com.dozycoffee.domain.product.Product;
+import com.dozycoffee.domain.product.ProductKind;
+import com.dozycoffee.domain.product.ProductStatus;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -47,6 +49,50 @@ public class FakeProductRepository implements ProductRepository {
         checkThrow();
         return store.values().stream()
                 .filter(p -> p.getCategoryId() != null && p.getCategoryId() == categoryId)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void updateStatusByBranchId(long branchId, ProductStatus productStatus) throws RepositoryException {
+        checkThrow();
+        store.values().stream()
+                .filter(p -> branchId == (p.getBranchId() == null ? -1 : p.getBranchId()))
+                .forEach(p -> {
+                    if (productStatus == ProductStatus.ACTIVE) p.activate();
+                    else p.deactivate();
+                });
+    }
+
+    @Override
+    public List<Product> findAllActiveCommon() throws RepositoryException {
+        checkThrow();
+        return store.values().stream()
+                .filter(p -> p.getStatus() == ProductStatus.ACTIVE && p.getKind() == ProductKind.COMMON)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Product> findAllActiveBranchExclusive(long branchId) throws RepositoryException {
+        checkThrow();
+        return store.values().stream()
+                .filter(p -> p.getStatus() == ProductStatus.ACTIVE
+                        && p.getKind() == ProductKind.BRANCH_EXCLUSIVE
+                        && p.getBranchId() != null && p.getBranchId() == branchId)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Product findById(long productId) throws RepositoryException {
+        checkThrow();
+        return store.get(productId);
+    }
+
+    @Override
+    public List<Product> findAllActiveNotInIds(List<Integer> productIds) throws RepositoryException {
+        checkThrow();
+        return store.values().stream()
+                .filter(p -> p.getStatus() == ProductStatus.ACTIVE
+                        && !productIds.contains(p.getId().intValue()))
                 .collect(Collectors.toList());
     }
 }
