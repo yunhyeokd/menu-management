@@ -1,28 +1,24 @@
 package com.dozycoffee.domain.branch;
 
-
-
 import java.time.Instant;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 public class BranchAccount {
 
-    private Long id;
-    private String code;
+    private BranchId id;
+    private BranchCode code;
     private String authKeyHash;
     private BranchStatus status;
     private Instant createdAt;
     private Instant deletedAt;
 
 
-    private BranchAccount(Long id, String code, String authKeyHash, BranchStatus status, Instant createdAt, Instant deletedAt) {
-        validateRequiredFields(code, authKeyHash, status, createdAt);
-        this.id = id;
-        this.code = code;
-        this.authKeyHash = authKeyHash;
-        this.status = status;
-        this.createdAt = createdAt;
+    private BranchAccount(BranchId id, BranchCode code, String authKeyHash, BranchStatus status, Instant createdAt, Instant deletedAt) {
+        setId(id);
+        setCode(code);
+        setAuthKeyHash(authKeyHash);
+        setStatus(status);
+        setCreatedAt(createdAt);
         this.deletedAt = deletedAt;
     }
 
@@ -30,7 +26,6 @@ public class BranchAccount {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof BranchAccount branchAccount)) return false;
-        if (id == null || branchAccount.id == null) return false;
         return id.equals(branchAccount.id);
     }
 
@@ -39,56 +34,61 @@ public class BranchAccount {
         return Objects.hash(id);
     }
 
-    public static BranchAccount of(long id, String code, String authKeyHash, BranchStatus status, Instant createdAt, Instant deletedAt) {
+    public static BranchAccount of(BranchId id, BranchCode code, String authKeyHash, BranchStatus status, Instant createdAt, Instant deletedAt) {
         return new BranchAccount(id, code, authKeyHash, status, createdAt, deletedAt);
     }
 
-    public static BranchAccount create(String code, String authKeyHash) {
-        validateCode(code);
-        validateAuthKeyHash(authKeyHash);
-        return new BranchAccount(null, code, authKeyHash, BranchStatus.ACTIVE, Instant.now(), null);
+    public static BranchAccount create(BranchId id, BranchCode code, String authKeyHash) {
+        return new BranchAccount(id, code, authKeyHash, BranchStatus.ACTIVE, Instant.now(), null);
     }
 
-    private static void validateRequiredFields(String code, String authKeyHash, BranchStatus status, Instant createdAt) {
-        if (code == null) throw new BranchException("code cannot be null");
-        if (authKeyHash == null) throw new BranchException("authKeyHash cannot be null");
-        if (status == null) throw new BranchException("status cannot be null");
-        if (createdAt == null) throw new BranchException("createdAt cannot be null");
-    }
-
-    private static final Pattern CODE_PATTERN =
-            Pattern.compile("^[0-9]{8}$");
-
-    private static void validateCode(String code) {
-        if (code == null || !CODE_PATTERN.matcher(code).matches()) {
-            throw new BranchException("Invalid branch code");
-        }
-    }
-
-    private static void validateAuthKeyHash(String authKeyHash) {
-        if (authKeyHash == null || authKeyHash.isBlank()) {
-            throw new BranchException("Invalid branch authKeyHash");
-        }
-    }
-
-    public Long getId() {
+    public BranchId getId() {
         return id;
     }
 
-    public String getCode() {
+    private void setId(BranchId id) {
+        if (id == null) throw new BranchException("id cannot be null");
+        this.id = id;
+    }
+
+    public BranchCode getCode() {
         return code;
+    }
+
+    private void setCode(BranchCode code) {
+        if (code == null) {
+            throw new BranchException("Invalid branch code");
+        }
+        this.code = code;
     }
 
     public String getAuthKeyHash() {
         return authKeyHash;
     }
 
+    private void setAuthKeyHash(String authKeyHash) {
+        if (authKeyHash == null || authKeyHash.isBlank()) {
+            throw new BranchException("Invalid branch authKeyHash");
+        }
+        this.authKeyHash = authKeyHash;
+    }
+
     public BranchStatus getStatus() {
         return status;
     }
 
+    private void setStatus(BranchStatus status) {
+        if (status == null) throw new BranchException("status cannot be null");
+        this.status = status;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    private void setCreatedAt(Instant createdAt) {
+        if (createdAt == null) throw new BranchException("createdAt cannot be null");
+        this.createdAt = createdAt;
     }
 
     public Instant getDeletedAt() {

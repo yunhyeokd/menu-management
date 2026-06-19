@@ -5,16 +5,15 @@ import java.util.regex.Pattern;
 
 public class BranchProfile {
 
-    private long branchId;
+    private BranchId branchId;
     private String name;
     private String address;
 
 
-    private BranchProfile(long branchId, String name, String address) {
-        validateRequiredFields(name, address);
-        this.branchId = branchId;
-        this.name = name;
-        this.address = address;
+    private BranchProfile(BranchId branchId, String name, String address) {
+        setBranchId(branchId);
+        setName(name);
+        setAddress(address);
     }
 
     @Override
@@ -29,20 +28,27 @@ public class BranchProfile {
         return Objects.hash(branchId);
     }
 
-    public static BranchProfile of(long branchId, String name, String address) {
+    public static BranchProfile of(BranchId branchId, String name, String address) {
         return new BranchProfile(branchId, name, address);
     }
 
-    public static BranchProfile create(long branchId, String name, String address) {
-        validateName(name);
-        validateAddress(address);
+    public static BranchProfile create(BranchId branchId, String name, String address) {
         return new BranchProfile(branchId, name, address);
     }
 
-    private static void validateRequiredFields(String name, String address) {
-        if (name == null) throw new BranchException("name cannot be null");
-        if (address == null) throw new BranchException("address cannot be null");
+    public BranchId getBranchId() {
+        return branchId;
     }
+
+    private void setBranchId(BranchId branchId) {
+        if (branchId == null) throw new BranchException("branchId cannot be null");
+        this.branchId = branchId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
 
     private static final Pattern NAME_PATTERN =
             Pattern.compile("^[a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ \\-()&.]+$");
@@ -70,6 +76,16 @@ public class BranchProfile {
         }
     }
 
+    private void setName(String name) {
+        validateName(name);
+        this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+
     private static final int MAX_ADDRESS_LENGTH = 255;
 
     private static void validateAddress(String address) {
@@ -81,25 +97,16 @@ public class BranchProfile {
         }
     }
 
-    public Long getBranchId() {
-        return branchId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getAddress() {
-        return address;
+    private void setAddress(String address) {
+        validateAddress(address);
+        this.address = address;
     }
 
     public void changeName(String newName) {
-        validateName(newName);
-        this.name = newName;
+        setName(newName);
     }
 
     public void changeAddress(String newAddress) {
-        validateAddress(newAddress);
-        this.address = newAddress;
+        setAddress(newAddress);
     }
 }
