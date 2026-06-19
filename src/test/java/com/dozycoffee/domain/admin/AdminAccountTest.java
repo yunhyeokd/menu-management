@@ -21,7 +21,7 @@ public class AdminAccountTest {
         AdminAccount adminAccount = AdminAccount.create(AdminId.of(1L), AdminRole.STAFF, username, password);
 
         assertThat(adminAccount.getUsername()).isEqualTo(username);
-        assertThat(adminAccount.getRole()).isEqualTo(AdminRole.STAFF);
+        assertThat(adminAccount.getRole()).isEqualTo("STAFF");
         assertThat(adminAccount.getStatus()).isEqualTo(AdminStatus.PENDING);
     }
 

@@ -1,13 +1,15 @@
 package com.dozycoffee.domain.admin;
 
+import com.dozycoffee.domain.auth.Principal;
+
 import java.time.Instant;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class AdminAccount {
+public class AdminAccount implements Principal {
 
     private AdminId id;
-    private AdminRole role;
+    private AdminRole adminRole;
     private String username;
     private String passwordHash;
     private AdminStatus status;
@@ -24,7 +26,7 @@ public class AdminAccount {
             Instant deletedAt
     ) {
         setId(id);
-        setRole(role);
+        setAdminRole(role);
         setUsername(username);
         setPasswordHash(passwordHash);
         setStatus(status);
@@ -69,13 +71,18 @@ public class AdminAccount {
         this.id = id;
     }
 
-    public AdminRole getRole() {
-        return role;
+    @Override
+    public String getRole() {
+        return adminRole.name();
     }
 
-    private void setRole(AdminRole role) {
-        if (role == null) throw new AdminException("role cannot be null");
-        this.role = role;
+    public AdminRole getAdminRole() {
+        return adminRole;
+    }
+
+    private void setAdminRole(AdminRole adminRole) {
+        if (adminRole == null) throw new AdminException("role cannot be null");
+        this.adminRole = adminRole;
     }
 
     public String getUsername() {
@@ -144,7 +151,7 @@ public class AdminAccount {
     }
 
     public void updateStatus(AdminStatus status) {
-        if (role == AdminRole.SYSTEM) {
+        if (adminRole == AdminRole.SYSTEM) {
             throw new AdminException("system admin status cannot be updated");
         }
         setStatus(status);
@@ -155,7 +162,7 @@ public class AdminAccount {
     }
 
     public void softDelete() {
-        if (role == AdminRole.SYSTEM) {
+        if (adminRole == AdminRole.SYSTEM) {
             throw new AdminException("system admin status cannot be deleted");
         }
         if (deletedAt != null) {
