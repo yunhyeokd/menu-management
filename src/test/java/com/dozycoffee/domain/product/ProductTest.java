@@ -1,5 +1,6 @@
 package com.dozycoffee.domain.product;
 
+import com.dozycoffee.domain.branch.BranchId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
@@ -113,16 +114,16 @@ public class ProductTest {
     @Test
     public void id가_같은_상품은_동등하다() {
         ProductFixture.Builder builder = ProductFixture.builder();
-        Product product1 = builder.id(1L).build();
-        Product product2 = builder.id(1L).build();
+        Product product1 = builder.id(ProductId.of(1L)).build();
+        Product product2 = builder.id(ProductId.of(1L)).build();
         assertThat(product1).isEqualTo(product2);
     }
 
     @Test
     public void id가_다른_상품은_동등하지_않다() {
         ProductFixture.Builder builder = ProductFixture.builder();
-        Product product1 = builder.id(1L).build();
-        Product product2 = builder.id(2L).build();
+        Product product1 = builder.id(ProductId.of(1L)).build();
+        Product product2 = builder.id(ProductId.of(2L)).build();
         assertThat(product1).isNotEqualTo(product2);
     }
 
@@ -131,8 +132,8 @@ public class ProductTest {
     @Test
     public void id가_null인_상품은_동등하지_않다() {
         ProductFixture.Builder builder = ProductFixture.builder();
-        Product product1 = builder.id(1L).build();
-        Product product2 = builder.createCommonProduct();
+        Product product1 = builder.id(ProductId.of(1L)).build();
+        Product product2 = builder.id(ProductId.of(2L)).createCommonProduct();
         assertThat(product1).isNotEqualTo(product2);
     }
 
@@ -157,7 +158,7 @@ public class ProductTest {
     public void 공통_상품에_branchId가_있으면_예외가_발생한다() {
         assertThatThrownBy(() -> ProductFixture.builder()
                 .kind(ProductKind.COMMON)
-                .branchId(1L)
+                .branchId(BranchId.of(1L))
                 .build()
         ).isInstanceOf(ProductException.class);
     }

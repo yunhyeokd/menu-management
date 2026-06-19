@@ -1,6 +1,5 @@
 package com.dozycoffee.domain.product;
 
-import com.dozycoffee.domain.product.ProductException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
@@ -17,7 +16,7 @@ public class CategoryTest {
     public void 카테고리를_정상_생성한다() {
         String name = "커피";
 
-        Category category = Category.create(name);
+        Category category = Category.create(CategoryId.of(1L), name);
 
         assertThat(category.getName()).isEqualTo(name);
     }
@@ -30,29 +29,29 @@ public class CategoryTest {
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     })
     public void 카테고리_생성시_카테고리명이_유효하지_않으면_예외를_발생시킨다(String categoryName) {
-        assertThatThrownBy(() -> Category.create(categoryName))
+        assertThatThrownBy(() -> Category.create(CategoryId.of(1L), categoryName))
                 .isInstanceOf(ProductException.class);
     }
 
     @Test
     public void id가_같은_카테고리는_동등하다() {
-        Category category1 = Category.of(1L, "커피1", Instant.now());
-        Category category2 = Category.of(1L, "커피2", Instant.now());
+        Category category1 = Category.of(CategoryId.of(1L), "커피1", Instant.now());
+        Category category2 = Category.of(CategoryId.of(1L), "커피2", Instant.now());
         assertThat(category1).isEqualTo(category2);
     }
 
     @Test
     public void id가_다른_카테고리는_동등하지_않다() {
         Instant createdAt = Instant.now();
-        Category category1 = Category.of(1L, "커피1", createdAt);
-        Category category2 = Category.of(2L, "커피1", createdAt);
+        Category category1 = Category.of(CategoryId.of(1L), "커피1", createdAt);
+        Category category2 = Category.of(CategoryId.of(2L), "커피1", createdAt);
         assertThat(category1).isNotEqualTo(category2);
     }
 
     @Test
     public void id가_null인_카테고리는_동등하지_않다() {
-        Category category1 = Category.of(1L, "커피1", Instant.now());
-        Category category2 = Category.create("커피1");
+        Category category1 = Category.of(CategoryId.of(1L), "커피1", Instant.now());
+        Category category2 = Category.create(CategoryId.of(2L), "커피1");
         assertThat(category1).isNotEqualTo(category2);
     }
 

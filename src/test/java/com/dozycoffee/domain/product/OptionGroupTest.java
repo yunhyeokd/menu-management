@@ -18,7 +18,7 @@ public class OptionGroupTest {
     @Test
     public void 옵션_그룹을_정상_생성한다() {
 
-        OptionGroup optionGroup = OptionGroup.create(validName, validDescription);
+        OptionGroup optionGroup = OptionGroup.create(OptionGroupId.of(1L), validName, validDescription);
         assertThat(optionGroup.getName()).isEqualTo(validName);
         assertThat(optionGroup.getDescription()).isEqualTo(validDescription);
     }
@@ -31,36 +31,36 @@ public class OptionGroupTest {
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     })
     public void 옵션그룹_생성시_옵션그룹명이_유효하지_않으면_예외를_발생시킨다(String name) {
-        assertThatThrownBy(() -> OptionGroup.create(name, validDescription))
+        assertThatThrownBy(() -> OptionGroup.create(OptionGroupId.of(1L), name, validDescription))
                 .isInstanceOf(ProductException.class);
     }
 
     @Test
     public void 옵션그룹_생성시_설명이_최대길이를_초과하면_예외를_발생시킨다() {
         String longDescription = "a".repeat(501);
-        assertThatThrownBy(() -> OptionGroup.create(validName, longDescription))
+        assertThatThrownBy(() -> OptionGroup.create(OptionGroupId.of(1L), validName, longDescription))
                 .isInstanceOf(ProductException.class);
     }
 
     @Test
     public void id가_같은_옵션그룹은_동등하다() {
-        OptionGroup optionGroup1 = OptionGroup.of(1L, validName, validDescription, Instant.now());
-        OptionGroup optionGroup2 = OptionGroup.of(1L, validName, validDescription, Instant.now());
+        OptionGroup optionGroup1 = OptionGroup.of(OptionGroupId.of(1L), validName, validDescription, Instant.now());
+        OptionGroup optionGroup2 = OptionGroup.of(OptionGroupId.of(1L), validName, validDescription, Instant.now());
         assertThat(optionGroup1).isEqualTo(optionGroup2);
     }
 
     @Test
     public void id가_다른_옵션그룹은_동등하지_않다() {
         Instant createdAt = Instant.now();
-        OptionGroup optionGroup1 = OptionGroup.of(1L, validName, validDescription, createdAt);
-        OptionGroup optionGroup2 = OptionGroup.of(2L, validName, validDescription, createdAt);
+        OptionGroup optionGroup1 = OptionGroup.of(OptionGroupId.of(1L), validName, validDescription, createdAt);
+        OptionGroup optionGroup2 = OptionGroup.of(OptionGroupId.of(2L), validName, validDescription, createdAt);
         assertThat(optionGroup1).isNotEqualTo(optionGroup2);
     }
 
     @Test
     public void id가_null인_옵션그룹은_동등하지_않다() {
-        OptionGroup optionGroup1 = OptionGroup.of(1L, validName, validDescription, Instant.now());
-        OptionGroup optionGroup2 = OptionGroup.create(validName, validDescription);
+        OptionGroup optionGroup1 = OptionGroup.of(OptionGroupId.of(1L), validName, validDescription, Instant.now());
+        OptionGroup optionGroup2 = OptionGroup.create(OptionGroupId.of(2L), validName, validDescription);
         assertThat(optionGroup1).isNotEqualTo(optionGroup2);
     }
 

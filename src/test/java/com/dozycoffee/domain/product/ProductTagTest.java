@@ -10,8 +10,8 @@ public class ProductTagTest {
 
     @Test
     public void 상품태그를_정상_생성한다() {
-        long productId = 1L;
-        long tagId = 1L;
+        ProductId productId = ProductId.of(1L);
+        TagId tagId = TagId.of(1L);
 
         ProductTag productTag = ProductTag.create(productId, tagId);
 
@@ -23,8 +23,8 @@ public class ProductTagTest {
     @Test
     public void id가_같은_상품태그는_동등하다() {
 
-        long productId = 1L;
-        long tagId = 1L;
+        ProductId productId = ProductId.of(1L);
+        TagId tagId = TagId.of(1L);
         Instant createdAt = Instant.now();
 
         ProductTag productTag1 = ProductTag.of(1L, productId, tagId, createdAt);
@@ -38,8 +38,8 @@ public class ProductTagTest {
     @Test
     public void id가_다른_상품태그는_동등하지_않다() {
 
-        long productId = 1L;
-        long tagId = 1L;
+        ProductId productId = ProductId.of(1L);
+        TagId tagId = TagId.of(1L);
         Instant createdAt = Instant.now();
 
         ProductTag productTag1 = ProductTag.of(1L, productId, tagId, createdAt);
@@ -52,8 +52,8 @@ public class ProductTagTest {
     @Test
     public void id가_null인_상품태그는_동등하지_않다() {
 
-        long productId = 1L;
-        long tagId = 1L;
+        ProductId productId = ProductId.of(1L);
+        TagId tagId = TagId.of(1L);
         Instant createdAt = Instant.now();
 
         ProductTag productTag1 = ProductTag.of(1L, productId, tagId, createdAt);
