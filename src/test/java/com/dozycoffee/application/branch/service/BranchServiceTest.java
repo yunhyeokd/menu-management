@@ -1,5 +1,7 @@
 package com.dozycoffee.application.branch.service;
 
+import com.dozycoffee.application.auth.FakeSessionInvalidationPort;
+import com.dozycoffee.application.branch.dto.BranchAuthKeyReissueResult;
 import com.dozycoffee.application.branch.dto.BranchCreateResult;
 import com.dozycoffee.application.branch.dto.BranchProfileUpdateDto;
 import com.dozycoffee.application.branch.repository.FakeBranchAccountRepository;
@@ -23,6 +25,7 @@ public class BranchServiceTest {
     private FakeBranchProfileRepository branchProfileRepository;
     private FakeProductRepository productRepository;
     private FakeProductSalesOverrideRepository productSalesOverrideRepository;
+    private FakeSessionInvalidationPort sessionInvalidationPort;
     private BranchService branchService;
 
     private long nextBranchId = 1L;
@@ -35,6 +38,7 @@ public class BranchServiceTest {
         branchProfileRepository = new FakeBranchProfileRepository();
         productRepository = new FakeProductRepository();
         productSalesOverrideRepository = new FakeProductSalesOverrideRepository();
+        sessionInvalidationPort = new FakeSessionInvalidationPort();
         nextBranchId = 1L;
         nextCodeSeq = 1L;
         nextOverrideId = 1L;
@@ -47,8 +51,57 @@ public class BranchServiceTest {
                 () -> BranchId.of(nextBranchId++),
                 () -> BranchCode.of(String.format("2026%04d", nextCodeSeq++)),
                 () -> "raw-auth-key",
-                raw -> "hashed-" + raw
+                raw -> "hashed-" + raw,
+                sessionInvalidationPort
         );
+    }
+
+    // ─── reissueAuthKey ───────────────────────────────────────────────────────
+
+    @Test
+    public void 인증키를_정상_재발급한다() {
+        BranchId branchId = BranchId.of(1L);
+        BranchAccount account = BranchFixture.builder().id(branchId).authKeyHash("old-hash").build();
+        branchAccountRepository.put(account);
+
+        BranchAuthKeyReissueResult result = branchService.reissueAuthKey(branchId);
+
+        assertThat(result.rawAuthKey()).isEqualTo("raw-auth-key");
+        assertThat(branchAccountRepository.findById(branchId).getAuthKeyHash()).isEqualTo("hashed-raw-auth-key");
+        assertThat(sessionInvalidationPort.wasInvalidated(branchAccountRepository.findById(branchId))).isTrue();
+    }
+
+    @Test
+    public void 인증키_재발급시_지점이_존재하지_않으면_BRANCH_NOT_FOUND_ERROR를_던진다() {
+        assertThatThrownBy(() -> branchService.reissueAuthKey(BranchId.of(999L)))
+                .isInstanceOf(BranchBusinessException.class)
+                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
+                        .isEqualTo(BranchErrors.BRANCH_NOT_FOUND_ERROR.errorCode));
+    }
+
+    @Test
+    public void 인증키_재발급시_소프트_삭제된_지점이면_ALREADY_DELETED_ERROR를_던진다() {
+        BranchId branchId = BranchId.of(1L);
+        BranchAccount account = BranchFixture.builder().id(branchId).build();
+        account.softDelete();
+        branchAccountRepository.put(account);
+
+        assertThatThrownBy(() -> branchService.reissueAuthKey(branchId))
+                .isInstanceOf(BranchBusinessException.class)
+                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
+                        .isEqualTo(BranchErrors.ALREADY_DELETED_ERROR.errorCode));
+    }
+
+    @Test
+    public void 인증키_재발급중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
+        BranchId branchId = BranchId.of(1L);
+        branchAccountRepository.put(BranchFixture.builder().id(branchId).build());
+        branchAccountRepository.throwOnNextCall();
+
+        assertThatThrownBy(() -> branchService.reissueAuthKey(branchId))
+                .isInstanceOf(BranchBusinessException.class)
+                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
+                        .isEqualTo(BranchErrors.UNKNOWN_ERROR.errorCode));
     }
 
     // ─── create ──────────────────────────────────────────────────────────────

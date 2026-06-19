@@ -118,4 +118,11 @@ public class BranchAccount implements Principal {
         }
         this.deletedAt = Instant.now();
     }
+
+    public void reissueAuthKey(String newHash) {
+        if (deletedAt != null) {
+            throw new BranchException("Branch is already deleted");
+        }
+        setAuthKeyHash(newHash);
+    }
 }
