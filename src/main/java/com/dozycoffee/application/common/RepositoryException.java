@@ -1,7 +1,5 @@
 package com.dozycoffee.application.common;
 
-import com.dozycoffee.domain.common.DomainCode;
-
 public class RepositoryException extends RuntimeException {
     public RepositoryException() {
     }

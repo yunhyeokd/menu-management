@@ -2,17 +2,18 @@ package com.dozycoffee.application.product.repository;
 
 import com.dozycoffee.application.common.RepositoryException;
 import com.dozycoffee.domain.product.Tag;
+import com.dozycoffee.domain.product.TagId;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class FakeTagRepository implements TagRepository {
 
-    private final Map<Long, Tag> store = new LinkedHashMap<>();
-    private long sequence = 1;
+    private final Map<TagId, Tag> store = new LinkedHashMap<>();
     private boolean shouldThrow = false;
 
     public void throwOnNextCall() {
@@ -24,7 +25,7 @@ public class FakeTagRepository implements TagRepository {
         return tag;
     }
 
-    public boolean contains(long tagId) {
+    public boolean contains(TagId tagId) {
         return store.containsKey(tagId);
     }
 
@@ -36,15 +37,9 @@ public class FakeTagRepository implements TagRepository {
     }
 
     @Override
-    public Tag save(Tag tag) throws RepositoryException {
+    public void save(Tag tag) throws RepositoryException {
         checkThrow();
-        if (tag.getId() == null) {
-            Tag saved = Tag.of(sequence++, tag.getName(), tag.getCreatedAt());
-            store.put(saved.getId(), saved);
-            return saved;
-        }
         store.put(tag.getId(), tag);
-        return tag;
     }
 
     @Override
@@ -62,22 +57,21 @@ public class FakeTagRepository implements TagRepository {
     }
 
     @Override
-    public Tag findById(long tagId) throws RepositoryException {
+    public Optional<Tag> findById(TagId tagId) throws RepositoryException {
         checkThrow();
-        return store.get(tagId);
+        return Optional.ofNullable(store.get(tagId));
     }
 
     @Override
-    public Tag findByName(String tagName) throws RepositoryException {
+    public Optional<Tag> findByName(String tagName) throws RepositoryException {
         checkThrow();
         return store.values().stream()
                 .filter(tag -> tag.getName().equals(tagName))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
     @Override
-    public void deleteById(long tagId) throws RepositoryException {
+    public void deleteById(TagId tagId) throws RepositoryException {
         checkThrow();
         store.remove(tagId);
     }

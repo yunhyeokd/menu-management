@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class AdminAccount {
 
-    private Long id;
+    private AdminId id;
     private AdminRole role;
     private String username;
     private String passwordHash;
@@ -15,7 +15,7 @@ public class AdminAccount {
     private Instant deletedAt;
 
     private AdminAccount(
-            Long id,
+            AdminId id,
             AdminRole role,
             String username,
             String passwordHash,
@@ -23,20 +23,18 @@ public class AdminAccount {
             Instant createdAt,
             Instant deletedAt
     ) {
-        validateRequiredFields(role, username, passwordHash, status, createdAt);
-        this.id = id;
-        this.role = role;
-        this.username = username;
-        this.passwordHash = passwordHash;
-        this.status = status;
-        this.createdAt = createdAt;
+        setId(id);
+        setRole(role);
+        setUsername(username);
+        setPasswordHash(passwordHash);
+        setStatus(status);
+        setCreatedAt(createdAt);
         this.deletedAt = deletedAt;
     }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof AdminAccount adminAccount)) return false;
-        if (id == null || adminAccount.id == null) return false;
         return Objects.equals(id, adminAccount.id);
     }
 
@@ -46,7 +44,7 @@ public class AdminAccount {
     }
 
     public static AdminAccount of(
-            long id,
+            AdminId id,
             AdminRole role,
             String username,
             String password,
@@ -57,26 +55,31 @@ public class AdminAccount {
         return new AdminAccount(id, role, username, password, status, createdAt, deletedAt);
     }
 
-    public static AdminAccount create(AdminRole role, String username, String password) {
-        validateUsername(username);
-        validatePasswordHash(password);
+    public static AdminAccount create(AdminId id, AdminRole role, String username, String password) {
         AdminStatus status = role == AdminRole.SYSTEM ? AdminStatus.ACTIVE : AdminStatus.PENDING;
-        return new AdminAccount(null, role, username, password, status, Instant.now(), null);
+        return new AdminAccount(id, role, username, password, status, Instant.now(), null);
     }
 
-    private static void validateRequiredFields(AdminRole role, String username, String passwordHash, AdminStatus status, Instant createdAt) {
-        validateRoleAndStatus(role, status);
-        if (username == null) throw new AdminException("username cannot be null");
-        if (passwordHash == null) throw new AdminException("password cannot be null");
-        if (createdAt == null) throw new AdminException("createdAt cannot be null");
+    public AdminId getId() {
+        return id;
     }
 
-    private static void validateRoleAndStatus(AdminRole role, AdminStatus status) {
+    private void setId(AdminId id) {
+        if (id == null) throw new AdminException("id cannot be null");
+        this.id = id;
+    }
+
+    public AdminRole getRole() {
+        return role;
+    }
+
+    private void setRole(AdminRole role) {
         if (role == null) throw new AdminException("role cannot be null");
-        if (status == null) throw new AdminException("status cannot be null");
-        if (role == AdminRole.SYSTEM) {
-            if (status != AdminStatus.ACTIVE) throw new AdminException("status must be ACTIVE");
-        }
+        this.role = role;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     private static final Pattern USERNAME_PATTERN =
@@ -97,34 +100,43 @@ public class AdminAccount {
         }
     }
 
-    private static void validatePasswordHash(String passwordHash) {
-        if (passwordHash == null || passwordHash.isEmpty()) {
-            throw new AdminException("Password is required");
-        }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public AdminRole getRole() {
-        return role;
-    }
-
-    public String getUsername() {
-        return username;
+    private void setUsername(String username) {
+        validateUsername(username);
+        this.username = username;
     }
 
     public String getPasswordHash() {
         return passwordHash;
     }
 
+
+    private static void validatePasswordHash(String passwordHash) {
+        if (passwordHash == null || passwordHash.isEmpty()) {
+            throw new AdminException("Password is required");
+        }
+    }
+
+    private void setPasswordHash(String passwordHash) {
+        validatePasswordHash(passwordHash);
+        this.passwordHash = passwordHash;
+    }
+
     public AdminStatus getStatus() {
         return status;
     }
 
+    private void setStatus(AdminStatus status) {
+        if (status == null) throw new AdminException("status cannot be null");
+        this.status = status;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    private void setCreatedAt(Instant createdAt) {
+        if (createdAt == null) throw new AdminException("createdAt cannot be null");
+        this.createdAt = createdAt;
     }
 
     public Instant getDeletedAt() {
@@ -135,13 +147,11 @@ public class AdminAccount {
         if (role == AdminRole.SYSTEM) {
             throw new AdminException("system admin status cannot be updated");
         }
-        if (status == null) throw new AdminException("status cannot be null");
-        this.status = status;
+        setStatus(status);
     }
 
     public void updatePasswordHash(String passwordHash) {
-        validatePasswordHash(passwordHash);
-        this.passwordHash = passwordHash;
+        setPasswordHash(passwordHash);
     }
 
     public void softDelete() {

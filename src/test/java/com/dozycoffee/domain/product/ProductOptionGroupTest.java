@@ -10,8 +10,8 @@ public class ProductOptionGroupTest {
 
     @Test
     public void 상품_옵션그룹을_정상_생성한다() {
-        long productId = 1L;
-        long optionGroupId = 1L;
+        ProductId productId = ProductId.of(1L);
+        OptionGroupId optionGroupId = OptionGroupId.of(1L);
         boolean isRequired = true;
         boolean allowMultiple = false;
 
@@ -26,8 +26,8 @@ public class ProductOptionGroupTest {
 
     @Test
     public void id가_같은_상품_옵션그룹은_동등하다() {
-        long productId = 1L;
-        long optionGroupId = 1L;
+        ProductId productId = ProductId.of(1L);
+        OptionGroupId optionGroupId = OptionGroupId.of(1L);
         boolean isRequired = true;
         boolean allowMultiple = false;
         Instant createdAt = Instant.now();
@@ -41,8 +41,8 @@ public class ProductOptionGroupTest {
 
     @Test
     public void id가_다른_상품_옵션그룹은_동등하지_않다() {
-        long productId = 1L;
-        long optionGroupId = 1L;
+        ProductId productId = ProductId.of(1L);
+        OptionGroupId optionGroupId = OptionGroupId.of(1L);
         boolean isRequired = true;
         boolean allowMultiple = false;
         Instant createdAt = Instant.now();
@@ -56,8 +56,8 @@ public class ProductOptionGroupTest {
 
     @Test
     public void id가_null인_상품_옵션그룹은_동등하지_않다() {
-        long productId = 1L;
-        long optionGroupId = 1L;
+        ProductId productId = ProductId.of(1L);
+        OptionGroupId optionGroupId = OptionGroupId.of(1L);
         boolean isRequired = true;
         boolean allowMultiple = false;
         Instant createdAt = Instant.now();

@@ -1,7 +1,9 @@
 package com.dozycoffee.application.product.repository;
 
 import com.dozycoffee.application.common.RepositoryException;
+import com.dozycoffee.domain.product.CategoryId;
 import com.dozycoffee.domain.product.Product;
+import com.dozycoffee.domain.product.ProductId;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -11,8 +13,7 @@ import java.util.stream.Collectors;
 
 public class FakeProductRepository implements ProductRepository {
 
-    private final Map<Long, Product> store = new LinkedHashMap<>();
-    private long sequence = 1;
+    private final Map<ProductId, Product> store = new LinkedHashMap<>();
     private boolean shouldThrow = false;
 
     public void throwOnNextCall() {
@@ -36,17 +37,16 @@ public class FakeProductRepository implements ProductRepository {
     }
 
     @Override
-    public Product save(Product product) throws RepositoryException {
+    public void save(Product product) throws RepositoryException {
         checkThrow();
         store.put(product.getId(), product);
-        return product;
     }
 
     @Override
-    public List<Product> findAllByCategoryId(long categoryId) throws RepositoryException {
+    public List<Product> findAllByCategoryId(CategoryId categoryId) throws RepositoryException {
         checkThrow();
         return store.values().stream()
-                .filter(p -> p.getCategoryId() != null && p.getCategoryId() == categoryId)
+                .filter(p -> p.getCategoryId() != null && p.getCategoryId().equals(categoryId))
                 .collect(Collectors.toList());
     }
 }

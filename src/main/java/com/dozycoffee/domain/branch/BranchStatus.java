@@ -1,5 +1,7 @@
 package com.dozycoffee.domain.branch;
 
+
+
 public enum BranchStatus {
     ACTIVE,
     INACTIVE,

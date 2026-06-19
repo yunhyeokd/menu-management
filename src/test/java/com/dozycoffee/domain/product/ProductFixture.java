@@ -1,21 +1,23 @@
 package com.dozycoffee.domain.product;
 
+import com.dozycoffee.domain.branch.BranchId;
+
 import java.time.Instant;
 import java.util.Set;
 
 public class ProductFixture {
 
     public static class Base {
-        public static long id = 1L;
+        public static ProductId id = ProductId.of(1L);
         public static String name = "아메리카노";
         public static String description = "아메리카노입니다.";
         public static String imageUrl = "https://www.dozycoffee.com";
-        public static long categoryId = 1L;
+        public static CategoryId categoryId = CategoryId.of(1L);
         public static int price = 1000;
         public static int kcal = 100;
         public static AllergenInfo allergenInfo = new AllergenInfo(Set.of(AllergenType.CASHEW));
         public static ProductKind kind = ProductKind.COMMON;
-        public static Long branchId = 1L;
+        public static BranchId branchId = BranchId.of(1L);
         public static ProductStatus status = ProductStatus.ACTIVE;
         public static Instant createdAt = Instant.now();
     }
@@ -25,20 +27,20 @@ public class ProductFixture {
     }
 
     public static class Builder {
-        private Long id = Base.id;
+        private ProductId id = Base.id;
         private String name = Base.name;
         private String description = Base.description;
         private String imageUrl = Base.imageUrl;
-        private Long categoryId = Base.categoryId;
+        private CategoryId categoryId = Base.categoryId;
         private int price = Base.price;
         private Integer kcal = Base.kcal;
-        private Long branchId = Base.branchId;
+        private BranchId branchId = Base.branchId;
         private AllergenInfo allergenInfo = Base.allergenInfo;
         private ProductKind kind = ProductKind.BRANCH_EXCLUSIVE;
         private ProductStatus status = Base.status;
         private Instant createdAt = Base.createdAt;
 
-        public Builder id(Long id) {
+        public Builder id(ProductId id) {
             this.id = id;
             return this;
         }
@@ -58,7 +60,7 @@ public class ProductFixture {
             return this;
         }
 
-        public Builder categoryId(Long categoryId) {
+        public Builder categoryId(CategoryId categoryId) {
             this.categoryId = categoryId;
             return this;
         }
@@ -78,7 +80,7 @@ public class ProductFixture {
             return this;
         }
 
-        public Builder branchId(Long branchId) {
+        public Builder branchId(BranchId branchId) {
             this.branchId = branchId;
             return this;
         }
@@ -99,11 +101,11 @@ public class ProductFixture {
         }
 
         public Product createCommonProduct() {
-            return Product.createCommonProduct(name, description, imageUrl, categoryId, price, kcal, allergenInfo);
+            return Product.createCommonProduct(id, name, description, imageUrl, categoryId, price, kcal, allergenInfo);
         }
 
         public Product createBranchProduct() {
-            return Product.createBranchProduct(name, description, imageUrl, categoryId, price, kcal, allergenInfo, branchId);
+            return Product.createBranchProduct(id, name, description, imageUrl, categoryId, price, kcal, allergenInfo, branchId);
         }
 
         public Product build() {
