@@ -19,6 +19,18 @@ public class Category {
         this.createdAt = createdAt;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Category category)) return false;
+        if (id == null || category.id==null) return false;
+        return Objects.equals(id, category.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
     public static Category of(long id, String name, Instant createdAt) {
         return new Category(id, name, createdAt);
     }
@@ -59,15 +71,9 @@ public class Category {
         return createdAt;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Category category)) return false;
-        if (id == null || category.id==null) return false;
-        return Objects.equals(id, category.id);
+    public void updateName(String name) {
+        validateName(name);
+        this.name = name;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
 }
