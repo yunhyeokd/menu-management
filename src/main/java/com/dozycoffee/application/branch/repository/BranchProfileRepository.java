@@ -6,6 +6,7 @@ import com.dozycoffee.domain.branch.BranchProfile;
 
 public interface BranchProfileRepository {
     BranchProfile findById(BranchId branchId) throws RepositoryException;
+    BranchProfile findByName(String name) throws RepositoryException;
     void save(BranchProfile branchProfile) throws RepositoryException;
     void deleteById(BranchId branchId);
 }

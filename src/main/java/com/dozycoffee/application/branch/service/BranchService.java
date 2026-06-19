@@ -1,9 +1,12 @@
 package com.dozycoffee.application.branch.service;
 
+import com.dozycoffee.application.branch.dto.BranchCreateResult;
 import com.dozycoffee.application.branch.dto.BranchProfileUpdateDto;
 import com.dozycoffee.application.branch.repository.BranchAccountRepository;
 import com.dozycoffee.application.branch.repository.BranchProfileRepository;
 import com.dozycoffee.application.branch.repository.ProductSalesOverrideRepository;
+import com.dozycoffee.application.common.IdentifierGenerator;
+import com.dozycoffee.application.auth.PasswordHasher;
 import com.dozycoffee.application.common.RepositoryException;
 import com.dozycoffee.application.product.repository.ProductRepository;
 import com.dozycoffee.domain.branch.*;
@@ -21,17 +24,59 @@ public class BranchService {
     private final BranchProfileRepository branchProfileRepository;
     private final ProductRepository productRepository;
     private final ProductSalesOverrideRepository productSalesOverrideRepository;
+    private final IdentifierGenerator<BranchId> idGenerator;
+    private final BranchCodeGenerator codeGenerator;
+    private final BranchAuthKeyGenerator authKeyGenerator;
+    private final PasswordHasher passwordHasher;
 
     public BranchService(
             BranchAccountRepository branchAccountRepository,
             BranchProfileRepository branchProfileRepository,
             ProductRepository productRepository,
-            ProductSalesOverrideRepository productSalesOverrideRepository
+            ProductSalesOverrideRepository productSalesOverrideRepository,
+            IdentifierGenerator<BranchId> idGenerator,
+            BranchCodeGenerator codeGenerator,
+            BranchAuthKeyGenerator authKeyGenerator,
+            PasswordHasher passwordHasher
     ) {
         this.branchAccountRepository = branchAccountRepository;
         this.branchProfileRepository = branchProfileRepository;
         this.productRepository = productRepository;
         this.productSalesOverrideRepository = productSalesOverrideRepository;
+        this.idGenerator = idGenerator;
+        this.codeGenerator = codeGenerator;
+        this.authKeyGenerator = authKeyGenerator;
+        this.passwordHasher = passwordHasher;
+    }
+
+    public BranchCreateResult create(String name, String address) {
+        try {
+            if (branchProfileRepository.findByName(name) != null) {
+                throw BranchBusinessException.with(BranchErrors.DUPLICATE_NAME_ERROR);
+            }
+            try {
+                BranchId branchId = idGenerator.generate();
+                BranchCode branchCode = codeGenerator.generate();
+                String rawAuthKey = authKeyGenerator.generate();
+                String authKeyHash = passwordHasher.hash(rawAuthKey);
+                BranchAccount account = BranchAccount.create(branchId, branchCode, authKeyHash);
+                BranchProfile profile = BranchProfile.create(branchId, name, address);
+                branchAccountRepository.save(account);
+                branchProfileRepository.save(profile);
+                return new BranchCreateResult(
+                        account.getId(),
+                        account.getCode(),
+                        rawAuthKey,
+                        profile.getName(),
+                        profile.getAddress(),
+                        account.getCreatedAt()
+                );
+            } catch (BranchException e) {
+                throw BranchBusinessException.with(BranchErrors.INVALID_BRANCH_ERROR);
+            }
+        } catch (RepositoryException e) {
+            throw BranchBusinessException.with(BranchErrors.UNKNOWN_ERROR);
+        }
     }
 
     private void assertBranchAccountExists(BranchId branchId) throws RepositoryException {
