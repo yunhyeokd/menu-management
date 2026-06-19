@@ -2,6 +2,7 @@ package com.dozycoffee.application.product.repository;
 
 import com.dozycoffee.application.common.RepositoryException;
 import com.dozycoffee.domain.product.ProductTag;
+import com.dozycoffee.domain.product.TagId;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -20,12 +21,6 @@ public class FakeProductTagRepository implements ProductTagRepository {
     }
 
     public ProductTag add(ProductTag productTag) {
-        if (productTag.getId() == null) {
-            ProductTag saved = ProductTag.of(
-                    sequence++, productTag.getProductId(), productTag.getTagId(), productTag.getCreatedAt());
-            store.put(saved.getId(), saved);
-            return saved;
-        }
         store.put(productTag.getId(), productTag);
         return productTag;
     }
@@ -42,16 +37,16 @@ public class FakeProductTagRepository implements ProductTagRepository {
     }
 
     @Override
-    public void deleteAllByTagId(long tagId) throws RepositoryException {
+    public void deleteAllByTagId(TagId tagId) throws RepositoryException {
         checkThrow();
-        store.entrySet().removeIf(entry -> entry.getValue().getTagId() == tagId);
+        store.entrySet().removeIf(entry -> entry.getValue().getTagId().equals(tagId));
     }
 
     @Override
-    public List<ProductTag> findAllByTagId(long tagId) throws RepositoryException {
+    public List<ProductTag> findAllByTagId(TagId tagId) throws RepositoryException {
         checkThrow();
         return store.values().stream()
-                .filter(productTag -> productTag.getTagId() == tagId)
+                .filter(productTag -> productTag.getTagId().equals(tagId))
                 .collect(Collectors.toList());
     }
 }

@@ -2,20 +2,16 @@ package com.dozycoffee.application.product.repository;
 
 import com.dozycoffee.application.common.RepositoryException;
 import com.dozycoffee.domain.product.Tag;
+import com.dozycoffee.domain.product.TagId;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TagRepository {
-
-    Tag save(Tag tag) throws RepositoryException;
-
+    void save(Tag tag) throws RepositoryException;
     List<Tag> findAll() throws RepositoryException;
-
     List<Tag> searchByName(String tagName) throws RepositoryException;
-
-    Tag findById(long tagId) throws RepositoryException;
-
-    Tag findByName(String tagName) throws RepositoryException;
-
-    void deleteById(long tagId) throws RepositoryException;
+    Optional<Tag> findById(TagId tagId) throws RepositoryException;
+    Optional<Tag> findByName(String tagName) throws RepositoryException;
+    void deleteById(TagId tagId) throws RepositoryException;
 }

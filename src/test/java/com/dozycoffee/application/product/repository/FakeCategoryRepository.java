@@ -2,17 +2,18 @@ package com.dozycoffee.application.product.repository;
 
 import com.dozycoffee.application.common.RepositoryException;
 import com.dozycoffee.domain.product.Category;
+import com.dozycoffee.domain.product.CategoryId;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class FakeCategoryRepository implements CategoryRepository {
 
-    private final Map<Long, Category> store = new LinkedHashMap<>();
-    private long sequence = 1;
+    private final Map<CategoryId, Category> store = new LinkedHashMap<>();
     private boolean shouldThrow = false;
 
     public void throwOnNextCall() {
@@ -24,7 +25,7 @@ public class FakeCategoryRepository implements CategoryRepository {
         return category;
     }
 
-    public boolean contains(long id) {
+    public boolean contains(CategoryId id) {
         return store.containsKey(id);
     }
 
@@ -36,15 +37,9 @@ public class FakeCategoryRepository implements CategoryRepository {
     }
 
     @Override
-    public Category save(Category category) throws RepositoryException {
+    public void save(Category category) throws RepositoryException {
         checkThrow();
-        if (category.getId() == null) {
-            Category saved = Category.of(sequence++, category.getName(), category.getCreatedAt());
-            store.put(saved.getId(), saved);
-            return saved;
-        }
         store.put(category.getId(), category);
-        return category;
     }
 
     @Override
@@ -62,22 +57,21 @@ public class FakeCategoryRepository implements CategoryRepository {
     }
 
     @Override
-    public Category findById(long id) throws RepositoryException {
+    public Optional<Category> findById(CategoryId id) throws RepositoryException {
         checkThrow();
-        return store.get(id);
+        return Optional.ofNullable(store.get(id));
     }
 
     @Override
-    public Category findByName(String name) throws RepositoryException {
+    public Optional<Category> findByName(String name) throws RepositoryException {
         checkThrow();
         return store.values().stream()
                 .filter(c -> c.getName().equals(name))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
     @Override
-    public void deleteById(long id) throws RepositoryException {
+    public void deleteById(CategoryId id) throws RepositoryException {
         checkThrow();
         store.remove(id);
     }
