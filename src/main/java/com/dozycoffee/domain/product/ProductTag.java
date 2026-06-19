@@ -6,16 +6,15 @@ import java.util.Objects;
 public class ProductTag {
 
     private Long id;
-    private long productId;
-    private long tagId;
+    private ProductId productId;
+    private TagId tagId;
     private Instant createdAt;
 
-    private ProductTag(Long id, long productId, long tagId, Instant createdAt) {
-        validateRequiredFields(createdAt);
+    private ProductTag(Long id, ProductId productId, TagId tagId, Instant createdAt) {
+        setProductId(productId);
+        setTagId(tagId);
+        setCreatedAt(createdAt);
         this.id = id;
-        this.productId = productId;
-        this.tagId = tagId;
-        this.createdAt = createdAt;
     }
 
     @Override
@@ -30,33 +29,42 @@ public class ProductTag {
         return Objects.equals(id, productTag.id);
     }
 
-    public static ProductTag of(long id, long productId, long tagId, Instant createdAt) {
+    public static ProductTag of(long id, ProductId productId, TagId tagId, Instant createdAt) {
         return new ProductTag(id, productId, tagId, createdAt);
     }
 
-    public static ProductTag create(long productId, long tagId) {
+    public static ProductTag create(ProductId productId, TagId tagId) {
         return new ProductTag(null, productId, tagId, Instant.now());
-    }
-
-    private static void validateRequiredFields(Instant createdAt) {
-        if (createdAt == null) {
-            throw new ProductException("ProductTag createdAt must not be null");
-        }
     }
 
     public Long getId() {
         return id;
     }
 
-    public long getProductId() {
+    public ProductId getProductId() {
         return productId;
     }
 
-    public long getTagId() {
+    private void setProductId(ProductId productId) {
+        if (productId == null) throw new ProductException("productId cannot be null");
+        this.productId = productId;
+    }
+
+    public TagId getTagId() {
         return tagId;
+    }
+
+    private void setTagId(TagId tagId) {
+        if (tagId == null) throw new ProductException("tagId cannot be null");
+        this.tagId = tagId;
     }
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    private void setCreatedAt(Instant createdAt) {
+        if (createdAt == null) throw new ProductException("createdAt cannot be null");
+        this.createdAt = createdAt;
     }
 }
