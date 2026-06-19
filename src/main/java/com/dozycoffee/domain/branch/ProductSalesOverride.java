@@ -67,6 +67,10 @@ public class ProductSalesOverride {
         return status;
     }
 
+    public void updateStatus(ProductSalesOverrideStatus status) {
+        setStatus(status);
+    }
+
     private void setStatus(ProductSalesOverrideStatus status) {
         if (status == null) throw new BranchException("status cannot be null");
         this.status = status;

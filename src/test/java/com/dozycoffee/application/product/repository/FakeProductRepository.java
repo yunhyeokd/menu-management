@@ -1,9 +1,11 @@
 package com.dozycoffee.application.product.repository;
 
 import com.dozycoffee.application.common.RepositoryException;
+import com.dozycoffee.domain.branch.BranchId;
 import com.dozycoffee.domain.product.CategoryId;
 import com.dozycoffee.domain.product.Product;
 import com.dozycoffee.domain.product.ProductId;
+import com.dozycoffee.domain.product.ProductStatus;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -43,10 +45,49 @@ public class FakeProductRepository implements ProductRepository {
     }
 
     @Override
+    public Product findById(ProductId productId) throws RepositoryException {
+        checkThrow();
+        return store.get(productId);
+    }
+
+    @Override
     public List<Product> findAllByCategoryId(CategoryId categoryId) throws RepositoryException {
         checkThrow();
         return store.values().stream()
                 .filter(p -> p.getCategoryId() != null && p.getCategoryId().equals(categoryId))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Product> findAllActiveCommon() throws RepositoryException {
+        checkThrow();
+        return store.values().stream()
+                .filter(p -> p.getStatus() == ProductStatus.ACTIVE && p.getBranchId() == null)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Product> findAllActiveBranchExclusive(BranchId branchId) throws RepositoryException {
+        checkThrow();
+        return store.values().stream()
+                .filter(p -> p.getStatus() == ProductStatus.ACTIVE && branchId.equals(p.getBranchId()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void updateStatusByBranchId(BranchId branchId, ProductStatus status) throws RepositoryException {
+        checkThrow();
+        store.values().stream()
+                .filter(p -> branchId.equals(p.getBranchId()))
+                .forEach(p -> {
+                    if (status == ProductStatus.ACTIVE) p.activate();
+                    else p.deactivate();
+                });
+    }
+
+    @Override
+    public void deleteAllByBranchId(BranchId branchId) throws RepositoryException {
+        checkThrow();
+        store.entrySet().removeIf(e -> branchId.equals(e.getValue().getBranchId()));
     }
 }
