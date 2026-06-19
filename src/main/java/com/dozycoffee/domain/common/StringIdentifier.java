@@ -5,8 +5,12 @@ public abstract class StringIdentifier implements Identifier<String> {
     private final String value;
 
     protected StringIdentifier(String value) {
-        if (value == null) throw new DomainException("identifier value must not be null");
+        validate(value);
         this.value = value;
+    }
+
+    protected void validate(String value) {
+        if (value == null) throw new DomainException("identifier value must not be null");
     }
 
     @Override
