@@ -1,9 +1,11 @@
 package com.dozycoffee.domain.branch;
 
+import com.dozycoffee.domain.auth.Principal;
+
 import java.time.Instant;
 import java.util.Objects;
 
-public class BranchAccount {
+public class BranchAccount implements Principal {
 
     private BranchId id;
     private BranchCode code;
@@ -40,6 +42,13 @@ public class BranchAccount {
 
     public static BranchAccount create(BranchId id, BranchCode code, String authKeyHash) {
         return new BranchAccount(id, code, authKeyHash, BranchStatus.ACTIVE, Instant.now(), null);
+    }
+
+    public static final String ROLE = "BRANCH";
+
+    @Override
+    public String getRole() {
+        return ROLE;
     }
 
     public BranchId getId() {
