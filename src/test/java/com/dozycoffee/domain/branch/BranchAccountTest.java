@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+
 import java.time.Instant;
 import java.util.stream.Stream;
 
@@ -17,10 +18,10 @@ public class BranchAccountTest {
 
     @Test
     public void 지점을_정상_생성한다() {
-        String code = BranchFixture.code;
+        BranchCode code = BranchFixture.code;
         String authKeyHash = BranchFixture.authKeyHash;
 
-        BranchAccount branchAccount = BranchAccount.create(code, authKeyHash);
+        BranchAccount branchAccount = BranchAccount.create(BranchId.of(1L), code, authKeyHash);
 
         assertThat(branchAccount.getCode()).isEqualTo(code);
         assertThat(branchAccount.getAuthKeyHash()).isEqualTo(authKeyHash);
@@ -84,8 +85,8 @@ public class BranchAccountTest {
     @Test
     public void 같은_id를_가진_지점은_동등하다() {
         Instant now = Instant.now();
-        BranchAccount a = BranchAccount.of(1L, BranchFixture.code, BranchFixture.authKeyHash, BranchStatus.ACTIVE, now, null);
-        BranchAccount b = BranchAccount.of(1L, BranchFixture.code, BranchFixture.authKeyHash, BranchStatus.ACTIVE, now, null);
+        BranchAccount a = BranchAccount.of(BranchId.of(1L), BranchFixture.code, BranchFixture.authKeyHash, BranchStatus.ACTIVE, now, null);
+        BranchAccount b = BranchAccount.of(BranchId.of(1L), BranchFixture.code, BranchFixture.authKeyHash, BranchStatus.ACTIVE, now, null);
         assertThat(a).isEqualTo(b);
         assertThat(a.hashCode()).isEqualTo(b.hashCode());
     }
@@ -93,15 +94,8 @@ public class BranchAccountTest {
     @Test
     public void 다른_id를_가진_지점은_동등하지_않다() {
         Instant now = Instant.now();
-        BranchAccount a = BranchAccount.of(1L, BranchFixture.code, BranchFixture.authKeyHash, BranchStatus.ACTIVE, now, null);
-        BranchAccount b = BranchAccount.of(2L, BranchFixture.code, BranchFixture.authKeyHash, BranchStatus.ACTIVE, now, null);
-        assertThat(a).isNotEqualTo(b);
-    }
-
-    @Test
-    public void id가_null인_지점은_동등하지_않다() {
-        BranchAccount a = BranchFixture.builder().build();
-        BranchAccount b = BranchFixture.builder().build();
+        BranchAccount a = BranchAccount.of(BranchId.of(1L), BranchFixture.code, BranchFixture.authKeyHash, BranchStatus.ACTIVE, now, null);
+        BranchAccount b = BranchAccount.of(BranchId.of(2L), BranchFixture.code, BranchFixture.authKeyHash, BranchStatus.ACTIVE, now, null);
         assertThat(a).isNotEqualTo(b);
     }
 }

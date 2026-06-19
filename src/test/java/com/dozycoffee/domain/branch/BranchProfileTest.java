@@ -67,16 +67,16 @@ public class BranchProfileTest {
 
     @Test
     public void 같은_branchId를_가진_프로필은_동등하다() {
-        BranchProfile a = BranchProfile.of(1L, BranchProfileFixture.name, BranchProfileFixture.address);
-        BranchProfile b = BranchProfile.of(1L, BranchProfileFixture.name, BranchProfileFixture.address);
+        BranchProfile a = BranchProfile.of(BranchId.of(1L), BranchProfileFixture.name, BranchProfileFixture.address);
+        BranchProfile b = BranchProfile.of(BranchId.of(1L), BranchProfileFixture.name, BranchProfileFixture.address);
         assertThat(a).isEqualTo(b);
         assertThat(a.hashCode()).isEqualTo(b.hashCode());
     }
 
     @Test
     public void 다른_branchId를_가진_프로필은_동등하지_않다() {
-        BranchProfile a = BranchProfile.of(1L, BranchProfileFixture.name, BranchProfileFixture.address);
-        BranchProfile b = BranchProfile.of(2L, BranchProfileFixture.name, BranchProfileFixture.address);
+        BranchProfile a = BranchProfile.of(BranchId.of(1L), BranchProfileFixture.name, BranchProfileFixture.address);
+        BranchProfile b = BranchProfile.of(BranchId.of(2L), BranchProfileFixture.name, BranchProfileFixture.address);
         assertThat(a).isNotEqualTo(b);
     }
 }

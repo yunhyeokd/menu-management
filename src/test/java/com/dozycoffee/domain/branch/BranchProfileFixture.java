@@ -2,7 +2,7 @@ package com.dozycoffee.domain.branch;
 
 public class BranchProfileFixture {
 
-    public static long branchId = 1L;
+    public static BranchId branchId = BranchId.of(1L);
     public static String name = "어린이대공원";
     public static String address = "서울 광진구 능동로 195-16";
 
@@ -12,11 +12,11 @@ public class BranchProfileFixture {
 
     public static class BranchProfileBuilder {
 
-        private long branchId = BranchProfileFixture.branchId;
+        private BranchId branchId = BranchProfileFixture.branchId;
         private String name = BranchProfileFixture.name;
         private String address = BranchProfileFixture.address;
 
-        public BranchProfileBuilder branchId(long branchId) {
+        public BranchProfileBuilder branchId(BranchId branchId) {
             this.branchId = branchId;
             return this;
         }
