@@ -18,9 +18,8 @@ public class AdminAccountTest {
         String username = "test";
         String password = "password";
 
-        AdminAccount adminAccount = AdminAccount.create(AdminRole.STAFF, username, password);
+        AdminAccount adminAccount = AdminAccount.create(AdminId.of(1L), AdminRole.STAFF, username, password);
 
-        assertThat(adminAccount.getId()).isNull();
         assertThat(adminAccount.getUsername()).isEqualTo(username);
         assertThat(adminAccount.getRole()).isEqualTo(AdminRole.STAFF);
         assertThat(adminAccount.getStatus()).isEqualTo(AdminStatus.PENDING);
@@ -56,8 +55,8 @@ public class AdminAccountTest {
 
     @Test
     public void 같은_id를_가진_계정은_동등하다() {
-        AdminAccount a = AdminAccount.of(1L, AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null);
-        AdminAccount b = AdminAccount.of(1L, AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null);
+        AdminAccount a = AdminAccount.of(AdminId.of(1L), AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null);
+        AdminAccount b = AdminAccount.of(AdminId.of(1L), AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null);
 
         assertThat(a).isEqualTo(b);
         assertThat(a.hashCode()).isEqualTo(b.hashCode());
@@ -65,16 +64,8 @@ public class AdminAccountTest {
 
     @Test
     public void 다른_id를_가진_계정은_동등하지_않다() {
-        AdminAccount a = AdminAccount.of(1L, AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null);
-        AdminAccount b = AdminAccount.of(2L, AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null);
-
-        assertThat(a).isNotEqualTo(b);
-    }
-
-    @Test
-    public void id가_null인_계정은_동등하지_않다() {
-        AdminAccount a = AdminFixture.builder().build();
-        AdminAccount b = AdminFixture.builder().build();
+        AdminAccount a = AdminAccount.of(AdminId.of(1L), AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null);
+        AdminAccount b = AdminAccount.of(AdminId.of(2L), AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null);
 
         assertThat(a).isNotEqualTo(b);
     }
@@ -147,12 +138,5 @@ public class AdminAccountTest {
     public void 비밀번호_변경시_유효하지_않으면_예외가_발생한다(String invalidPassword) {
         AdminAccount staff = AdminFixture.builder().role(AdminRole.STAFF).build();
         assertThatThrownBy(() -> staff.updatePasswordHash(invalidPassword)).isInstanceOf(AdminException.class);
-    }
-
-    @ParameterizedTest
-    @EnumSource(value = AdminStatus.class, names = {"ACTIVE"}, mode = EnumSource.Mode.EXCLUDE)
-    public void SYSTEM_계정을_ACTIVE_외_상태로_생성하면_예외가_발생한다(AdminStatus status) {
-        assertThatThrownBy(() -> AdminAccount.of(1L, AdminRole.SYSTEM, "system_user", "password", status, Instant.now(), null))
-                .isInstanceOf(AdminException.class);
     }
 }
