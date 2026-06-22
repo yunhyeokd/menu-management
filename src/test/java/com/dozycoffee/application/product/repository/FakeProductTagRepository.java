@@ -1,18 +1,18 @@
 package com.dozycoffee.application.product.repository;
 
 import com.dozycoffee.application.common.RepositoryException;
+import com.dozycoffee.domain.product.ProductId;
 import com.dozycoffee.domain.product.ProductTag;
+import com.dozycoffee.domain.product.Tag;
 import com.dozycoffee.domain.product.TagId;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class FakeProductTagRepository implements ProductTagRepository {
 
     private final Map<Long, ProductTag> store = new LinkedHashMap<>();
+    private final Map<TagId, Tag> tagStore = new LinkedHashMap<>();
     private long sequence = 1;
     private boolean shouldThrow = false;
 
@@ -23,6 +23,10 @@ public class FakeProductTagRepository implements ProductTagRepository {
     public ProductTag add(ProductTag productTag) {
         store.put(productTag.getId(), productTag);
         return productTag;
+    }
+
+    public void registerTag(Tag tag) {
+        tagStore.put(tag.getId(), tag);
     }
 
     public List<ProductTag> all() {
@@ -37,9 +41,21 @@ public class FakeProductTagRepository implements ProductTagRepository {
     }
 
     @Override
+    public void save(ProductTag productTag) throws RepositoryException {
+        checkThrow();
+        store.put(productTag.getId(), productTag);
+    }
+
+    @Override
     public void deleteAllByTagId(TagId tagId) throws RepositoryException {
         checkThrow();
         store.entrySet().removeIf(entry -> entry.getValue().getTagId().equals(tagId));
+    }
+
+    @Override
+    public void deleteAllByProductId(ProductId productId) throws RepositoryException {
+        checkThrow();
+        store.entrySet().removeIf(entry -> entry.getValue().getProductId().equals(productId));
     }
 
     @Override
@@ -47,6 +63,16 @@ public class FakeProductTagRepository implements ProductTagRepository {
         checkThrow();
         return store.values().stream()
                 .filter(productTag -> productTag.getTagId().equals(tagId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Tag> findTagsByProductId(ProductId productId) throws RepositoryException {
+        checkThrow();
+        return store.values().stream()
+                .filter(pt -> pt.getProductId().equals(productId))
+                .map(pt -> tagStore.get(pt.getTagId()))
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 }

@@ -31,11 +31,9 @@ public class Product {
         setKcal(kcal);
         setStatus(status);
         setCreatedAt(createdAt);
-        validateCategoryStatus(categoryId, status);
-        validateKindBranchConsistency(kind, branchId);
-        this.categoryId = categoryId;
-        this.branchId = branchId;
-        this.allergenInfo = allergenInfo;
+        setCategoryId(categoryId);
+        setAllergenInfo(allergenInfo);
+        setBranchId(branchId);
     }
 
     @Override
@@ -126,6 +124,10 @@ public class Product {
         return categoryId;
     }
 
+    private void setCategoryId(CategoryId categoryId) {
+        this.categoryId = categoryId;
+    }
+
     public int getPrice() {
         return price;
     }
@@ -156,6 +158,10 @@ public class Product {
         return allergenInfo;
     }
 
+    private void setAllergenInfo(AllergenInfo allergenInfo) {
+        this.allergenInfo = allergenInfo;
+    }
+
     public ProductKind getKind() {
         return kind;
     }
@@ -167,6 +173,11 @@ public class Product {
 
     public BranchId getBranchId() {
         return branchId;
+    }
+
+    private void setBranchId(BranchId branchId) {
+        if (branchId == null) throw new ProductException("branch id is null");
+        this.branchId = branchId;
     }
 
     public ProductStatus getStatus() {
@@ -185,21 +196,6 @@ public class Product {
     private void setCreatedAt(Instant createdAt) {
         if (createdAt == null) throw new ProductException("Product createdAt is null");
         this.createdAt = createdAt;
-    }
-
-    private static void validateCategoryStatus(CategoryId categoryId, ProductStatus status) {
-        if (categoryId == null && status != ProductStatus.INACTIVE) {
-            throw new ProductException("Product with no category must be inactive");
-        }
-    }
-
-    private static void validateKindBranchConsistency(ProductKind kind, BranchId branchId) {
-        if (kind == ProductKind.COMMON && branchId != null) {
-            throw new ProductException("Common product must not have branchId");
-        }
-        if (kind == ProductKind.BRANCH_EXCLUSIVE && branchId == null) {
-            throw new ProductException("Branch exclusive product must have branchId");
-        }
     }
 
     public void activate() {
