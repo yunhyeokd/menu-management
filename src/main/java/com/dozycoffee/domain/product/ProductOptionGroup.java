@@ -5,18 +5,18 @@ import java.util.Objects;
 
 public class ProductOptionGroup {
 
-    private Long id;
+    private ProductOptionGroupId id;
     private ProductId productId;
     private OptionGroupId optionGroupId;
     private boolean isRequired;
     private boolean allowMultiple;
     private Instant createdAt;
 
-    private ProductOptionGroup(Long id, ProductId productId, OptionGroupId optionGroupId, boolean isRequired, boolean allowMultiple, Instant createdAt) {
+    private ProductOptionGroup(ProductOptionGroupId id, ProductId productId, OptionGroupId optionGroupId, boolean isRequired, boolean allowMultiple, Instant createdAt) {
+        setId(id);
         setProductId(productId);
         setOptionGroupId(optionGroupId);
         setCreatedAt(createdAt);
-        this.id = id;
         this.isRequired = isRequired;
         this.allowMultiple = allowMultiple;
     }
@@ -24,7 +24,6 @@ public class ProductOptionGroup {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof ProductOptionGroup that)) return false;
-        if (id == null || that.id == null) return false;
         return Objects.equals(id, that.id);
     }
 
@@ -33,16 +32,23 @@ public class ProductOptionGroup {
         return Objects.hashCode(id);
     }
 
-    public static ProductOptionGroup of(long id, ProductId productId, OptionGroupId optionGroupId, boolean isRequired, boolean allowMultiple, Instant createdAt) {
+    public static ProductOptionGroup of(ProductOptionGroupId id, ProductId productId, OptionGroupId optionGroupId, boolean isRequired, boolean allowMultiple, Instant createdAt) {
         return new ProductOptionGroup(id, productId, optionGroupId, isRequired, allowMultiple, createdAt);
     }
 
-    public static ProductOptionGroup create(ProductId productId, OptionGroupId optionGroupId, boolean isRequired, boolean allowMultiple) {
-        return new ProductOptionGroup(null, productId, optionGroupId, isRequired, allowMultiple, Instant.now());
+    public static ProductOptionGroup create(ProductOptionGroupId id, ProductId productId, OptionGroupId optionGroupId, boolean isRequired, boolean allowMultiple) {
+        return new ProductOptionGroup(id, productId, optionGroupId, isRequired, allowMultiple, Instant.now());
     }
 
-    public Long getId() {
+    public ProductOptionGroupId getId() {
         return id;
+    }
+
+    private void setId(ProductOptionGroupId id) {
+        if (id == null) {
+            throw new ProductException("Product option group id cannot be null");
+        }
+        this.id = id;
     }
 
     public ProductId getProductId() {
@@ -59,7 +65,7 @@ public class ProductOptionGroup {
     }
 
     private void setOptionGroupId(OptionGroupId optionGroupId) {
-        if (optionGroupId == null) throw new ProductException("optionGroupId cannot be null");
+        if (optionGroupId == null) throw new ProductException("option group id cannot be null");
         this.optionGroupId = optionGroupId;
     }
 

@@ -55,7 +55,7 @@ public class OptionItem {
     }
 
     private void setOptionGroupId(OptionGroupId optionGroupId) {
-        if (optionGroupId == null) throw new ProductException("optionGroupId cannot be null");
+        if (optionGroupId == null) throw new ProductException("option group id cannot be null");
         this.optionGroupId = optionGroupId;
     }
 
@@ -117,5 +117,17 @@ public class OptionItem {
     private void setCreatedAt(Instant createdAt) {
         if (createdAt == null) throw new ProductException("createdAt cannot be null");
         this.createdAt = createdAt;
+    }
+
+    public void updateName(String name) {
+        setName(name);
+    }
+
+    public void updateDescription(String description) {
+        setDescription(description);
+    }
+
+    public void updatePrice(Integer price) {
+        setPrice(price);
     }
 }
