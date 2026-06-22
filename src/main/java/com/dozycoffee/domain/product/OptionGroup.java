@@ -92,4 +92,12 @@ public class OptionGroup {
         if (createdAt == null) throw new ProductException("createdAt cannot be null");
         this.createdAt = createdAt;
     }
+
+    public void updateName(String name) {
+        setName(name);
+    }
+
+    public void updateDescription(String description) {
+        setDescription(description);
+    }
 }
