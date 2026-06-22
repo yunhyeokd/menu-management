@@ -35,10 +35,17 @@ public class OptionService {
         this.productOptionGroupIdGenerator = productOptionGroupIdGenerator;
     }
 
+    /*
+    Id로 OptionGroup 조회
+    !! OptionGroup이 존재하지 않을 시 예외 발생
+     */
     private OptionGroup getOptionGroup(OptionGroupId id) {
         return optionGroupRepository.findById(id).orElseThrow(() -> OptionBusinessException.of(OptionErrors.OPTION_GROUP_NOT_FOUND_ERROR));
     }
 
+    /*
+    옵션그룹과 옵션아이템 엔티티 목록을 결합하여 OptionGroupData 구성
+     */
     private OptionGroupData composeOptionGroupData(OptionGroup optionGroup, List<OptionItem> optionItems) {
         List<OptionItemData> optionItemDatas = optionItems
                 .stream()
@@ -54,6 +61,9 @@ public class OptionService {
         );
     }
 
+    /*
+    옵션그룹에 대해 모든 옵션 아이템을 받아와서 OptionGroupData로 결합
+     */
     private OptionGroupData readOptionGroupData(OptionGroup optionGroup) {
         List<OptionItem> optionItems = optionItemRepository
                 .findAllByOptionGroupId(optionGroup.getId());
@@ -61,6 +71,11 @@ public class OptionService {
         return composeOptionGroupData(optionGroup, optionItems);
     }
 
+    /*
+    옵션그룹과 옵션 아이템을 생성
+    !! 옵션 아이템이 하나도 없을 경우 예외 발생
+    !! 잘못된 옵션그룹 속성, 옵션 아이템 속성 입력시 예외 발생
+     */
     public OptionGroupData create(OptionGroupCreateCommand command) {
         try {
             if (command.items().isEmpty()) {
@@ -91,6 +106,9 @@ public class OptionService {
         }
     }
 
+    /*
+    모든 옵션 그룹과 각 옵션 그룹별 아이템을 불러와 OptionGroupData 리스트로 전달
+     */
     public List<OptionGroupData> findAll() {
         try {
             return optionGroupRepository
@@ -107,6 +125,10 @@ public class OptionService {
         }
     }
 
+    /*
+    옵션그룹명, 옵션그룹 설명을 업데이트
+    !! 잘못된 옵션그룹명, 옵션그룹 설명 입력시 예외 발생
+     */
     public void updateOptionGroupProfile(OptionGroupProfileUpdateCommand command) {
         try {
             OptionGroup optionGroup = getOptionGroup(command.optionGroupId());
@@ -122,6 +144,12 @@ public class OptionService {
         }
     }
 
+    /*
+    옵션그룹을 구성하는 아이템들을 입력받아 기존 아이템들을 제거하고 새로 구성
+    !! 대상 옵션 그룹이 존재하지 않을 시 예외 발생
+    !! 옵션 아이템이 하나도 없을 시 예외 발생
+    !! 잘못된 옵션 아이템 속성 입력 시 예외 발생
+     */
     public void updateOptionGroupItems(OptionGroupItemUpdateCommand command) {
         try {
             OptionGroup optionGroup = getOptionGroup(command.optionGroupId());
@@ -150,6 +178,10 @@ public class OptionService {
         }
     }
 
+    /*
+    옵션 그룹과 그 연관아이템들을 삭제
+    !! 옵션그룹과 연결된 상품 존재 시 예외 발생
+     */
     public void deleteOptionGroup(OptionGroupId id) {
         try {
             List<ProductOptionGroup> productOptionGroups = productOptionGroupRepository.findAllByOptionGroupId(id);
