@@ -168,8 +168,25 @@ public class AdminAccount implements Principal {
         if (deletedAt != null) {
             throw new AdminException("admin account is already deleted");
         }
+        updateStatus(AdminStatus.INACTIVE);
         deletedAt = Instant.now();
     }
 
+    public void approve() {
+        if (status != AdminStatus.PENDING) {
+            throw new AdminException("attempt to approve non-pending status");
+        }
+        updateStatus(AdminStatus.ACTIVE);
+    }
 
+    public void reject() {
+        if (status != AdminStatus.PENDING) {
+            throw new AdminException("attempt to reject non-pending status");
+        }
+        softDelete();
+    }
+
+    public boolean isSoftDeleted() {
+        return deletedAt != null;
+    }
 }

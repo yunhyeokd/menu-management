@@ -128,6 +128,10 @@ public class AdminProfile {
         this.email = email;
     }
 
+    public void changeName(String name) {
+        setName(name);
+    }
+
     public void changePhoneNumber(String newPhone) {
         setPhone(newPhone);
     }
