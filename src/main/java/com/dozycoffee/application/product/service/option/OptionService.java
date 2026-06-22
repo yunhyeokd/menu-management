@@ -2,10 +2,16 @@ package com.dozycoffee.application.product.service.option;
 
 import com.dozycoffee.application.common.IdentifierGenerator;
 import com.dozycoffee.application.common.RepositoryException;
-import com.dozycoffee.application.product.dto.*;
+import com.dozycoffee.application.product.dto.OptionGroupCreateCommand;
+import com.dozycoffee.application.product.dto.OptionGroupData;
+import com.dozycoffee.application.product.dto.OptionGroupItemUpdateCommand;
+import com.dozycoffee.application.product.dto.OptionGroupProfileUpdateCommand;
+import com.dozycoffee.application.product.dto.OptionItemCreateCommand;
 import com.dozycoffee.application.product.repository.OptionGroupRepository;
 import com.dozycoffee.application.product.repository.OptionItemRepository;
 import com.dozycoffee.application.product.repository.ProductOptionGroupRepository;
+import com.dozycoffee.application.product.service.ProductBusinessException;
+import com.dozycoffee.application.product.service.ProductErrors;
 import com.dozycoffee.domain.product.*;
 
 import java.util.*;
@@ -40,35 +46,15 @@ public class OptionService {
     !! OptionGroup이 존재하지 않을 시 예외 발생
      */
     private OptionGroup getOptionGroup(OptionGroupId id) {
-        return optionGroupRepository.findById(id).orElseThrow(() -> OptionBusinessException.of(OptionErrors.OPTION_GROUP_NOT_FOUND_ERROR));
-    }
-
-    /*
-    옵션그룹과 옵션아이템 엔티티 목록을 결합하여 OptionGroupData 구성
-     */
-    private OptionGroupData composeOptionGroupData(OptionGroup optionGroup, List<OptionItem> optionItems) {
-        List<OptionItemData> optionItemDatas = optionItems
-                .stream()
-                .map(OptionItemData::from)
-                .toList();
-
-        return new OptionGroupData(
-                optionGroup.getId(),
-                optionGroup.getName(),
-                optionGroup.getDescription(),
-                optionItemDatas,
-                optionGroup.getCreatedAt()
-        );
+        return optionGroupRepository.findById(id).orElseThrow(() -> ProductBusinessException.of(ProductErrors.OPTION_GROUP_NOT_FOUND_ERROR));
     }
 
     /*
     옵션그룹에 대해 모든 옵션 아이템을 받아와서 OptionGroupData로 결합
      */
     private OptionGroupData readOptionGroupData(OptionGroup optionGroup) {
-        List<OptionItem> optionItems = optionItemRepository
-                .findAllByOptionGroupId(optionGroup.getId());
-
-        return composeOptionGroupData(optionGroup, optionItems);
+        List<OptionItem> optionItems = optionItemRepository.findAllByOptionGroupId(optionGroup.getId());
+        return OptionGroupData.from(optionGroup, optionItems);
     }
 
     /*
@@ -79,7 +65,7 @@ public class OptionService {
     public OptionGroupData create(OptionGroupCreateCommand command) {
         try {
             if (command.items().isEmpty()) {
-                throw OptionBusinessException.of(OptionErrors.EMPTY_OPTION_GROUP_ERROR);
+                throw ProductBusinessException.of(ProductErrors.EMPTY_OPTION_GROUP_ERROR);
             }
             OptionGroupId optionGroupId = optionGroupIdGenerator.generate();
             OptionGroup optionGroup = OptionGroup.create(optionGroupId, command.name(), command.description().orElse(null));
@@ -98,11 +84,11 @@ public class OptionService {
 
             optionGroupRepository.save(optionGroup);
             optionItems.forEach(optionItemRepository::save);
-            return composeOptionGroupData(optionGroup, optionItems);
+            return OptionGroupData.from(optionGroup, optionItems);
         } catch (ProductException e) {
-            throw OptionBusinessException.of(OptionErrors.INVALID_OPTION_ERROR);
+            throw ProductBusinessException.of(ProductErrors.INVALID_OPTION_ERROR);
         } catch (RepositoryException e) {
-            throw  OptionBusinessException.of(OptionErrors.UNKNOWN_ERROR);
+            throw ProductBusinessException.of(ProductErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -118,10 +104,10 @@ public class OptionService {
                     .toList();
         }
         catch (ProductException e) {
-            throw OptionBusinessException.of(OptionErrors.INVALID_OPTION_ERROR);
+            throw ProductBusinessException.of(ProductErrors.INVALID_OPTION_ERROR);
         }
         catch (RepositoryException e) {
-            throw OptionBusinessException.of(OptionErrors.UNKNOWN_ERROR);
+            throw ProductBusinessException.of(ProductErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -137,10 +123,10 @@ public class OptionService {
             optionGroupRepository.save(optionGroup);
         }
         catch (ProductException e) {
-            throw OptionBusinessException.of(OptionErrors.INVALID_OPTION_ERROR);
+            throw ProductBusinessException.of(ProductErrors.INVALID_OPTION_ERROR);
         }
         catch (RepositoryException e) {
-            throw OptionBusinessException.of(OptionErrors.UNKNOWN_ERROR);
+            throw ProductBusinessException.of(ProductErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -155,7 +141,7 @@ public class OptionService {
             OptionGroup optionGroup = getOptionGroup(command.optionGroupId());
 
             if (command.items().isEmpty()) {
-                throw OptionBusinessException.of(OptionErrors.EMPTY_OPTION_GROUP_ERROR);
+                throw ProductBusinessException.of(ProductErrors.EMPTY_OPTION_GROUP_ERROR);
             }
             List<OptionItem> optionItems = command.items().stream().map(itemUpdateCommand -> {
                 OptionItemId optionItemId = optionItemIdGenerator.generate();
@@ -171,10 +157,10 @@ public class OptionService {
             optionItems.forEach(optionItemRepository::save);
         }
         catch (ProductException e) {
-            throw OptionBusinessException.of(OptionErrors.INVALID_OPTION_ERROR);
+            throw ProductBusinessException.of(ProductErrors.INVALID_OPTION_ERROR);
         }
         catch (RepositoryException e) {
-            throw OptionBusinessException.of(OptionErrors.UNKNOWN_ERROR);
+            throw ProductBusinessException.of(ProductErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -186,14 +172,13 @@ public class OptionService {
         try {
             List<ProductOptionGroup> productOptionGroups = productOptionGroupRepository.findAllByOptionGroupId(id);
             if (!productOptionGroups.isEmpty()) {
-                throw OptionBusinessException.of(OptionErrors.LINKED_PRODUCT_EXISTS_ERROR);
+                throw ProductBusinessException.of(ProductErrors.LINKED_PRODUCT_EXISTS_ERROR);
             }
             optionItemRepository.deleteByOptionGroupId(id);
             optionGroupRepository.deleteById(id);
         }
         catch (RepositoryException e) {
-            throw OptionBusinessException.of(OptionErrors.UNKNOWN_ERROR);
+            throw ProductBusinessException.of(ProductErrors.UNKNOWN_ERROR);
         }
     }
-
 }

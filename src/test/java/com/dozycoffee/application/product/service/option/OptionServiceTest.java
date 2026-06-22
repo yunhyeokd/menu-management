@@ -4,6 +4,8 @@ import com.dozycoffee.application.product.dto.*;
 import com.dozycoffee.application.product.repository.FakeOptionGroupRepository;
 import com.dozycoffee.application.product.repository.FakeOptionItemRepository;
 import com.dozycoffee.application.product.repository.FakeProductOptionGroupRepository;
+import com.dozycoffee.application.product.service.ProductBusinessException;
+import com.dozycoffee.application.product.service.ProductErrors;
 import com.dozycoffee.domain.product.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,9 +72,9 @@ public class OptionServiceTest {
         OptionGroupCreateCommand command = createCommand("사이즈", List.of());
 
         assertThatThrownBy(() -> optionService.create(command))
-                .isInstanceOf(OptionBusinessException.class)
-                .satisfies(e -> assertThat(((OptionBusinessException) e).getErrorCode())
-                        .isEqualTo(OptionErrors.EMPTY_OPTION_GROUP_ERROR.errorCode));
+                .isInstanceOf(ProductBusinessException.class)
+                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
+                        .isEqualTo(ProductErrors.EMPTY_OPTION_GROUP_ERROR.errorCode));
     }
 
     @Test
@@ -80,9 +82,9 @@ public class OptionServiceTest {
         OptionGroupCreateCommand command = createCommand("", List.of(itemCommand("S", 0)));
 
         assertThatThrownBy(() -> optionService.create(command))
-                .isInstanceOf(OptionBusinessException.class)
-                .satisfies(e -> assertThat(((OptionBusinessException) e).getErrorCode())
-                        .isEqualTo(OptionErrors.INVALID_OPTION_ERROR.errorCode));
+                .isInstanceOf(ProductBusinessException.class)
+                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
+                        .isEqualTo(ProductErrors.INVALID_OPTION_ERROR.errorCode));
     }
 
     @Test
@@ -90,9 +92,9 @@ public class OptionServiceTest {
         optionGroupRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> optionService.create(createCommand("사이즈", List.of(itemCommand("S", 0)))))
-                .isInstanceOf(OptionBusinessException.class)
-                .satisfies(e -> assertThat(((OptionBusinessException) e).getErrorCode())
-                        .isEqualTo(OptionErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(ProductBusinessException.class)
+                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
+                        .isEqualTo(ProductErrors.UNKNOWN_ERROR.errorCode));
     }
 
     // ─── findAll ─────────────────────────────────────────────────────────────
@@ -123,9 +125,9 @@ public class OptionServiceTest {
         optionGroupRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> optionService.findAll())
-                .isInstanceOf(OptionBusinessException.class)
-                .satisfies(e -> assertThat(((OptionBusinessException) e).getErrorCode())
-                        .isEqualTo(OptionErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(ProductBusinessException.class)
+                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
+                        .isEqualTo(ProductErrors.UNKNOWN_ERROR.errorCode));
     }
 
     // ─── updateOptionGroupProfile ─────────────────────────────────────────────
@@ -151,9 +153,9 @@ public class OptionServiceTest {
         );
 
         assertThatThrownBy(() -> optionService.updateOptionGroupProfile(command))
-                .isInstanceOf(OptionBusinessException.class)
-                .satisfies(e -> assertThat(((OptionBusinessException) e).getErrorCode())
-                        .isEqualTo(OptionErrors.OPTION_GROUP_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ProductBusinessException.class)
+                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
+                        .isEqualTo(ProductErrors.OPTION_GROUP_NOT_FOUND_ERROR.errorCode));
     }
 
     @Test
@@ -164,9 +166,9 @@ public class OptionServiceTest {
         );
 
         assertThatThrownBy(() -> optionService.updateOptionGroupProfile(command))
-                .isInstanceOf(OptionBusinessException.class)
-                .satisfies(e -> assertThat(((OptionBusinessException) e).getErrorCode())
-                        .isEqualTo(OptionErrors.INVALID_OPTION_ERROR.errorCode));
+                .isInstanceOf(ProductBusinessException.class)
+                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
+                        .isEqualTo(ProductErrors.INVALID_OPTION_ERROR.errorCode));
     }
 
     // ─── updateOptionGroupItems ───────────────────────────────────────────────
@@ -193,9 +195,9 @@ public class OptionServiceTest {
         OptionGroupItemUpdateCommand command = new OptionGroupItemUpdateCommand(OptionGroupId.of(1L), List.of());
 
         assertThatThrownBy(() -> optionService.updateOptionGroupItems(command))
-                .isInstanceOf(OptionBusinessException.class)
-                .satisfies(e -> assertThat(((OptionBusinessException) e).getErrorCode())
-                        .isEqualTo(OptionErrors.EMPTY_OPTION_GROUP_ERROR.errorCode));
+                .isInstanceOf(ProductBusinessException.class)
+                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
+                        .isEqualTo(ProductErrors.EMPTY_OPTION_GROUP_ERROR.errorCode));
     }
 
     @Test
@@ -205,9 +207,9 @@ public class OptionServiceTest {
         );
 
         assertThatThrownBy(() -> optionService.updateOptionGroupItems(command))
-                .isInstanceOf(OptionBusinessException.class)
-                .satisfies(e -> assertThat(((OptionBusinessException) e).getErrorCode())
-                        .isEqualTo(OptionErrors.OPTION_GROUP_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ProductBusinessException.class)
+                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
+                        .isEqualTo(ProductErrors.OPTION_GROUP_NOT_FOUND_ERROR.errorCode));
     }
 
     // ─── deleteOptionGroup ────────────────────────────────────────────────────
@@ -231,9 +233,9 @@ public class OptionServiceTest {
         ));
 
         assertThatThrownBy(() -> optionService.deleteOptionGroup(OptionGroupId.of(1L)))
-                .isInstanceOf(OptionBusinessException.class)
-                .satisfies(e -> assertThat(((OptionBusinessException) e).getErrorCode())
-                        .isEqualTo(OptionErrors.LINKED_PRODUCT_EXISTS_ERROR.errorCode));
+                .isInstanceOf(ProductBusinessException.class)
+                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
+                        .isEqualTo(ProductErrors.LINKED_PRODUCT_EXISTS_ERROR.errorCode));
     }
 
     @Test
@@ -242,8 +244,8 @@ public class OptionServiceTest {
         productOptionGroupRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> optionService.deleteOptionGroup(OptionGroupId.of(1L)))
-                .isInstanceOf(OptionBusinessException.class)
-                .satisfies(e -> assertThat(((OptionBusinessException) e).getErrorCode())
-                        .isEqualTo(OptionErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(ProductBusinessException.class)
+                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
+                        .isEqualTo(ProductErrors.UNKNOWN_ERROR.errorCode));
     }
 }
