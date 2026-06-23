@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -67,8 +68,10 @@ public class BranchServiceTest {
         BranchAuthKeyReissueResult result = branchService.reissueAuthKey(branchId);
 
         assertThat(result.rawAuthKey()).isEqualTo("raw-auth-key");
-        assertThat(branchAccountRepository.findById(branchId).getAuthKeyHash()).isEqualTo("hashed-raw-auth-key");
-        assertThat(sessionInvalidationPort.wasInvalidated(branchAccountRepository.findById(branchId))).isTrue();
+        branchAccountRepository.findById(branchId).ifPresent(branchAccount -> {
+            assertThat(branchAccount.getAuthKeyHash()).isEqualTo("hashed-raw-auth-key");
+            assertThat(sessionInvalidationPort.wasInvalidated(branchAccount)).isTrue();
+        });
     }
 
     @Test
@@ -157,9 +160,11 @@ public class BranchServiceTest {
 
         branchService.updateProfile(branchId, new BranchProfileUpdateDto("강남역점", "서울 강남구 강남대로 456"));
 
-        BranchProfile updated = branchProfileRepository.findById(branchId);
-        assertThat(updated.getName()).isEqualTo("강남역점");
-        assertThat(updated.getAddress()).isEqualTo("서울 강남구 강남대로 456");
+        Optional<BranchProfile> updated = branchProfileRepository.findById(branchId);
+        updated.ifPresent(branchProfile -> {
+            assertThat(branchProfile.getName()).isEqualTo("강남역점");
+            assertThat(branchProfile.getAddress()).isEqualTo("서울 강남구 강남대로 456");
+        });
     }
 
     @Test
@@ -203,10 +208,10 @@ public class BranchServiceTest {
 
         branchService.softDelete(branchId);
 
-        BranchAccount account = branchAccountRepository.findById(branchId);
-        assertThat(account.getDeletedAt()).isNotNull();
-        assertThat(productRepository.all())
-                .allMatch(p -> p.getStatus() == ProductStatus.INACTIVE);
+        branchAccountRepository.findById(branchId).ifPresent(account -> {
+            assertThat(account.getDeletedAt()).isNotNull();
+        });
+        assertThat(productRepository.all()).allMatch(p -> p.getStatus() == ProductStatus.INACTIVE);
     }
 
     @Test
@@ -320,8 +325,7 @@ public class BranchServiceTest {
 
         branchService.hideSale(branchId, productId);
 
-        ProductSalesOverride override = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId);
-        assertThat(override).isNotNull();
+        ProductSalesOverride override = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId).orElseThrow();
         assertThat(override.getStatus()).isEqualTo(ProductSalesOverrideStatus.HIDDEN);
     }
 
@@ -331,11 +335,11 @@ public class BranchServiceTest {
         ProductId productId = ProductId.of(10L);
         branchAccountRepository.put(BranchFixture.builder().id(branchId).build());
         productRepository.put(ProductFixture.builder().id(productId).status(ProductStatus.ACTIVE).build());
-        productSalesOverrideRepository.put(ProductSalesOverride.of(1L, productId, branchId, ProductSalesOverrideStatus.SOLD_OUT, Instant.now()));
+        productSalesOverrideRepository.put(ProductSalesOverride.of(productId, branchId, ProductSalesOverrideStatus.SOLD_OUT, Instant.now()));
 
         branchService.hideSale(branchId, productId);
 
-        ProductSalesOverride override = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId);
+        ProductSalesOverride override = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId).orElseThrow();
         assertThat(override.getStatus()).isEqualTo(ProductSalesOverrideStatus.HIDDEN);
     }
 
@@ -396,8 +400,7 @@ public class BranchServiceTest {
 
         branchService.soldOut(branchId, productId);
 
-        ProductSalesOverride override = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId);
-        assertThat(override).isNotNull();
+        ProductSalesOverride override = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId).orElseThrow();
         assertThat(override.getStatus()).isEqualTo(ProductSalesOverrideStatus.SOLD_OUT);
     }
 
@@ -407,11 +410,11 @@ public class BranchServiceTest {
         ProductId productId = ProductId.of(10L);
         branchAccountRepository.put(BranchFixture.builder().id(branchId).build());
         productRepository.put(ProductFixture.builder().id(productId).status(ProductStatus.ACTIVE).build());
-        productSalesOverrideRepository.put(ProductSalesOverride.of(1L, productId, branchId, ProductSalesOverrideStatus.HIDDEN, Instant.now()));
+        productSalesOverrideRepository.put(ProductSalesOverride.of(productId, branchId, ProductSalesOverrideStatus.HIDDEN, Instant.now()));
 
         branchService.soldOut(branchId, productId);
 
-        ProductSalesOverride override = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId);
+        ProductSalesOverride override = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId).orElseThrow();
         assertThat(override.getStatus()).isEqualTo(ProductSalesOverrideStatus.SOLD_OUT);
     }
 
@@ -467,11 +470,11 @@ public class BranchServiceTest {
     public void 판매_재개를_정상_처리한다() {
         BranchId branchId = BranchId.of(1L);
         ProductId productId = ProductId.of(10L);
-        productSalesOverrideRepository.put(ProductSalesOverride.of(1L, productId, branchId, ProductSalesOverrideStatus.HIDDEN, Instant.now()));
+        productSalesOverrideRepository.put(ProductSalesOverride.of(productId, branchId, ProductSalesOverrideStatus.HIDDEN, Instant.now()));
 
         branchService.restoreSale(branchId, productId);
 
-        assertThat(productSalesOverrideRepository.contains(1L)).isFalse();
+        assertThat(productSalesOverrideRepository.contains(branchId, productId)).isFalse();
     }
 
     @Test

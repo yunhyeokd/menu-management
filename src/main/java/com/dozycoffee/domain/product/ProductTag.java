@@ -5,40 +5,33 @@ import java.util.Objects;
 
 public class ProductTag {
 
-    private Long id;
     private ProductId productId;
     private TagId tagId;
     private Instant createdAt;
 
-    private ProductTag(Long id, ProductId productId, TagId tagId, Instant createdAt) {
+    private ProductTag(ProductId productId, TagId tagId, Instant createdAt) {
         setProductId(productId);
         setTagId(tagId);
         setCreatedAt(createdAt);
-        this.id = id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(productId, tagId);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof ProductTag productTag)) return false;
-        if (id == null || productTag.id == null) return false;
-        return Objects.equals(id, productTag.id);
+        return Objects.equals(productId, productTag.productId) && Objects.equals(tagId, productTag.tagId);
     }
 
-    public static ProductTag of(long id, ProductId productId, TagId tagId, Instant createdAt) {
-        return new ProductTag(id, productId, tagId, createdAt);
+    public static ProductTag of(ProductId productId, TagId tagId, Instant createdAt) {
+        return new ProductTag(productId, tagId, createdAt);
     }
 
     public static ProductTag create(ProductId productId, TagId tagId) {
-        return new ProductTag(null, productId, tagId, Instant.now());
-    }
-
-    public Long getId() {
-        return id;
+        return new ProductTag(productId, tagId, Instant.now());
     }
 
     public ProductId getProductId() {

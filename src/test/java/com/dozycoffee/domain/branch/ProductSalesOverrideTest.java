@@ -34,44 +34,39 @@ public class ProductSalesOverrideTest {
     }
 
     @Test
-    public void id가_같은_지점상품_오버라이드는_동등하다() {
+    public void 복합키가_같은_지점상품_오버라이드는_동등하다() {
         ProductId productId = ProductId.of(1L);
         BranchId branchId = BranchId.of(1L);
         ProductSalesOverrideStatus status = ProductSalesOverrideStatus.SOLD_OUT;
         Instant createdAt = Instant.now();
 
-        ProductSalesOverride salesOverride1 = ProductSalesOverride.of(1L, productId, branchId, status, createdAt);
-        ProductSalesOverride salesOverride2 = ProductSalesOverride.of(1L, productId, branchId, status, createdAt);
+        ProductSalesOverride salesOverride1 = ProductSalesOverride.of(productId, branchId, status, createdAt);
+        ProductSalesOverride salesOverride2 = ProductSalesOverride.of(productId, branchId, status, createdAt);
 
-        assertThat(salesOverride1.getId()).isEqualTo(salesOverride2.getId());
         assertThat(salesOverride1).isEqualTo(salesOverride2);
     }
 
     @Test
-    public void id가_다른_지점상품_오버라이드는_동등하지_않다() {
-        ProductId productId = ProductId.of(1L);
+    public void productId가_다른_지점상품_오버라이드는_동등하지_않다() {
         BranchId branchId = BranchId.of(1L);
         ProductSalesOverrideStatus status = ProductSalesOverrideStatus.SOLD_OUT;
         Instant createdAt = Instant.now();
 
-        ProductSalesOverride salesOverride1 = ProductSalesOverride.of(1L, productId, branchId, status, createdAt);
-        ProductSalesOverride salesOverride2 = ProductSalesOverride.of(2L, productId, branchId, status, createdAt);
+        ProductSalesOverride salesOverride1 = ProductSalesOverride.of(ProductId.of(1L), branchId, status, createdAt);
+        ProductSalesOverride salesOverride2 = ProductSalesOverride.of(ProductId.of(2L), branchId, status, createdAt);
 
-        assertThat(salesOverride1.getId()).isNotEqualTo(salesOverride2.getId());
         assertThat(salesOverride1).isNotEqualTo(salesOverride2);
     }
 
     @Test
-    public void id가_null인_지점상품_오버라이드는_동등하지_않다() {
+    public void branchId가_다른_지점상품_오버라이드는_동등하지_않다() {
         ProductId productId = ProductId.of(1L);
-        BranchId branchId = BranchId.of(1L);
         ProductSalesOverrideStatus status = ProductSalesOverrideStatus.SOLD_OUT;
         Instant createdAt = Instant.now();
 
-        ProductSalesOverride salesOverride1 = ProductSalesOverride.of(1L, productId, branchId, status, createdAt);
-        ProductSalesOverride salesOverride2 = ProductSalesOverride.create(ProductId.of(2L), branchId, status);
+        ProductSalesOverride salesOverride1 = ProductSalesOverride.of(productId, BranchId.of(1L), status, createdAt);
+        ProductSalesOverride salesOverride2 = ProductSalesOverride.of(productId, BranchId.of(2L), status, createdAt);
 
-        assertThat(salesOverride1.getId()).isNotEqualTo(salesOverride2.getId());
         assertThat(salesOverride1).isNotEqualTo(salesOverride2);
     }
 

@@ -6,6 +6,7 @@ import com.dozycoffee.domain.branch.BranchProfile;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class FakeBranchProfileRepository implements BranchProfileRepository {
 
@@ -33,18 +34,17 @@ public class FakeBranchProfileRepository implements BranchProfileRepository {
     }
 
     @Override
-    public BranchProfile findById(BranchId branchId) throws RepositoryException {
+    public Optional<BranchProfile> findById(BranchId branchId) throws RepositoryException {
         checkThrow();
-        return store.get(branchId);
+        return Optional.ofNullable(store.get(branchId));
     }
 
     @Override
-    public BranchProfile findByName(String name) throws RepositoryException {
+    public Optional<BranchProfile> findByName(String name) throws RepositoryException {
         checkThrow();
         return store.values().stream()
                 .filter(p -> p.getName().equals(name))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
     @Override
@@ -54,7 +54,7 @@ public class FakeBranchProfileRepository implements BranchProfileRepository {
     }
 
     @Override
-    public void deleteById(BranchId branchId) {
+    public void deleteById(BranchId branchId) throws RepositoryException {
         store.remove(branchId);
     }
 }

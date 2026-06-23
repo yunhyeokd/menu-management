@@ -2,8 +2,11 @@ package com.dozycoffee.application.product.service.category;
 
 import com.dozycoffee.application.common.IdentifierGenerator;
 import com.dozycoffee.application.common.RepositoryException;
+import com.dozycoffee.application.product.dto.CategoryData;
 import com.dozycoffee.application.product.repository.CategoryRepository;
 import com.dozycoffee.application.product.repository.ProductRepository;
+import com.dozycoffee.application.product.service.ProductBusinessException;
+import com.dozycoffee.application.product.service.ProductErrors;
 import com.dozycoffee.domain.product.Category;
 import com.dozycoffee.domain.product.CategoryId;
 import com.dozycoffee.domain.product.Product;
@@ -27,62 +30,66 @@ public class CategoryService {
         this.idGenerator = idGenerator;
     }
 
-    public Category create(String categoryName) {
+    public CategoryData create(String categoryName) {
         try {
             if (categoryRepository.findByName(categoryName).isPresent()) {
-                throw CategoryBusinessException.with(CategoryErrors.DUPLICATE_NAME_ERROR);
+                throw ProductBusinessException.of(ProductErrors.DUPLICATE_CATEGORY_NAME_ERROR);
             }
             try {
                 Category category = Category.create(idGenerator.generate(), categoryName);
                 categoryRepository.save(category);
-                return category;
+                return CategoryData.from(category);
             } catch (ProductException e) {
-                throw CategoryBusinessException.with(CategoryErrors.INVALID_CATEGORY_ERROR);
+                throw ProductBusinessException.of(ProductErrors.INVALID_CATEGORY_ERROR);
             }
         } catch (RepositoryException e) {
-            throw CategoryBusinessException.with(CategoryErrors.UNKNOWN_ERROR);
+            throw ProductBusinessException.of(ProductErrors.UNKNOWN_ERROR);
         }
     }
 
-    public Category updateName(CategoryId id, String newName) {
+    public CategoryData updateName(CategoryId id, String newName) {
         try {
             Category category = categoryRepository.findById(id)
-                    .orElseThrow(() -> CategoryBusinessException.with(CategoryErrors.NOT_FOUND_ERROR));
+                    .orElseThrow(() -> ProductBusinessException.of(ProductErrors.CATEGORY_NOT_FOUND_ERROR));
             if (categoryRepository.findByName(newName).isPresent()) {
-                throw CategoryBusinessException.with(CategoryErrors.DUPLICATE_NAME_ERROR);
+                throw ProductBusinessException.of(ProductErrors.DUPLICATE_CATEGORY_NAME_ERROR);
             }
             try {
                 category.updateName(newName);
                 categoryRepository.save(category);
-                return category;
+                return CategoryData.from(category);
             } catch (ProductException e) {
-                throw CategoryBusinessException.with(CategoryErrors.INVALID_CATEGORY_ERROR);
+                throw ProductBusinessException.of(ProductErrors.INVALID_CATEGORY_ERROR);
             }
         } catch (RepositoryException e) {
-            throw CategoryBusinessException.with(CategoryErrors.UNKNOWN_ERROR);
+            throw ProductBusinessException.of(ProductErrors.UNKNOWN_ERROR);
         }
     }
 
-    public List<Category> findAll() {
+    public List<CategoryData> findAll() {
         try {
-            return categoryRepository.findAll();
+            return categoryRepository.findAll().stream()
+                    .map(CategoryData::from)
+                    .toList();
         } catch (RepositoryException e) {
-            throw CategoryBusinessException.with(CategoryErrors.UNKNOWN_ERROR);
+            throw ProductBusinessException.of(ProductErrors.UNKNOWN_ERROR);
         }
     }
 
-    public List<Category> searchByName(String categoryName) {
+    public List<CategoryData> searchByName(String categoryName) {
         try {
-            return categoryRepository.searchByName(categoryName);
+            return categoryRepository.searchByName(categoryName).stream()
+                    .map(CategoryData::from)
+                    .toList();
         } catch (RepositoryException e) {
-            throw CategoryBusinessException.with(CategoryErrors.UNKNOWN_ERROR);
+            throw ProductBusinessException.of(ProductErrors.UNKNOWN_ERROR);
         }
     }
 
     public void remove(CategoryId categoryId) {
         try {
             Category category = categoryRepository.findById(categoryId)
-                    .orElseThrow(() -> CategoryBusinessException.with(CategoryErrors.NOT_FOUND_ERROR));
+                    .orElseThrow(() -> ProductBusinessException.of(ProductErrors.CATEGORY_NOT_FOUND_ERROR));
             List<Product> products = productRepository.findAllByCategoryId(category.getId());
             for (Product product : products) {
                 product.deactivate();
@@ -90,7 +97,7 @@ public class CategoryService {
             }
             categoryRepository.deleteById(categoryId);
         } catch (RepositoryException e) {
-            throw CategoryBusinessException.with(CategoryErrors.UNKNOWN_ERROR);
+            throw ProductBusinessException.of(ProductErrors.UNKNOWN_ERROR);
         }
     }
 }

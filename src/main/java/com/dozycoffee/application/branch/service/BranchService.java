@@ -10,6 +10,7 @@ import com.dozycoffee.application.branch.repository.ProductSalesOverrideReposito
 import com.dozycoffee.application.common.IdentifierGenerator;
 import com.dozycoffee.application.auth.PasswordHasher;
 import com.dozycoffee.application.common.RepositoryException;
+import java.util.Optional;
 import com.dozycoffee.application.product.repository.ProductRepository;
 import com.dozycoffee.domain.branch.*;
 import com.dozycoffee.domain.product.Product;
@@ -56,9 +57,11 @@ public class BranchService {
 
     public BranchCreateResult create(String name, String address) {
         try {
-            if (branchProfileRepository.findByName(name) != null) {
-                throw BranchBusinessException.with(BranchErrors.DUPLICATE_NAME_ERROR);
-            }
+            branchProfileRepository
+                    .findByName(name)
+                    .ifPresent(branchProfile -> {
+                        throw BranchBusinessException.with(BranchErrors.DUPLICATE_NAME_ERROR);
+                    });
             try {
                 BranchId branchId = idGenerator.generate();
                 BranchCode branchCode = codeGenerator.generate();
@@ -85,41 +88,28 @@ public class BranchService {
     }
 
     private void assertBranchAccountExists(BranchId branchId) throws RepositoryException {
-        BranchAccount branchAccount = branchAccountRepository.findById(branchId);
-        if (branchAccount == null) {
-            throw BranchBusinessException.with(BranchErrors.BRANCH_NOT_FOUND_ERROR);
-        }
+        branchAccountRepository.findById(branchId)
+                .orElseThrow(() -> BranchBusinessException.with(BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     private void assertProductExists(ProductId productId) throws RepositoryException {
-        Product product = productRepository.findById(productId);
-        if (product == null) {
-            throw BranchBusinessException.with(BranchErrors.PRODUCT_NOT_FOUND_ERROR);
-        }
+        productRepository.findById(productId)
+                .orElseThrow(() -> BranchBusinessException.with(BranchErrors.PRODUCT_NOT_FOUND_ERROR));
     }
 
     private BranchAccount getBranchAccount(BranchId branchId) {
-        BranchAccount branchAccount = branchAccountRepository.findById(branchId);
-        if (branchAccount == null) {
-            throw BranchBusinessException.with(BranchErrors.BRANCH_NOT_FOUND_ERROR);
-        }
-        return branchAccount;
+        return branchAccountRepository.findById(branchId)
+                .orElseThrow(() -> BranchBusinessException.with(BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     private BranchProfile getBranchProfile(BranchId branchId) throws RepositoryException {
-        BranchProfile branchProfile = branchProfileRepository.findById(branchId);
-        if (branchProfile == null) {
-            throw BranchBusinessException.with(BranchErrors.BRANCH_NOT_FOUND_ERROR);
-        }
-        return branchProfile;
+        return branchProfileRepository.findById(branchId)
+                .orElseThrow(() -> BranchBusinessException.with(BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     private Product getProduct(ProductId productId) throws RepositoryException {
-        Product product = productRepository.findById(productId);
-        if (product == null) {
-            throw BranchBusinessException.with(BranchErrors.PRODUCT_NOT_FOUND_ERROR);
-        }
-        return product;
+        return productRepository.findById(productId)
+                .orElseThrow(() -> BranchBusinessException.with(BranchErrors.PRODUCT_NOT_FOUND_ERROR));
     }
 
     public BranchAuthKeyReissueResult reissueAuthKey(BranchId branchId) {
@@ -194,14 +184,16 @@ public class BranchService {
 
     private void suspendSale(BranchId branchId, ProductId productId, ProductSalesOverrideStatus overrideStatus) {
         try {
-            ProductSalesOverride salesOverride = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId);
             try {
-                if (salesOverride == null) {
-                    salesOverride = ProductSalesOverride.create(productId, branchId, overrideStatus);
-                } else if (overrideStatus != salesOverride.getStatus()) {
+                Optional<ProductSalesOverride> existing = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId);
+                if (existing.isEmpty()) {
+                    productSalesOverrideRepository.save(ProductSalesOverride.create(productId, branchId, overrideStatus));
+                } else {
+                    ProductSalesOverride salesOverride = existing.get();
+                    if (overrideStatus == salesOverride.getStatus()) return;
                     salesOverride.updateStatus(overrideStatus);
-                } else return;
-                productSalesOverrideRepository.save(salesOverride);
+                    productSalesOverrideRepository.save(salesOverride);
+                }
             } catch (BranchException e) {
                 throw BranchBusinessException.with(BranchErrors.INVALID_BRANCH_ERROR);
             }
@@ -238,11 +230,9 @@ public class BranchService {
 
     public void restoreSale(BranchId branchId, ProductId productId) {
         try {
-            ProductSalesOverride productSalesOverride = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId);
-            if (productSalesOverride == null) {
-                throw BranchBusinessException.with(BranchErrors.SALES_OVERRIDE_NOT_FOUND_ERROR);
-            }
-            productSalesOverrideRepository.deleteById(productSalesOverride.getId());
+            productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId)
+                    .orElseThrow(() -> BranchBusinessException.with(BranchErrors.SALES_OVERRIDE_NOT_FOUND_ERROR));
+            productSalesOverrideRepository.deleteByBranchIdAndProductId(branchId, productId);
         } catch (RepositoryException e) {
             throw BranchBusinessException.with(BranchErrors.UNKNOWN_ERROR);
         }

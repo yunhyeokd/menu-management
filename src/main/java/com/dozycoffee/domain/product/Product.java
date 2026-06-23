@@ -31,11 +31,9 @@ public class Product {
         setKcal(kcal);
         setStatus(status);
         setCreatedAt(createdAt);
-        validateCategoryStatus(categoryId, status);
-        validateKindBranchConsistency(kind, branchId);
-        this.categoryId = categoryId;
-        this.branchId = branchId;
-        this.allergenInfo = allergenInfo;
+        setCategoryId(categoryId);
+        setAllergenInfo(allergenInfo);
+        setBranchId(branchId);
     }
 
     @Override
@@ -50,6 +48,8 @@ public class Product {
     }
 
     public static Product of(ProductId id, String name, String description, String imageUrl, CategoryId categoryId, int price, Integer kcal, AllergenInfo allergenInfo, ProductKind kind, BranchId branchId, ProductStatus status, Instant createdAt) {
+        validateKindConflict(kind, branchId);
+        validateNoCategoryStatus(categoryId, status);
         return new Product(id, name, description, imageUrl, categoryId, price, kcal, allergenInfo, kind, branchId, status, createdAt);
     }
 
@@ -59,6 +59,21 @@ public class Product {
 
     public static Product createBranchProduct(ProductId id, String name, String description, String imageUrl, CategoryId categoryId, int price, Integer kcal, AllergenInfo allergenInfo, BranchId branchId) {
         return new Product(id, name, description, imageUrl, categoryId, price, kcal, allergenInfo, ProductKind.BRANCH_EXCLUSIVE, branchId, ProductStatus.INACTIVE, Instant.now());
+    }
+
+    private static void validateKindConflict(ProductKind kind, BranchId branchId) {
+        if (kind == ProductKind.COMMON && branchId != null) {
+            throw new ProductException("common product must not have branch id");
+        }
+        if (kind == ProductKind.BRANCH_EXCLUSIVE && branchId == null) {
+            throw new ProductException("branch exclusive product must have branch id");
+        }
+    }
+
+    private static void validateNoCategoryStatus(CategoryId categoryId, ProductStatus productStatus) {
+        if (categoryId == null && productStatus != ProductStatus.INACTIVE) {
+            throw new ProductException("product without category must be inactive");
+        }
     }
 
     public ProductId getId() {
@@ -126,6 +141,10 @@ public class Product {
         return categoryId;
     }
 
+    private void setCategoryId(CategoryId categoryId) {
+        this.categoryId = categoryId;
+    }
+
     public int getPrice() {
         return price;
     }
@@ -156,6 +175,10 @@ public class Product {
         return allergenInfo;
     }
 
+    private void setAllergenInfo(AllergenInfo allergenInfo) {
+        this.allergenInfo = allergenInfo;
+    }
+
     public ProductKind getKind() {
         return kind;
     }
@@ -167,6 +190,10 @@ public class Product {
 
     public BranchId getBranchId() {
         return branchId;
+    }
+
+    private void setBranchId(BranchId branchId) {
+        this.branchId = branchId;
     }
 
     public ProductStatus getStatus() {
@@ -185,21 +212,6 @@ public class Product {
     private void setCreatedAt(Instant createdAt) {
         if (createdAt == null) throw new ProductException("Product createdAt is null");
         this.createdAt = createdAt;
-    }
-
-    private static void validateCategoryStatus(CategoryId categoryId, ProductStatus status) {
-        if (categoryId == null && status != ProductStatus.INACTIVE) {
-            throw new ProductException("Product with no category must be inactive");
-        }
-    }
-
-    private static void validateKindBranchConsistency(ProductKind kind, BranchId branchId) {
-        if (kind == ProductKind.COMMON && branchId != null) {
-            throw new ProductException("Common product must not have branchId");
-        }
-        if (kind == ProductKind.BRANCH_EXCLUSIVE && branchId == null) {
-            throw new ProductException("Branch exclusive product must have branchId");
-        }
     }
 
     public void activate() {
@@ -233,5 +245,25 @@ public class Product {
         if (branchId == null) throw new ProductException("branchId cannot be null");
         this.branchId = branchId;
         this.kind = ProductKind.BRANCH_EXCLUSIVE;
+    }
+
+    public void updateName(String name) {
+        setName(name);
+    }
+
+    public void updateDescription(String description) {
+        setDescription(description);
+    }
+
+    public void updateImageUrl(String imageUrl) {
+        setImageUrl(imageUrl);
+    }
+
+    public void updateKcal(Integer kcal) {
+        setKcal(kcal);
+    }
+
+    public void updateAllergenInfo(AllergenInfo allergenInfo) {
+        setAllergenInfo(allergenInfo);
     }
 }
