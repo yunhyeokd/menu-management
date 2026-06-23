@@ -6,7 +6,6 @@ public enum ProductErrors {
 
     INVALID_PRODUCT_ERROR(2, "Invalid product"),
     PRODUCT_NOT_FOUND_ERROR(3, "Product not found"),
-
     INVALID_CATEGORY_ERROR(10, "Invalid category"),
     DUPLICATE_CATEGORY_NAME_ERROR(11, "Duplicate category name"),
     CATEGORY_NOT_FOUND_ERROR(12, "Category not found"),
@@ -20,7 +19,8 @@ public enum ProductErrors {
     OPTION_ITEM_NOT_FOUND_ERROR(32, "Option item not found"),
     EMPTY_OPTION_GROUP_ERROR(33, "No option group items"),
     LINKED_PRODUCT_EXISTS_ERROR(34, "Linked products exist"),
-    ;
+
+    BRANCH_NOT_FOUND_ERROR(40, "Branch not found"), ;
 
     public final int errorCode;
     public final String message;
