@@ -325,8 +325,7 @@ public class BranchServiceTest {
 
         branchService.hideSale(branchId, productId);
 
-        ProductSalesOverride override = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId);
-        assertThat(override).isNotNull();
+        ProductSalesOverride override = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId).orElseThrow();
         assertThat(override.getStatus()).isEqualTo(ProductSalesOverrideStatus.HIDDEN);
     }
 
@@ -340,7 +339,7 @@ public class BranchServiceTest {
 
         branchService.hideSale(branchId, productId);
 
-        ProductSalesOverride override = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId);
+        ProductSalesOverride override = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId).orElseThrow();
         assertThat(override.getStatus()).isEqualTo(ProductSalesOverrideStatus.HIDDEN);
     }
 
@@ -401,8 +400,7 @@ public class BranchServiceTest {
 
         branchService.soldOut(branchId, productId);
 
-        ProductSalesOverride override = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId);
-        assertThat(override).isNotNull();
+        ProductSalesOverride override = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId).orElseThrow();
         assertThat(override.getStatus()).isEqualTo(ProductSalesOverrideStatus.SOLD_OUT);
     }
 
@@ -416,7 +414,7 @@ public class BranchServiceTest {
 
         branchService.soldOut(branchId, productId);
 
-        ProductSalesOverride override = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId);
+        ProductSalesOverride override = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId).orElseThrow();
         assertThat(override.getStatus()).isEqualTo(ProductSalesOverrideStatus.SOLD_OUT);
     }
 

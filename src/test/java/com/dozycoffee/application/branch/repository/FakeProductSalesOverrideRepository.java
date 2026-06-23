@@ -7,6 +7,7 @@ import com.dozycoffee.domain.product.ProductId;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class FakeProductSalesOverrideRepository implements ProductSalesOverrideRepository {
 
@@ -44,9 +45,9 @@ public class FakeProductSalesOverrideRepository implements ProductSalesOverrideR
     }
 
     @Override
-    public ProductSalesOverride findByBranchIdAndProductId(BranchId branchId, ProductId productId) throws RepositoryException {
+    public Optional<ProductSalesOverride> findByBranchIdAndProductId(BranchId branchId, ProductId productId) throws RepositoryException {
         checkThrow();
-        return store.get(key(branchId, productId));
+        return Optional.ofNullable(store.get(key(branchId, productId)));
     }
 
     @Override
