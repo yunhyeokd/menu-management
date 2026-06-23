@@ -21,48 +21,26 @@ public class ProductTagTest {
     }
 
     @Test
-    public void id가_같은_상품태그는_동등하다() {
-
+    public void 복합키가_같은_상품태그는_동등하다() {
         ProductId productId = ProductId.of(1L);
         TagId tagId = TagId.of(1L);
         Instant createdAt = Instant.now();
 
-        ProductTag productTag1 = ProductTag.of(1L, productId, tagId, createdAt);
-        ProductTag productTag2 = ProductTag.of(1L, productId, tagId, createdAt);
+        ProductTag productTag1 = ProductTag.of(productId, tagId, createdAt);
+        ProductTag productTag2 = ProductTag.of(productId, tagId, createdAt);
 
-        assertThat(productTag1.getId()).isEqualTo(productTag2.getId());
         assertThat(productTag1).isEqualTo(productTag2);
     }
 
-
     @Test
-    public void id가_다른_상품태그는_동등하지_않다() {
-
+    public void tagId가_다른_상품태그는_동등하지_않다() {
         ProductId productId = ProductId.of(1L);
-        TagId tagId = TagId.of(1L);
         Instant createdAt = Instant.now();
 
-        ProductTag productTag1 = ProductTag.of(1L, productId, tagId, createdAt);
-        ProductTag productTag2 = ProductTag.of(2L, productId, tagId, createdAt);
+        ProductTag productTag1 = ProductTag.of(productId, TagId.of(1L), createdAt);
+        ProductTag productTag2 = ProductTag.of(productId, TagId.of(2L), createdAt);
 
-        assertThat(productTag1.getId()).isNotEqualTo(productTag2.getId());
         assertThat(productTag1).isNotEqualTo(productTag2);
     }
-
-    @Test
-    public void id가_null인_상품태그는_동등하지_않다() {
-
-        ProductId productId = ProductId.of(1L);
-        TagId tagId = TagId.of(1L);
-        Instant createdAt = Instant.now();
-
-        ProductTag productTag1 = ProductTag.of(1L, productId, tagId, createdAt);
-        ProductTag productTag2 = ProductTag.create(productId, tagId);
-
-        assertThat(productTag1.getId()).isNotEqualTo(productTag2.getId());
-        assertThat(productTag1).isNotEqualTo(productTag2);
-    }
-
-
 
 }

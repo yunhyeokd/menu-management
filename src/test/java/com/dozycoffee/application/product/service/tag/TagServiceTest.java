@@ -188,8 +188,8 @@ public class TagServiceTest {
     @Test
     public void 태그에_연결된_상품_id_목록을_조회한다() {
         Tag tag = tagRepository.put(Tag.of(TagId.of(1L), "신제품", Instant.now()));
-        productTagRepository.add(ProductTag.of(1L, ProductId.of(10L), tag.getId(), Instant.now()));
-        productTagRepository.add(ProductTag.of(2L, ProductId.of(20L), tag.getId(), Instant.now()));
+        productTagRepository.add(ProductTag.of(ProductId.of(10L), tag.getId(), Instant.now()));
+        productTagRepository.add(ProductTag.of(ProductId.of(20L), tag.getId(), Instant.now()));
 
         List<ProductId> productIds = tagService.findLinkedProductIds(tag.getId());
 
@@ -227,7 +227,7 @@ public class TagServiceTest {
     @Test
     public void 태그를_정상_삭제한다() {
         Tag tag = tagRepository.put(Tag.of(TagId.of(1L), "신제품", Instant.now()));
-        productTagRepository.add(ProductTag.of(1L, ProductId.of(10L), tag.getId(), Instant.now()));
+        productTagRepository.add(ProductTag.of(ProductId.of(10L), tag.getId(), Instant.now()));
 
         tagService.remove(tag.getId());
 

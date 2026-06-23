@@ -11,9 +11,8 @@ import java.util.stream.Collectors;
 
 public class FakeProductTagRepository implements ProductTagRepository {
 
-    private final Map<Long, ProductTag> store = new LinkedHashMap<>();
+    private final Map<String, ProductTag> store = new LinkedHashMap<>();
     private final Map<TagId, Tag> tagStore = new LinkedHashMap<>();
-    private long sequence = 1;
     private boolean shouldThrow = false;
 
     public void throwOnNextCall() {
@@ -21,7 +20,7 @@ public class FakeProductTagRepository implements ProductTagRepository {
     }
 
     public ProductTag add(ProductTag productTag) {
-        store.put(productTag.getId(), productTag);
+        store.put(key(productTag.getProductId(), productTag.getTagId()), productTag);
         return productTag;
     }
 
@@ -31,6 +30,10 @@ public class FakeProductTagRepository implements ProductTagRepository {
 
     public List<ProductTag> all() {
         return new ArrayList<>(store.values());
+    }
+
+    private String key(ProductId productId, TagId tagId) {
+        return productId.getValue() + "_" + tagId.getValue();
     }
 
     private void checkThrow() {
@@ -43,19 +46,19 @@ public class FakeProductTagRepository implements ProductTagRepository {
     @Override
     public void save(ProductTag productTag) throws RepositoryException {
         checkThrow();
-        store.put(productTag.getId(), productTag);
+        store.put(key(productTag.getProductId(), productTag.getTagId()), productTag);
     }
 
     @Override
     public void deleteAllByTagId(TagId tagId) throws RepositoryException {
         checkThrow();
-        store.entrySet().removeIf(entry -> entry.getValue().getTagId().equals(tagId));
+        store.values().removeIf(pt -> pt.getTagId().equals(tagId));
     }
 
     @Override
     public void deleteAllByProductId(ProductId productId) throws RepositoryException {
         checkThrow();
-        store.entrySet().removeIf(entry -> entry.getValue().getProductId().equals(productId));
+        store.values().removeIf(pt -> pt.getProductId().equals(productId));
     }
 
     @Override
