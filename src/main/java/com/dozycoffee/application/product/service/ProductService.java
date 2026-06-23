@@ -111,12 +111,12 @@ public class ProductService {
             Product product = Product.createCommonProduct(
                     productId,
                     command.name(),
-                    command.description().orElse(null),
-                    command.imageUrl().orElse(null),
+                    command.description(),
+                    command.imageUrl(),
                     command.categoryId(),
                     command.price(),
-                    command.kcal().orElse(null),
-                    command.allergenInfo().orElse(null)
+                    command.kcal(),
+                    command.allergenInfo()
             );
             productRepository.save(product);
             List<TagData> tags = saveTags(productId, command.tagNames());
@@ -140,12 +140,12 @@ public class ProductService {
             Product product = Product.createBranchProduct(
                     productId,
                     command.name(),
-                    command.description().orElse(null),
-                    command.imageUrl().orElse(null),
+                    command.description(),
+                    command.imageUrl(),
                     command.categoryId(),
                     command.price(),
-                    command.kcal().orElse(null),
-                    command.allergenInfo().orElse(null),
+                    command.kcal(),
+                    command.allergenInfo(),
                     command.branchId()
             );
             productRepository.save(product);
