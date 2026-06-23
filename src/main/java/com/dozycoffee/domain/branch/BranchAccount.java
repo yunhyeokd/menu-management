@@ -7,6 +7,8 @@ import java.util.Objects;
 
 public class BranchAccount implements Principal {
 
+    public static final String ROLE = "BRANCH";
+
     private BranchId id;
     private BranchCode code;
     private String authKeyHash;
@@ -37,6 +39,7 @@ public class BranchAccount implements Principal {
     }
 
     public static BranchAccount of(BranchId id, BranchCode code, String authKeyHash, BranchStatus status, Instant createdAt, Instant deletedAt) {
+        validateDeletedAccountStatus(status, deletedAt);
         return new BranchAccount(id, code, authKeyHash, status, createdAt, deletedAt);
     }
 
@@ -44,7 +47,11 @@ public class BranchAccount implements Principal {
         return new BranchAccount(id, code, authKeyHash, BranchStatus.ACTIVE, Instant.now(), null);
     }
 
-    public static final String ROLE = "BRANCH";
+    private static void validateDeletedAccountStatus(BranchStatus branchStatus, Instant deletedAt) {
+        if (deletedAt != null && branchStatus != BranchStatus.INACTIVE) {
+            throw new BranchException("Deleted branch account must be inactive");
+        }
+    }
 
     @Override
     public String getRole() {
