@@ -1,13 +1,13 @@
 package com.dozycoffee.application.product.dto;
 
 import com.dozycoffee.domain.product.OptionGroupId;
-import com.dozycoffee.domain.product.ProductOptionGroupId;
+import com.dozycoffee.domain.product.ProductId;
 
 import java.util.List;
 
 public record LinkedOptionGroupData(
-        ProductOptionGroupId linkId,
-        OptionGroupId id,
+        ProductId productId,
+        OptionGroupId optionGroupId,
         String name,
         String description,
         boolean isRequired,

@@ -25,8 +25,6 @@ public class OptionServiceTest {
     private OptionService optionService;
     private long nextOptionGroupId = 1L;
     private long nextOptionItemId = 1L;
-    private long nextProductOptionGroupId = 1L;
-
     @BeforeEach
     public void setUp() {
         optionGroupRepository = new FakeOptionGroupRepository();
@@ -34,14 +32,12 @@ public class OptionServiceTest {
         productOptionGroupRepository = new FakeProductOptionGroupRepository();
         nextOptionGroupId = 1L;
         nextOptionItemId = 1L;
-        nextProductOptionGroupId = 1L;
         optionService = new OptionService(
                 optionGroupRepository,
                 optionItemRepository,
                 productOptionGroupRepository,
                 () -> OptionGroupId.of(nextOptionGroupId++),
-                () -> OptionItemId.of(nextOptionItemId++),
-                () -> ProductOptionGroupId.of(nextProductOptionGroupId++)
+                () -> OptionItemId.of(nextOptionItemId++)
         );
     }
 
@@ -229,7 +225,7 @@ public class OptionServiceTest {
     public void 옵션_그룹_삭제시_연결된_상품이_있으면_LINKED_PRODUCT_EXISTS_ERROR를_던진다() {
         optionGroupRepository.put(OptionGroup.of(OptionGroupId.of(1L), "사이즈", null, Instant.now()));
         productOptionGroupRepository.put(ProductOptionGroup.of(
-                ProductOptionGroupId.of(1L), ProductId.of(1L), OptionGroupId.of(1L), true, false, Instant.now()
+                ProductId.of(1L), OptionGroupId.of(1L), true, false, Instant.now()
         ));
 
         assertThatThrownBy(() -> optionService.deleteOptionGroup(OptionGroupId.of(1L)))

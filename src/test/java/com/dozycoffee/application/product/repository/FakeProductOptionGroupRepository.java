@@ -4,14 +4,13 @@ import com.dozycoffee.application.common.RepositoryException;
 import com.dozycoffee.domain.product.OptionGroupId;
 import com.dozycoffee.domain.product.ProductId;
 import com.dozycoffee.domain.product.ProductOptionGroup;
-import com.dozycoffee.domain.product.ProductOptionGroupId;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class FakeProductOptionGroupRepository implements ProductOptionGroupRepository {
 
-    private final Map<ProductOptionGroupId, ProductOptionGroup> store = new LinkedHashMap<>();
+    private final Map<String, ProductOptionGroup> store = new LinkedHashMap<>();
     private boolean shouldThrow = false;
 
     public void throwOnNextCall() {
@@ -19,8 +18,12 @@ public class FakeProductOptionGroupRepository implements ProductOptionGroupRepos
     }
 
     public ProductOptionGroup put(ProductOptionGroup productOptionGroup) {
-        store.put(productOptionGroup.getId(), productOptionGroup);
+        store.put(key(productOptionGroup.getProductId(), productOptionGroup.getOptionGroupId()), productOptionGroup);
         return productOptionGroup;
+    }
+
+    private String key(ProductId productId, OptionGroupId optionGroupId) {
+        return productId.getValue() + "_" + optionGroupId.getValue();
     }
 
     private void checkThrow() {
@@ -33,13 +36,7 @@ public class FakeProductOptionGroupRepository implements ProductOptionGroupRepos
     @Override
     public void save(ProductOptionGroup productOptionGroup) throws RepositoryException {
         checkThrow();
-        store.put(productOptionGroup.getId(), productOptionGroup);
-    }
-
-    @Override
-    public Optional<ProductOptionGroup> findById(ProductOptionGroupId id) throws RepositoryException {
-        checkThrow();
-        return Optional.ofNullable(store.get(id));
+        store.put(key(productOptionGroup.getProductId(), productOptionGroup.getOptionGroupId()), productOptionGroup);
     }
 
     @Override
@@ -53,9 +50,7 @@ public class FakeProductOptionGroupRepository implements ProductOptionGroupRepos
     @Override
     public Optional<ProductOptionGroup> findByProductIdAndOptionGroupId(ProductId productId, OptionGroupId optionGroupId) throws RepositoryException {
         checkThrow();
-        return store.values().stream()
-                .filter(pog -> pog.getProductId().equals(productId) && pog.getOptionGroupId().equals(optionGroupId))
-                .findFirst();
+        return Optional.ofNullable(store.get(key(productId, optionGroupId)));
     }
 
     @Override

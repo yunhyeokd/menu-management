@@ -20,10 +20,9 @@ public class ProductService {
     private final ProductOptionGroupRepository productOptionGroupRepository;
     private final BranchAccountRepository branchAccountRepository;
     private final IdentifierGenerator<ProductId> idGenerator;
-    private final IdentifierGenerator<ProductOptionGroupId> productOptionGroupIdGenerator;
     private final TagService tagService;
 
-    public ProductService(ProductRepository productRepository, ProductQueryRepository productQueryRepository, CategoryRepository categoryRepository, TagRepository tagRepository, ProductTagRepository productTagRepository, OptionGroupRepository optionGroupRepository, ProductOptionGroupRepository productOptionGroupRepository, BranchAccountRepository branchAccountRepository, IdentifierGenerator<ProductId> idGenerator, IdentifierGenerator<ProductOptionGroupId> productOptionGroupIdGenerator, TagService tagService) {
+    public ProductService(ProductRepository productRepository, ProductQueryRepository productQueryRepository, CategoryRepository categoryRepository, TagRepository tagRepository, ProductTagRepository productTagRepository, OptionGroupRepository optionGroupRepository, ProductOptionGroupRepository productOptionGroupRepository, BranchAccountRepository branchAccountRepository, IdentifierGenerator<ProductId> idGenerator, TagService tagService) {
         this.productRepository = productRepository;
         this.productQueryRepository = productQueryRepository;
         this.categoryRepository = categoryRepository;
@@ -32,7 +31,6 @@ public class ProductService {
         this.productOptionGroupRepository = productOptionGroupRepository;
         this.branchAccountRepository = branchAccountRepository;
         this.idGenerator = idGenerator;
-        this.productOptionGroupIdGenerator = productOptionGroupIdGenerator;
         this.tagService = tagService;
     }
 
@@ -81,7 +79,6 @@ public class ProductService {
             optionGroupRepository.findById(spec.optionGroupId())
                     .orElseThrow(() -> ProductBusinessException.of(ProductErrors.OPTION_GROUP_NOT_FOUND_ERROR));
             productOptionGroupRepository.save(ProductOptionGroup.create(
-                    productOptionGroupIdGenerator.generate(),
                     productId,
                     spec.optionGroupId(),
                     spec.isRequired(),

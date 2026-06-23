@@ -23,22 +23,19 @@ public class OptionService {
     private final ProductOptionGroupRepository productOptionGroupRepository;
     private final IdentifierGenerator<OptionGroupId> optionGroupIdGenerator;
     private final IdentifierGenerator<OptionItemId> optionItemIdGenerator;
-    private final IdentifierGenerator<ProductOptionGroupId> productOptionGroupIdGenerator;
 
     public OptionService(
             OptionGroupRepository optionGroupRepository,
             OptionItemRepository optionItemRepository,
             ProductOptionGroupRepository productOptionGroupRepository,
             IdentifierGenerator<OptionGroupId> optionGroupIdGenerator,
-            IdentifierGenerator<OptionItemId> optionItemIdGenerator,
-            IdentifierGenerator<ProductOptionGroupId> productOptionGroupIdGenerator
+            IdentifierGenerator<OptionItemId> optionItemIdGenerator
     ) {
         this.optionGroupRepository = optionGroupRepository;
         this.optionItemRepository = optionItemRepository;
         this.productOptionGroupRepository = productOptionGroupRepository;
         this.optionGroupIdGenerator = optionGroupIdGenerator;
         this.optionItemIdGenerator = optionItemIdGenerator;
-        this.productOptionGroupIdGenerator = productOptionGroupIdGenerator;
     }
 
     /*
