@@ -51,10 +51,16 @@ public class FakeProductOptionGroupRepository implements ProductOptionGroupRepos
     }
 
     @Override
-    public List<ProductOptionGroup> findAllByProductIdAndOptionGroupId(ProductId productId, OptionGroupId optionGroupId) throws RepositoryException {
+    public Optional<ProductOptionGroup> findByProductIdAndOptionGroupId(ProductId productId, OptionGroupId optionGroupId) throws RepositoryException {
         checkThrow();
         return store.values().stream()
                 .filter(pog -> pog.getProductId().equals(productId) && pog.getOptionGroupId().equals(optionGroupId))
-                .collect(Collectors.toList());
+                .findFirst();
+    }
+
+    @Override
+    public void deleteAllByProductId(ProductId productId) throws RepositoryException {
+        checkThrow();
+        store.values().removeIf(pog -> pog.getProductId().equals(productId));
     }
 }

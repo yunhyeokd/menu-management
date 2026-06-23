@@ -56,9 +56,11 @@ public class BranchService {
 
     public BranchCreateResult create(String name, String address) {
         try {
-            if (branchProfileRepository.findByName(name) != null) {
-                throw BranchBusinessException.with(BranchErrors.DUPLICATE_NAME_ERROR);
-            }
+            branchProfileRepository
+                    .findByName(name)
+                    .ifPresent(branchProfile -> {
+                        throw BranchBusinessException.with(BranchErrors.DUPLICATE_NAME_ERROR);
+                    });
             try {
                 BranchId branchId = idGenerator.generate();
                 BranchCode branchCode = codeGenerator.generate();
@@ -85,41 +87,28 @@ public class BranchService {
     }
 
     private void assertBranchAccountExists(BranchId branchId) throws RepositoryException {
-        BranchAccount branchAccount = branchAccountRepository.findById(branchId);
-        if (branchAccount == null) {
-            throw BranchBusinessException.with(BranchErrors.BRANCH_NOT_FOUND_ERROR);
-        }
+        branchAccountRepository.findById(branchId)
+                .orElseThrow(() -> BranchBusinessException.with(BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     private void assertProductExists(ProductId productId) throws RepositoryException {
-        Product product = productRepository.findById(productId);
-        if (product == null) {
-            throw BranchBusinessException.with(BranchErrors.PRODUCT_NOT_FOUND_ERROR);
-        }
+        productRepository.findById(productId)
+                .orElseThrow(() -> BranchBusinessException.with(BranchErrors.PRODUCT_NOT_FOUND_ERROR));
     }
 
     private BranchAccount getBranchAccount(BranchId branchId) {
-        BranchAccount branchAccount = branchAccountRepository.findById(branchId);
-        if (branchAccount == null) {
-            throw BranchBusinessException.with(BranchErrors.BRANCH_NOT_FOUND_ERROR);
-        }
-        return branchAccount;
+        return branchAccountRepository.findById(branchId)
+                .orElseThrow(() -> BranchBusinessException.with(BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     private BranchProfile getBranchProfile(BranchId branchId) throws RepositoryException {
-        BranchProfile branchProfile = branchProfileRepository.findById(branchId);
-        if (branchProfile == null) {
-            throw BranchBusinessException.with(BranchErrors.BRANCH_NOT_FOUND_ERROR);
-        }
-        return branchProfile;
+        return branchProfileRepository.findById(branchId)
+                .orElseThrow(() -> BranchBusinessException.with(BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     private Product getProduct(ProductId productId) throws RepositoryException {
-        Product product = productRepository.findById(productId);
-        if (product == null) {
-            throw BranchBusinessException.with(BranchErrors.PRODUCT_NOT_FOUND_ERROR);
-        }
-        return product;
+        return productRepository.findById(productId)
+                .orElseThrow(() -> BranchBusinessException.with(BranchErrors.PRODUCT_NOT_FOUND_ERROR));
     }
 
     public BranchAuthKeyReissueResult reissueAuthKey(BranchId branchId) {

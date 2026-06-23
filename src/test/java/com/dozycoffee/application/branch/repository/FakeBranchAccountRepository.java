@@ -6,6 +6,7 @@ import com.dozycoffee.domain.branch.BranchId;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class FakeBranchAccountRepository implements BranchAccountRepository {
 
@@ -33,16 +34,15 @@ public class FakeBranchAccountRepository implements BranchAccountRepository {
     }
 
     @Override
-    public BranchAccount save(BranchAccount branchAccount) {
+    public void save(BranchAccount branchAccount) {
         checkThrow();
         store.put(branchAccount.getId(), branchAccount);
-        return branchAccount;
     }
 
     @Override
-    public BranchAccount findById(BranchId branchId) {
+    public Optional<BranchAccount> findById(BranchId branchId) {
         checkThrow();
-        return store.get(branchId);
+        return Optional.ofNullable(store.get(branchId));
     }
 
     @Override

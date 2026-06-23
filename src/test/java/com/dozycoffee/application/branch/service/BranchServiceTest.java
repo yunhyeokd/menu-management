@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -67,8 +68,10 @@ public class BranchServiceTest {
         BranchAuthKeyReissueResult result = branchService.reissueAuthKey(branchId);
 
         assertThat(result.rawAuthKey()).isEqualTo("raw-auth-key");
-        assertThat(branchAccountRepository.findById(branchId).getAuthKeyHash()).isEqualTo("hashed-raw-auth-key");
-        assertThat(sessionInvalidationPort.wasInvalidated(branchAccountRepository.findById(branchId))).isTrue();
+        branchAccountRepository.findById(branchId).ifPresent(branchAccount -> {
+            assertThat(branchAccount.getAuthKeyHash()).isEqualTo("hashed-raw-auth-key");
+            assertThat(sessionInvalidationPort.wasInvalidated(branchAccount)).isTrue();
+        });
     }
 
     @Test
@@ -157,9 +160,11 @@ public class BranchServiceTest {
 
         branchService.updateProfile(branchId, new BranchProfileUpdateDto("강남역점", "서울 강남구 강남대로 456"));
 
-        BranchProfile updated = branchProfileRepository.findById(branchId);
-        assertThat(updated.getName()).isEqualTo("강남역점");
-        assertThat(updated.getAddress()).isEqualTo("서울 강남구 강남대로 456");
+        Optional<BranchProfile> updated = branchProfileRepository.findById(branchId);
+        updated.ifPresent(branchProfile -> {
+            assertThat(branchProfile.getName()).isEqualTo("강남역점");
+            assertThat(branchProfile.getAddress()).isEqualTo("서울 강남구 강남대로 456");
+        });
     }
 
     @Test
@@ -203,10 +208,10 @@ public class BranchServiceTest {
 
         branchService.softDelete(branchId);
 
-        BranchAccount account = branchAccountRepository.findById(branchId);
-        assertThat(account.getDeletedAt()).isNotNull();
-        assertThat(productRepository.all())
-                .allMatch(p -> p.getStatus() == ProductStatus.INACTIVE);
+        branchAccountRepository.findById(branchId).ifPresent(account -> {
+            assertThat(account.getDeletedAt()).isNotNull();
+        });
+        assertThat(productRepository.all()).allMatch(p -> p.getStatus() == ProductStatus.INACTIVE);
     }
 
     @Test

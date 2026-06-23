@@ -14,6 +14,7 @@ public interface ProductOptionGroupRepository {
     void save(ProductOptionGroup productOptionGroup) throws RepositoryException;
     Optional<ProductOptionGroup> findById(ProductOptionGroupId id) throws RepositoryException;
     List<ProductOptionGroup> findAllByOptionGroupId(OptionGroupId id) throws RepositoryException;
-    List<ProductOptionGroup> findAllByProductIdAndOptionGroupId(ProductId productId, OptionGroupId optionGroupId) throws RepositoryException;
+    Optional<ProductOptionGroup> findByProductIdAndOptionGroupId(ProductId productId, OptionGroupId optionGroupId) throws RepositoryException;
 
+    void deleteAllByProductId(ProductId productId) throws RepositoryException;
 }

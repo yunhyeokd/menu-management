@@ -7,10 +7,7 @@ import com.dozycoffee.domain.product.Product;
 import com.dozycoffee.domain.product.ProductId;
 import com.dozycoffee.domain.product.ProductStatus;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class FakeProductRepository implements ProductRepository {
@@ -45,9 +42,9 @@ public class FakeProductRepository implements ProductRepository {
     }
 
     @Override
-    public Product findById(ProductId productId) throws RepositoryException {
+    public Optional<Product> findById(ProductId productId) throws RepositoryException {
         checkThrow();
-        return store.get(productId);
+        return Optional.ofNullable(store.get(productId));
     }
 
     @Override
@@ -89,5 +86,11 @@ public class FakeProductRepository implements ProductRepository {
     public void deleteAllByBranchId(BranchId branchId) throws RepositoryException {
         checkThrow();
         store.entrySet().removeIf(e -> branchId.equals(e.getValue().getBranchId()));
+    }
+
+    @Override
+    public void deleteById(ProductId productId) throws RepositoryException {
+        checkThrow();
+        store.remove(productId);
     }
 }
