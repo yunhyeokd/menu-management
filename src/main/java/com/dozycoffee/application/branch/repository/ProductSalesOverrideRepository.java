@@ -8,6 +8,5 @@ import com.dozycoffee.domain.product.ProductId;
 public interface ProductSalesOverrideRepository {
     void save(ProductSalesOverride productSalesOverride) throws RepositoryException;
     ProductSalesOverride findByBranchIdAndProductId(BranchId branchId, ProductId productId) throws RepositoryException;
-    ProductSalesOverride findById(Long id) throws RepositoryException;
-    void deleteById(Long id) throws RepositoryException;
+    void deleteByBranchIdAndProductId(BranchId branchId, ProductId productId) throws RepositoryException;
 }

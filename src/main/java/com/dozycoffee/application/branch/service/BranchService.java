@@ -227,11 +227,10 @@ public class BranchService {
 
     public void restoreSale(BranchId branchId, ProductId productId) {
         try {
-            ProductSalesOverride productSalesOverride = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId);
-            if (productSalesOverride == null) {
+            if (productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId) == null) {
                 throw BranchBusinessException.with(BranchErrors.SALES_OVERRIDE_NOT_FOUND_ERROR);
             }
-            productSalesOverrideRepository.deleteById(productSalesOverride.getId());
+            productSalesOverrideRepository.deleteByBranchIdAndProductId(branchId, productId);
         } catch (RepositoryException e) {
             throw BranchBusinessException.with(BranchErrors.UNKNOWN_ERROR);
         }

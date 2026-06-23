@@ -7,42 +7,35 @@ import java.util.Objects;
 
 public class ProductSalesOverride {
 
-    private Long id;
     private ProductId productId;
     private BranchId branchId;
     private ProductSalesOverrideStatus status;
     private Instant createdAt;
 
-    private ProductSalesOverride(Long id, ProductId productId, BranchId branchId, ProductSalesOverrideStatus status, Instant createdAt) {
+    private ProductSalesOverride(ProductId productId, BranchId branchId, ProductSalesOverrideStatus status, Instant createdAt) {
         setProductId(productId);
         setBranchId(branchId);
         setStatus(status);
         setCreatedAt(createdAt);
-        this.id = id;
     }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof ProductSalesOverride that)) return false;
-        if (id == null || that.id == null) return false;
-        return Objects.equals(id, that.id);
+        return Objects.equals(productId, that.productId) && Objects.equals(branchId, that.branchId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hash(productId, branchId);
     }
 
-    public static ProductSalesOverride of(long id, ProductId productId, BranchId branchId, ProductSalesOverrideStatus status, Instant createdAt) {
-        return new ProductSalesOverride(id, productId, branchId, status, createdAt);
+    public static ProductSalesOverride of(ProductId productId, BranchId branchId, ProductSalesOverrideStatus status, Instant createdAt) {
+        return new ProductSalesOverride(productId, branchId, status, createdAt);
     }
 
     public static ProductSalesOverride create(ProductId productId, BranchId branchId, ProductSalesOverrideStatus status) {
-        return new ProductSalesOverride(null, productId, branchId, status, Instant.now());
-    }
-
-    public Long getId() {
-        return id;
+        return new ProductSalesOverride(productId, branchId, status, Instant.now());
     }
 
     public ProductId getProductId() {

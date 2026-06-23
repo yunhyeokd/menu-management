@@ -336,7 +336,7 @@ public class BranchServiceTest {
         ProductId productId = ProductId.of(10L);
         branchAccountRepository.put(BranchFixture.builder().id(branchId).build());
         productRepository.put(ProductFixture.builder().id(productId).status(ProductStatus.ACTIVE).build());
-        productSalesOverrideRepository.put(ProductSalesOverride.of(1L, productId, branchId, ProductSalesOverrideStatus.SOLD_OUT, Instant.now()));
+        productSalesOverrideRepository.put(ProductSalesOverride.of(productId, branchId, ProductSalesOverrideStatus.SOLD_OUT, Instant.now()));
 
         branchService.hideSale(branchId, productId);
 
@@ -412,7 +412,7 @@ public class BranchServiceTest {
         ProductId productId = ProductId.of(10L);
         branchAccountRepository.put(BranchFixture.builder().id(branchId).build());
         productRepository.put(ProductFixture.builder().id(productId).status(ProductStatus.ACTIVE).build());
-        productSalesOverrideRepository.put(ProductSalesOverride.of(1L, productId, branchId, ProductSalesOverrideStatus.HIDDEN, Instant.now()));
+        productSalesOverrideRepository.put(ProductSalesOverride.of(productId, branchId, ProductSalesOverrideStatus.HIDDEN, Instant.now()));
 
         branchService.soldOut(branchId, productId);
 
@@ -472,11 +472,11 @@ public class BranchServiceTest {
     public void 판매_재개를_정상_처리한다() {
         BranchId branchId = BranchId.of(1L);
         ProductId productId = ProductId.of(10L);
-        productSalesOverrideRepository.put(ProductSalesOverride.of(1L, productId, branchId, ProductSalesOverrideStatus.HIDDEN, Instant.now()));
+        productSalesOverrideRepository.put(ProductSalesOverride.of(productId, branchId, ProductSalesOverrideStatus.HIDDEN, Instant.now()));
 
         branchService.restoreSale(branchId, productId);
 
-        assertThat(productSalesOverrideRepository.contains(1L)).isFalse();
+        assertThat(productSalesOverrideRepository.contains(branchId, productId)).isFalse();
     }
 
     @Test

@@ -7,12 +7,10 @@ import com.dozycoffee.domain.product.ProductId;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class FakeProductSalesOverrideRepository implements ProductSalesOverrideRepository {
 
-    private final Map<Long, ProductSalesOverride> store = new LinkedHashMap<>();
-    private final AtomicLong idSeq = new AtomicLong(1);
+    private final Map<String, ProductSalesOverride> store = new LinkedHashMap<>();
     private boolean shouldThrow = false;
 
     public void throwOnNextCall() {
@@ -20,12 +18,16 @@ public class FakeProductSalesOverrideRepository implements ProductSalesOverrideR
     }
 
     public ProductSalesOverride put(ProductSalesOverride override) {
-        store.put(override.getId(), override);
+        store.put(key(override.getBranchId(), override.getProductId()), override);
         return override;
     }
 
-    public boolean contains(Long id) {
-        return store.containsKey(id);
+    public boolean contains(BranchId branchId, ProductId productId) {
+        return store.containsKey(key(branchId, productId));
+    }
+
+    private String key(BranchId branchId, ProductId productId) {
+        return branchId.getValue() + "_" + productId.getValue();
     }
 
     private void checkThrow() {
@@ -38,39 +40,18 @@ public class FakeProductSalesOverrideRepository implements ProductSalesOverrideR
     @Override
     public void save(ProductSalesOverride productSalesOverride) throws RepositoryException {
         checkThrow();
-        if (productSalesOverride.getId() == null) {
-            long newId = idSeq.getAndIncrement();
-            ProductSalesOverride withId = ProductSalesOverride.of(
-                    newId,
-                    productSalesOverride.getProductId(),
-                    productSalesOverride.getBranchId(),
-                    productSalesOverride.getStatus(),
-                    productSalesOverride.getCreatedAt()
-            );
-            store.put(newId, withId);
-        } else {
-            store.put(productSalesOverride.getId(), productSalesOverride);
-        }
+        store.put(key(productSalesOverride.getBranchId(), productSalesOverride.getProductId()), productSalesOverride);
     }
 
     @Override
     public ProductSalesOverride findByBranchIdAndProductId(BranchId branchId, ProductId productId) throws RepositoryException {
         checkThrow();
-        return store.values().stream()
-                .filter(o -> o.getBranchId().equals(branchId) && o.getProductId().equals(productId))
-                .findFirst()
-                .orElse(null);
+        return store.get(key(branchId, productId));
     }
 
     @Override
-    public ProductSalesOverride findById(Long id) throws RepositoryException {
+    public void deleteByBranchIdAndProductId(BranchId branchId, ProductId productId) throws RepositoryException {
         checkThrow();
-        return store.get(id);
-    }
-
-    @Override
-    public void deleteById(Long id) throws RepositoryException {
-        checkThrow();
-        store.remove(id);
+        store.remove(key(branchId, productId));
     }
 }
