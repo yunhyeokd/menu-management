@@ -5,6 +5,9 @@ import com.dozycoffee.application.admin.repository.FakeAdminAccountRepository;
 import com.dozycoffee.application.admin.repository.FakeAdminProfileRepository;
 import com.dozycoffee.application.auth.FakeSessionInvalidationPort;
 import com.dozycoffee.application.auth.PasswordHasher;
+import com.dozycoffee.application.common.AppException;
+import com.dozycoffee.application.common.ServiceError;
+import com.dozycoffee.application.common.exception.*;
 import com.dozycoffee.domain.admin.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,7 +60,7 @@ public class AdminServiceTest {
     }
 
     private void assertErrorCode(Throwable e, AdminErrors error) {
-        assertThat(((AdminBusinessException) e).getErrorCode()).isEqualTo(error.errorCode);
+        assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
     }
 
     // ─── registerSystem ───────────────────────────────────────────────────────
@@ -83,7 +86,7 @@ public class AdminServiceTest {
 
         assertThatThrownBy(() -> adminService.registerSystem(
                 new SystemAdminRegisterCommand("another", "password")))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(ConflictException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.DUPLICATE_ACCOUNT_ERROR));
     }
 
@@ -91,7 +94,7 @@ public class AdminServiceTest {
     public void 시스템_관리자_생성시_username이_유효하지_않으면_INVALID_ADMIN_ERROR를_던진다() {
         assertThatThrownBy(() -> adminService.registerSystem(
                 new SystemAdminRegisterCommand("a", "password")))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(ValidationException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.INVALID_ADMIN_ERROR));
     }
 
@@ -101,7 +104,7 @@ public class AdminServiceTest {
 
         assertThatThrownBy(() -> adminService.registerSystem(
                 new SystemAdminRegisterCommand("sysadmin", "password")))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(SystemException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.UNKNOWN_ERROR));
     }
 
@@ -129,7 +132,7 @@ public class AdminServiceTest {
 
         assertThatThrownBy(() -> adminService.registerStaff(new AdminRegisterCommand(
                 "staff01", "password", "EMP002", "김철수", "+821087654321", "kim@dozy.com")))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(ConflictException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.DUPLICATE_ACCOUNT_ERROR));
     }
 
@@ -137,7 +140,7 @@ public class AdminServiceTest {
     public void 사원_관리자_생성시_프로필_값이_유효하지_않으면_INVALID_ADMIN_ERROR를_던진다() {
         assertThatThrownBy(() -> adminService.registerStaff(new AdminRegisterCommand(
                 "staff01", "password", "EMP001", "홍길동", "invalid-phone", "staff@dozy.com")))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(ValidationException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.INVALID_ADMIN_ERROR));
     }
 
@@ -147,7 +150,7 @@ public class AdminServiceTest {
 
         assertThatThrownBy(() -> adminService.registerStaff(new AdminRegisterCommand(
                 "staff01", "password", "EMP001", "홍길동", "+821012345678", "staff@dozy.com")))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(SystemException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.UNKNOWN_ERROR));
     }
 
@@ -167,7 +170,7 @@ public class AdminServiceTest {
     @Test
     public void 승인시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
         assertThatThrownBy(() -> adminService.approve(AdminId.of(999L)))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
     }
 
@@ -179,7 +182,7 @@ public class AdminServiceTest {
         adminAccountRepository.put(account);
 
         assertThatThrownBy(() -> adminService.approve(adminId))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(ConflictException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.UNABLE_APPROVAL_ERROR));
     }
 
@@ -190,7 +193,7 @@ public class AdminServiceTest {
         adminAccountRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> adminService.approve(adminId))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(SystemException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.UNKNOWN_ERROR));
     }
 
@@ -211,7 +214,7 @@ public class AdminServiceTest {
     @Test
     public void 거절시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
         assertThatThrownBy(() -> adminService.reject(AdminId.of(999L)))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
     }
 
@@ -223,7 +226,7 @@ public class AdminServiceTest {
         adminAccountRepository.put(account);
 
         assertThatThrownBy(() -> adminService.reject(adminId))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(ConflictException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.UNABLE_APPROVAL_ERROR));
     }
 
@@ -265,7 +268,7 @@ public class AdminServiceTest {
     public void 프로필_수정시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
         assertThatThrownBy(() -> adminService.updateProfile(AdminId.of(999L),
                 new AdminProfileUpdateCommand(Optional.of("김철수"), Optional.empty(), Optional.empty())))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
     }
 
@@ -276,7 +279,7 @@ public class AdminServiceTest {
 
         assertThatThrownBy(() -> adminService.updateProfile(adminId,
                 new AdminProfileUpdateCommand(Optional.empty(), Optional.of("invalid-phone"), Optional.empty())))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(ValidationException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.INVALID_ADMIN_ERROR));
     }
 
@@ -288,7 +291,7 @@ public class AdminServiceTest {
 
         assertThatThrownBy(() -> adminService.updateProfile(adminId,
                 new AdminProfileUpdateCommand(Optional.of("김철수"), Optional.empty(), Optional.empty())))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(SystemException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.UNKNOWN_ERROR));
     }
 
@@ -310,7 +313,7 @@ public class AdminServiceTest {
     @Test
     public void 소프트_삭제시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
         assertThatThrownBy(() -> adminService.softDelete(AdminId.of(999L)))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
     }
 
@@ -320,7 +323,7 @@ public class AdminServiceTest {
         adminAccountRepository.put(AdminFixture.system().id(adminId).build());
 
         assertThatThrownBy(() -> adminService.softDelete(adminId))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(ValidationException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.INVALID_ADMIN_ERROR));
     }
 
@@ -332,7 +335,7 @@ public class AdminServiceTest {
         adminAccountRepository.put(account);
 
         assertThatThrownBy(() -> adminService.softDelete(adminId))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(ValidationException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.INVALID_ADMIN_ERROR));
     }
 
@@ -343,7 +346,7 @@ public class AdminServiceTest {
         adminAccountRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> adminService.softDelete(adminId))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(SystemException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.UNKNOWN_ERROR));
     }
 
@@ -367,7 +370,7 @@ public class AdminServiceTest {
     @Test
     public void 하드_삭제시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
         assertThatThrownBy(() -> adminService.hardDelete(AdminId.of(999L)))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
     }
 
@@ -377,7 +380,7 @@ public class AdminServiceTest {
         adminAccountRepository.put(AdminFixture.builder().id(adminId).build());
 
         assertThatThrownBy(() -> adminService.hardDelete(adminId))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(ConflictException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.INVALID_ADMIN_ERROR));
     }
 
@@ -391,7 +394,7 @@ public class AdminServiceTest {
         adminProfileRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> adminService.hardDelete(adminId))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(SystemException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.UNKNOWN_ERROR));
     }
 
@@ -411,7 +414,7 @@ public class AdminServiceTest {
     @Test
     void 비밀번호_변경시_계정이_없으면_ADMIN_NOT_FOUND를_던진다() {
         assertThatThrownBy(() -> adminService.changePassword(AdminId.of(999L), "any", "new"))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
     }
 
@@ -421,7 +424,7 @@ public class AdminServiceTest {
         adminAccountRepository.put(AdminFixture.builder().id(adminId).password("hashed-correctPassword").build());
 
         assertThatThrownBy(() -> adminService.changePassword(adminId, "wrongPassword", "newPassword"))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(AuthenticationException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.AUTHENTICATION_FAILED_ERROR));
     }
 
@@ -432,7 +435,7 @@ public class AdminServiceTest {
         adminAccountRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> adminService.changePassword(adminId, "currentPassword", "newPassword"))
-                .isInstanceOf(AdminBusinessException.class)
+                .isInstanceOf(SystemException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.UNKNOWN_ERROR));
     }
 }

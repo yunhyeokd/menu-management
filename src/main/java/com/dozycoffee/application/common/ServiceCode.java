@@ -1,14 +1,8 @@
 package com.dozycoffee.application.common;
 
-public enum BusinessCode {
-
+public enum ServiceCode {
     AUTH,
     ADM,
     BRN,
-    CAT,
-    TAG,
-    OPT,
-    PRD,
-    OPS
-
+    PRD
 }

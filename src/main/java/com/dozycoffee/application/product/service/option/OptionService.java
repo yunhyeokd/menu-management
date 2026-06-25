@@ -2,6 +2,11 @@ package com.dozycoffee.application.product.service.option;
 
 import com.dozycoffee.application.common.IdentifierGenerator;
 import com.dozycoffee.application.common.RepositoryException;
+import com.dozycoffee.application.common.ServiceCode;
+import com.dozycoffee.application.common.exception.ConflictException;
+import com.dozycoffee.application.common.exception.ResourceNotFoundException;
+import com.dozycoffee.application.common.exception.SystemException;
+import com.dozycoffee.application.common.exception.ValidationException;
 import com.dozycoffee.application.product.dto.OptionGroupCreateCommand;
 import com.dozycoffee.application.product.dto.OptionGroupData;
 import com.dozycoffee.application.product.dto.OptionGroupItemUpdateCommand;
@@ -10,7 +15,6 @@ import com.dozycoffee.application.product.dto.OptionItemCreateCommand;
 import com.dozycoffee.application.product.repository.OptionGroupRepository;
 import com.dozycoffee.application.product.repository.OptionItemRepository;
 import com.dozycoffee.application.product.repository.ProductOptionGroupRepository;
-import com.dozycoffee.application.product.service.ProductBusinessException;
 import com.dozycoffee.application.product.service.ProductErrors;
 import com.dozycoffee.domain.product.*;
 
@@ -43,7 +47,7 @@ public class OptionService {
     !! OptionGroup이 존재하지 않을 시 예외 발생
      */
     private OptionGroup getOptionGroup(OptionGroupId id) {
-        return optionGroupRepository.findById(id).orElseThrow(() -> ProductBusinessException.of(ProductErrors.OPTION_GROUP_NOT_FOUND_ERROR));
+        return optionGroupRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ServiceCode.PRD, ProductErrors.OPTION_GROUP_NOT_FOUND_ERROR));
     }
 
     /*
@@ -62,7 +66,7 @@ public class OptionService {
     public OptionGroupData create(OptionGroupCreateCommand command) {
         try {
             if (command.items().isEmpty()) {
-                throw ProductBusinessException.of(ProductErrors.EMPTY_OPTION_GROUP_ERROR);
+                throw new ValidationException(ServiceCode.PRD, ProductErrors.EMPTY_OPTION_GROUP_ERROR);
             }
             OptionGroupId optionGroupId = optionGroupIdGenerator.generate();
             OptionGroup optionGroup = OptionGroup.create(optionGroupId, command.name(), command.description().orElse(null));
@@ -83,9 +87,9 @@ public class OptionService {
             optionItems.forEach(optionItemRepository::save);
             return OptionGroupData.from(optionGroup, optionItems);
         } catch (ProductException e) {
-            throw ProductBusinessException.of(ProductErrors.INVALID_OPTION_ERROR);
+            throw new ValidationException(ServiceCode.PRD, ProductErrors.INVALID_OPTION_ERROR);
         } catch (RepositoryException e) {
-            throw ProductBusinessException.of(ProductErrors.UNKNOWN_ERROR);
+            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -99,12 +103,10 @@ public class OptionService {
                     .stream()
                     .map(this::readOptionGroupData)
                     .toList();
-        }
-        catch (ProductException e) {
-            throw ProductBusinessException.of(ProductErrors.INVALID_OPTION_ERROR);
-        }
-        catch (RepositoryException e) {
-            throw ProductBusinessException.of(ProductErrors.UNKNOWN_ERROR);
+        } catch (ProductException e) {
+            throw new ValidationException(ServiceCode.PRD, ProductErrors.INVALID_OPTION_ERROR);
+        } catch (RepositoryException e) {
+            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -118,12 +120,10 @@ public class OptionService {
             optionGroup.updateName(command.name());
             optionGroup.updateDescription(command.description().orElse(null));
             optionGroupRepository.save(optionGroup);
-        }
-        catch (ProductException e) {
-            throw ProductBusinessException.of(ProductErrors.INVALID_OPTION_ERROR);
-        }
-        catch (RepositoryException e) {
-            throw ProductBusinessException.of(ProductErrors.UNKNOWN_ERROR);
+        } catch (ProductException e) {
+            throw new ValidationException(ServiceCode.PRD, ProductErrors.INVALID_OPTION_ERROR);
+        } catch (RepositoryException e) {
+            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -138,7 +138,7 @@ public class OptionService {
             OptionGroup optionGroup = getOptionGroup(command.optionGroupId());
 
             if (command.items().isEmpty()) {
-                throw ProductBusinessException.of(ProductErrors.EMPTY_OPTION_GROUP_ERROR);
+                throw new ValidationException(ServiceCode.PRD, ProductErrors.EMPTY_OPTION_GROUP_ERROR);
             }
             List<OptionItem> optionItems = command.items().stream().map(itemUpdateCommand -> {
                 OptionItemId optionItemId = optionItemIdGenerator.generate();
@@ -152,12 +152,10 @@ public class OptionService {
             }).toList();
             optionItemRepository.deleteByOptionGroupId(optionGroup.getId());
             optionItems.forEach(optionItemRepository::save);
-        }
-        catch (ProductException e) {
-            throw ProductBusinessException.of(ProductErrors.INVALID_OPTION_ERROR);
-        }
-        catch (RepositoryException e) {
-            throw ProductBusinessException.of(ProductErrors.UNKNOWN_ERROR);
+        } catch (ProductException e) {
+            throw new ValidationException(ServiceCode.PRD, ProductErrors.INVALID_OPTION_ERROR);
+        } catch (RepositoryException e) {
+            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -169,13 +167,12 @@ public class OptionService {
         try {
             List<ProductOptionGroup> productOptionGroups = productOptionGroupRepository.findAllByOptionGroupId(id);
             if (!productOptionGroups.isEmpty()) {
-                throw ProductBusinessException.of(ProductErrors.LINKED_PRODUCT_EXISTS_ERROR);
+                throw new ConflictException(ServiceCode.PRD, ProductErrors.LINKED_PRODUCT_EXISTS_ERROR);
             }
             optionItemRepository.deleteByOptionGroupId(id);
             optionGroupRepository.deleteById(id);
-        }
-        catch (RepositoryException e) {
-            throw ProductBusinessException.of(ProductErrors.UNKNOWN_ERROR);
+        } catch (RepositoryException e) {
+            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 }

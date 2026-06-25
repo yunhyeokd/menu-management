@@ -1,6 +1,8 @@
 package com.dozycoffee.application.admin.service;
 
-public enum AdminErrors {
+import com.dozycoffee.application.common.ServiceError;
+
+public enum AdminErrors implements ServiceError {
 
     UNKNOWN_ERROR(1, "Unknown Error"),
     INVALID_ADMIN_ERROR(2, "Invalid Admin Error"),
@@ -9,13 +11,14 @@ public enum AdminErrors {
     UNABLE_APPROVAL_ERROR(5, "Account is not a subject to approval"),
     AUTHENTICATION_FAILED_ERROR(6, "Authentication Failed"),;
 
-    public final Integer errorCode;
-    public final String message;
-    AdminErrors(Integer errorCode, String message) {
+    private final int errorCode;
+    private final String message;
+
+    AdminErrors(int errorCode, String message) {
         this.errorCode = errorCode;
         this.message = message;
     }
 
-
-
+    @Override public int getErrorCode() { return errorCode; }
+    @Override public String getMessage() { return message; }
 }

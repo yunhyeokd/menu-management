@@ -1,6 +1,9 @@
 package com.dozycoffee.application.product.service;
 
 import com.dozycoffee.application.branch.repository.FakeBranchAccountRepository;
+import com.dozycoffee.application.common.AppException;
+import com.dozycoffee.application.common.ServiceError;
+import com.dozycoffee.application.common.exception.*;
 import com.dozycoffee.application.product.dto.*;
 import com.dozycoffee.application.product.repository.*;
 import com.dozycoffee.application.product.service.tag.TagService;
@@ -63,6 +66,10 @@ public class ProductServiceTest {
         );
     }
 
+    private void assertErrorCode(Throwable e, ServiceError error) {
+        assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
+    }
+
     private Category defaultCategory() {
         return categoryRepository.put(Category.of(CategoryId.of(1L), "음료", Instant.now()));
     }
@@ -109,9 +116,8 @@ public class ProductServiceTest {
         );
 
         assertThatThrownBy(() -> productService.registerCommonProduct(command))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.CATEGORY_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
     }
 
     @Test
@@ -156,9 +162,8 @@ public class ProductServiceTest {
         );
 
         assertThatThrownBy(() -> productService.registerCommonProduct(command))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.OPTION_GROUP_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.OPTION_GROUP_NOT_FOUND_ERROR));
     }
 
     // ─── UC-PRD.2.1 상품 필터 조회 ─────────────────────────────────────────────
@@ -183,9 +188,8 @@ public class ProductServiceTest {
         productQueryRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> productService.searchProducts(ProductFilterQuery.empty()))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.UNKNOWN_ERROR));
     }
 
     // ─── UC-PRD.3/7 상품 수정 ──────────────────────────────────────────────────
@@ -215,9 +219,8 @@ public class ProductServiceTest {
         );
 
         assertThatThrownBy(() -> productService.updateProfile(command))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.PRODUCT_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
     }
 
     @Test
@@ -230,9 +233,8 @@ public class ProductServiceTest {
         );
 
         assertThatThrownBy(() -> productService.updateProfile(command))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.CATEGORY_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
     }
 
     // ─── UC-PRD.4/8 상품 삭제 ──────────────────────────────────────────────────
@@ -263,9 +265,8 @@ public class ProductServiceTest {
     @Test
     public void 상품_삭제시_상품이_없으면_PRODUCT_NOT_FOUND_ERROR를_던진다() {
         assertThatThrownBy(() -> productService.deleteProduct(ProductId.of(999L)))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.PRODUCT_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
     }
 
     // ─── UC-PRD.5 지점 전용 상품 생성 ──────────────────────────────────────────
@@ -296,9 +297,8 @@ public class ProductServiceTest {
         );
 
         assertThatThrownBy(() -> productService.registerBranchProduct(command))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.BRANCH_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     @Test
@@ -311,9 +311,8 @@ public class ProductServiceTest {
         );
 
         assertThatThrownBy(() -> productService.registerBranchProduct(command))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.CATEGORY_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
     }
 
     // ─── UC-PRD.9 옵션 그룹 구성 변경 ──────────────────────────────────────────
@@ -338,9 +337,8 @@ public class ProductServiceTest {
     @Test
     public void 옵션그룹_구성_변경시_상품이_없으면_PRODUCT_NOT_FOUND_ERROR를_던진다() {
         assertThatThrownBy(() -> productService.replaceOptionGroups(ProductId.of(999L), List.of()))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.PRODUCT_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
     }
 
     @Test
@@ -350,9 +348,8 @@ public class ProductServiceTest {
         List<OptionGroupLinkSpec> specs = List.of(new OptionGroupLinkSpec(OptionGroupId.of(999L), true, false));
 
         assertThatThrownBy(() -> productService.replaceOptionGroups(ProductId.of(1L), specs))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.OPTION_GROUP_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.OPTION_GROUP_NOT_FOUND_ERROR));
     }
 
     // ─── UC-PRD.10 관리자 판매 상태 변경 ───────────────────────────────────────
@@ -384,16 +381,14 @@ public class ProductServiceTest {
     @Test
     public void 상품_활성화시_상품이_없으면_PRODUCT_NOT_FOUND_ERROR를_던진다() {
         assertThatThrownBy(() -> productService.activate(ProductId.of(999L)))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.PRODUCT_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
     }
 
     @Test
     public void 상품_비활성화시_상품이_없으면_PRODUCT_NOT_FOUND_ERROR를_던진다() {
         assertThatThrownBy(() -> productService.deactivate(ProductId.of(999L)))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.PRODUCT_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
     }
 }

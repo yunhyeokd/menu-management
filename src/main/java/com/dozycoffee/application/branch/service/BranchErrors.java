@@ -1,6 +1,8 @@
 package com.dozycoffee.application.branch.service;
 
-public enum BranchErrors {
+import com.dozycoffee.application.common.ServiceError;
+
+public enum BranchErrors implements ServiceError {
 
     UNKNOWN_ERROR(1, "Unknown error"),
     INVALID_BRANCH_ERROR(2, "Invalid branch"),
@@ -13,12 +15,14 @@ public enum BranchErrors {
     PRODUCT_NOT_ACTIVE_ERROR(9, "Product is not active"),
     ;
 
-    public final int errorCode;
-    public final String message;
+    private final int errorCode;
+    private final String message;
 
     BranchErrors(int errorCode, String message) {
         this.errorCode = errorCode;
         this.message = message;
     }
 
+    @Override public int getErrorCode() { return errorCode; }
+    @Override public String getMessage() { return message; }
 }
