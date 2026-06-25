@@ -15,14 +15,14 @@ src
 ├── main/java/com/dozycoffee
 │   ├── domain
 │   │   ├── admin       # 관리자 계정 및 프로필
-│   │   ├── auth        # 인증 공통 인터페이스 (Account, Credential)
+│   │   ├── auth        # 인증 공통 인터페이스 및 세션 객체 (Principal, Credential, AuthSession, SessionId, SessionPrincipal)
 │   │   ├── branch      # 지점 계정, 프로필, 상품 판매 재정의
 │   │   ├── product     # 상품, 카테고리, 옵션 그룹/항목, 태그, 알레르기
 │   │   └── common      # 공통 도메인 예외, 식별자 추상화
 │   └── application
-│       ├── admin       # AdminService
-│       ├── auth        # AuthService (미구현)
-│       ├── branch      # BranchService
+│       ├── admin       # AdminService, AdminAuthenticator
+│       ├── auth        # AuthService, Authenticator, AuthSessionRepository, SessionIdGenerator, Roles
+│       ├── branch      # BranchService, BranchAuthenticator
 │       ├── product     # CategoryService, TagService, OptionService, ProductService
 │       └── common      # BusinessException, RepositoryException, IdentifierGenerator
 └── test/java/com/dozycoffee
@@ -48,8 +48,8 @@ product ──→ branch    (Product가 BranchId 참조)
 단, 아래 방향을 지키고 역방향 의존은 금지합니다.
 
 ```
-admin   ──→ auth      (PasswordHasher, SessionInvalidationPort 사용)
-branch  ──→ auth      (PasswordHasher, CredentialKeyGenerator, SessionInvalidationPort 사용)
+admin   ──→ auth      (AdminAuthenticator가 PasswordHasher 사용, SessionInvalidationPort 사용)
+branch  ──→ auth      (BranchAuthenticator가 PasswordHasher 사용, CredentialKeyGenerator, SessionInvalidationPort 사용)
 branch  ──→ product   (BranchService가 지점 삭제 시 ProductRepository로 상품 비활성화)
 product ──→ branch    (ProductService가 지점 전용 상품 생성 시 BranchAccountRepository로 지점 존재 확인)
 ```
