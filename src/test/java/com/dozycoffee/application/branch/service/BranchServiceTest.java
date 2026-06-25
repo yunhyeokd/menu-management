@@ -1,6 +1,7 @@
 package com.dozycoffee.application.branch.service;
 
 import com.dozycoffee.application.auth.FakeSessionInvalidationPort;
+import com.dozycoffee.application.auth.PasswordHasher;
 import com.dozycoffee.application.branch.dto.BranchAuthKeyReissueResult;
 import com.dozycoffee.application.branch.dto.BranchCreateResult;
 import com.dozycoffee.application.branch.dto.BranchProfileUpdateDto;
@@ -28,6 +29,7 @@ public class BranchServiceTest {
     private FakeProductSalesOverrideRepository productSalesOverrideRepository;
     private FakeSessionInvalidationPort sessionInvalidationPort;
     private BranchService branchService;
+    private PasswordHasher passwordHasher;
 
     private long nextBranchId = 1L;
     private long nextCodeSeq = 1L;
@@ -43,6 +45,17 @@ public class BranchServiceTest {
         nextBranchId = 1L;
         nextCodeSeq = 1L;
         nextOverrideId = 1L;
+        passwordHasher = new PasswordHasher() {
+            @Override
+            public String hash(String raw) {
+                return "hashed-" + raw;
+            }
+
+            @Override
+            public boolean matches(String raw, String hash) {
+                return hash(raw).equals(hash);
+            }
+        };
 
         branchService = new BranchService(
                 branchAccountRepository,
@@ -52,7 +65,7 @@ public class BranchServiceTest {
                 () -> BranchId.of(nextBranchId++),
                 () -> BranchCode.of(String.format("2026%04d", nextCodeSeq++)),
                 () -> "raw-auth-key",
-                raw -> "hashed-" + raw,
+                passwordHasher,
                 sessionInvalidationPort
         );
     }

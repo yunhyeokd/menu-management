@@ -68,11 +68,12 @@ public class BranchAccountTest {
     }
 
     @Test
-    public void 지점을_소프트_삭제하면_deletedAt이_설정된다() {
+    public void 지점을_소프트_삭제하면_deletedAt이_설정되고_상태가_INACTIVE로_변경된다() {
         BranchAccount branchAccount = BranchFixture.builder().build();
         assertThat(branchAccount.getDeletedAt()).isNull();
         branchAccount.softDelete();
         assertThat(branchAccount.getDeletedAt()).isNotNull();
+        assertThat(branchAccount.getStatus()).isEqualTo(BranchStatus.INACTIVE);
     }
 
     @Test

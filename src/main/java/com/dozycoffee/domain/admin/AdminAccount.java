@@ -72,6 +72,11 @@ public class AdminAccount implements Principal {
     }
 
     @Override
+    public String getSubject() {
+        return getId().toString();
+    }
+
+    @Override
     public String getRole() {
         return adminRole.name();
     }
@@ -188,5 +193,9 @@ public class AdminAccount implements Principal {
 
     public boolean isSoftDeleted() {
         return deletedAt != null;
+    }
+
+    public boolean isActive() {
+        return status == AdminStatus.ACTIVE;
     }
 }

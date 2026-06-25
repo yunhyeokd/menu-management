@@ -11,4 +11,8 @@ public class BranchId extends LongIdentifier {
     public static BranchId of(long value) {
         return new BranchId(value);
     }
+
+    public static BranchId of(String value) {
+        return new BranchId(Long.parseLong(value));
+    }
 }

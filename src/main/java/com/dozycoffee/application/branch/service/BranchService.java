@@ -10,7 +10,6 @@ import com.dozycoffee.application.branch.repository.ProductSalesOverrideReposito
 import com.dozycoffee.application.common.IdentifierGenerator;
 import com.dozycoffee.application.auth.PasswordHasher;
 import com.dozycoffee.application.common.RepositoryException;
-import java.util.Optional;
 import com.dozycoffee.application.product.repository.ProductRepository;
 import com.dozycoffee.domain.branch.*;
 import com.dozycoffee.domain.product.Product;
@@ -19,6 +18,7 @@ import com.dozycoffee.domain.product.ProductStatus;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class BranchService {

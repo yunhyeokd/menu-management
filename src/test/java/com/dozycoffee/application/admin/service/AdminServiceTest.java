@@ -4,6 +4,7 @@ import com.dozycoffee.application.admin.dto.*;
 import com.dozycoffee.application.admin.repository.FakeAdminAccountRepository;
 import com.dozycoffee.application.admin.repository.FakeAdminProfileRepository;
 import com.dozycoffee.application.auth.FakeSessionInvalidationPort;
+import com.dozycoffee.application.auth.PasswordHasher;
 import com.dozycoffee.domain.admin.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,8 @@ public class AdminServiceTest {
     private FakeAdminAccountRepository adminAccountRepository;
     private FakeAdminProfileRepository adminProfileRepository;
     private FakeSessionInvalidationPort sessionInvalidationPort;
+    private PasswordHasher passwordHasher;
+
     private AdminService adminService;
 
     private long nextAdminId = 1L;
@@ -27,13 +30,24 @@ public class AdminServiceTest {
         adminAccountRepository = new FakeAdminAccountRepository();
         adminProfileRepository = new FakeAdminProfileRepository();
         sessionInvalidationPort = new FakeSessionInvalidationPort();
+        passwordHasher = new PasswordHasher() {
+            @Override
+            public String hash(String raw) {
+                return "hashed-" + raw;
+            }
+
+            @Override
+            public boolean matches(String raw, String hash) {
+                return hash(raw).equals(hash);
+            }
+        };
         nextAdminId = 1L;
 
         adminService = new AdminService(
                 adminAccountRepository,
                 adminProfileRepository,
                 () -> AdminId.of(nextAdminId++),
-                raw -> "hashed-" + raw,
+                passwordHasher,
                 sessionInvalidationPort
         );
     }
