@@ -1,5 +1,6 @@
 package com.dozycoffee.application.auth;
 
+import com.dozycoffee.application.common.AppException;
 import com.dozycoffee.domain.admin.AdminAccount;
 import com.dozycoffee.domain.admin.AdminId;
 import com.dozycoffee.domain.admin.AdminRole;
@@ -73,7 +74,7 @@ public class AuthServiceTest {
     }
 
     private void assertErrorCode(Throwable e, AuthErrors error) {
-        assertThat(((AuthBusinessException) e).getErrorCode()).isEqualTo(error.errorCode);
+        assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
     }
 
     // ─── authenticateAdmin ────────────────────────────────────────────────────

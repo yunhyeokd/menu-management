@@ -8,6 +8,9 @@ import com.dozycoffee.application.branch.dto.BranchProfileUpdateDto;
 import com.dozycoffee.application.branch.repository.FakeBranchAccountRepository;
 import com.dozycoffee.application.branch.repository.FakeBranchProfileRepository;
 import com.dozycoffee.application.branch.repository.FakeProductSalesOverrideRepository;
+import com.dozycoffee.application.common.AppException;
+import com.dozycoffee.application.common.ServiceError;
+import com.dozycoffee.application.common.exception.*;
 import com.dozycoffee.application.product.repository.FakeProductRepository;
 import com.dozycoffee.domain.branch.*;
 import com.dozycoffee.domain.product.*;
@@ -70,6 +73,10 @@ public class BranchServiceTest {
         );
     }
 
+    private void assertErrorCode(Throwable e, ServiceError error) {
+        assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
+    }
+
     // ─── reissueAuthKey ───────────────────────────────────────────────────────
 
     @Test
@@ -90,9 +97,8 @@ public class BranchServiceTest {
     @Test
     public void 인증키_재발급시_지점이_존재하지_않으면_BRANCH_NOT_FOUND_ERROR를_던진다() {
         assertThatThrownBy(() -> branchService.reissueAuthKey(BranchId.of(999L)))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.BRANCH_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     @Test
@@ -103,9 +109,8 @@ public class BranchServiceTest {
         branchAccountRepository.put(account);
 
         assertThatThrownBy(() -> branchService.reissueAuthKey(branchId))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.ALREADY_DELETED_ERROR.errorCode));
+                .isInstanceOf(ConflictException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.ALREADY_DELETED_ERROR));
     }
 
     @Test
@@ -115,9 +120,8 @@ public class BranchServiceTest {
         branchAccountRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> branchService.reissueAuthKey(branchId))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.UNKNOWN_ERROR));
     }
 
     // ─── create ──────────────────────────────────────────────────────────────
@@ -141,17 +145,15 @@ public class BranchServiceTest {
         branchProfileRepository.put(BranchProfile.create(BranchId.of(99L), "강남점", "서울 강남구 테헤란로 1"));
 
         assertThatThrownBy(() -> branchService.create("강남점", "서울 강남구 테헤란로 123"))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.DUPLICATE_NAME_ERROR.errorCode));
+                .isInstanceOf(ConflictException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.DUPLICATE_NAME_ERROR));
     }
 
     @Test
     public void 지점_생성시_이름이_유효하지_않으면_INVALID_BRANCH_ERROR를_던진다() {
         assertThatThrownBy(() -> branchService.create("", "서울 강남구 테헤란로 123"))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.INVALID_BRANCH_ERROR.errorCode));
+                .isInstanceOf(ValidationException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.INVALID_BRANCH_ERROR));
     }
 
     @Test
@@ -159,9 +161,8 @@ public class BranchServiceTest {
         branchProfileRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> branchService.create("강남점", "서울 강남구 테헤란로 123"))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.UNKNOWN_ERROR));
     }
 
     // ─── updateProfile ────────────────────────────────────────────────────────
@@ -183,9 +184,8 @@ public class BranchServiceTest {
     @Test
     public void 지점_프로필_수정시_지점이_존재하지_않으면_BRANCH_NOT_FOUND_ERROR를_던진다() {
         assertThatThrownBy(() -> branchService.updateProfile(BranchId.of(999L), new BranchProfileUpdateDto("강남점", "서울 강남구 테헤란로 123")))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.BRANCH_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     @Test
@@ -194,9 +194,8 @@ public class BranchServiceTest {
         branchProfileRepository.put(BranchProfile.create(branchId, "강남점", "서울 강남구 테헤란로 123"));
 
         assertThatThrownBy(() -> branchService.updateProfile(branchId, new BranchProfileUpdateDto("", "서울 강남구 테헤란로 123")))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.INVALID_PROFILE_ERROR.errorCode));
+                .isInstanceOf(ValidationException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.INVALID_PROFILE_ERROR));
     }
 
     @Test
@@ -206,9 +205,8 @@ public class BranchServiceTest {
         branchProfileRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> branchService.updateProfile(branchId, new BranchProfileUpdateDto("강남역점", "서울 강남구 강남대로 456")))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.UNKNOWN_ERROR));
     }
 
     // ─── softDelete ───────────────────────────────────────────────────────────
@@ -232,9 +230,8 @@ public class BranchServiceTest {
     @Test
     public void 지점_소프트_삭제시_지점이_존재하지_않으면_BRANCH_NOT_FOUND_ERROR를_던진다() {
         assertThatThrownBy(() -> branchService.softDelete(BranchId.of(999L)))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.BRANCH_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     @Test
@@ -245,9 +242,8 @@ public class BranchServiceTest {
         branchAccountRepository.put(account);
 
         assertThatThrownBy(() -> branchService.softDelete(branchId))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.ALREADY_DELETED_ERROR.errorCode));
+                .isInstanceOf(ConflictException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.ALREADY_DELETED_ERROR));
     }
 
     @Test
@@ -257,9 +253,8 @@ public class BranchServiceTest {
         branchAccountRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> branchService.softDelete(branchId))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.UNKNOWN_ERROR));
     }
 
     // ─── hardDelete ───────────────────────────────────────────────────────────
@@ -289,11 +284,8 @@ public class BranchServiceTest {
         productRepository.put(ProductFixture.builder().id(ProductId.of(10L)).branchId(branchId).build());
 
         assertThatThrownBy(() -> branchService.hardDelete(BranchId.of(1L)))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.INVALID_BRANCH_ERROR.errorCode));
-
-
+                .isInstanceOf(ConflictException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.INVALID_BRANCH_ERROR));
     }
 
     @Test
@@ -307,9 +299,8 @@ public class BranchServiceTest {
 
         productRepository.throwOnNextCall();
         assertThatThrownBy(() -> branchService.hardDelete(branchId))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.UNKNOWN_ERROR));
     }
 
     // ─── findOverridableProducts ──────────────────────────────────────────────
@@ -336,9 +327,8 @@ public class BranchServiceTest {
     @Test
     public void 재정의_가능한_상품_조회시_지점이_존재하지_않으면_BRANCH_NOT_FOUND_ERROR를_던진다() {
         assertThatThrownBy(() -> branchService.findOverridableProducts(BranchId.of(999L)))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.BRANCH_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     @Test
@@ -348,9 +338,8 @@ public class BranchServiceTest {
         branchAccountRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> branchService.findOverridableProducts(branchId))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.UNKNOWN_ERROR));
     }
 
     // ─── hideSale ─────────────────────────────────────────────────────────────
@@ -385,9 +374,8 @@ public class BranchServiceTest {
     @Test
     public void 판매_숨기기시_지점이_존재하지_않으면_BRANCH_NOT_FOUND_ERROR를_던진다() {
         assertThatThrownBy(() -> branchService.hideSale(BranchId.of(999L), ProductId.of(10L)))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.BRANCH_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     @Test
@@ -396,9 +384,8 @@ public class BranchServiceTest {
         branchAccountRepository.put(BranchFixture.builder().id(branchId).build());
 
         assertThatThrownBy(() -> branchService.hideSale(branchId, ProductId.of(999L)))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.PRODUCT_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.PRODUCT_NOT_FOUND_ERROR));
     }
 
     @Test
@@ -409,9 +396,8 @@ public class BranchServiceTest {
         productRepository.put(ProductFixture.builder().id(productId).status(ProductStatus.INACTIVE).build());
 
         assertThatThrownBy(() -> branchService.hideSale(branchId, productId))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.PRODUCT_NOT_ACTIVE_ERROR.errorCode));
+                .isInstanceOf(ConflictException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.PRODUCT_NOT_ACTIVE_ERROR));
     }
 
     @Test
@@ -423,9 +409,8 @@ public class BranchServiceTest {
         branchAccountRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> branchService.hideSale(branchId, productId))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.UNKNOWN_ERROR));
     }
 
     // ─── soldOut ──────────────────────────────────────────────────────────────
@@ -460,9 +445,8 @@ public class BranchServiceTest {
     @Test
     public void 품절_처리시_지점이_존재하지_않으면_BRANCH_NOT_FOUND_ERROR를_던진다() {
         assertThatThrownBy(() -> branchService.soldOut(BranchId.of(999L), ProductId.of(10L)))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.BRANCH_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     @Test
@@ -471,9 +455,8 @@ public class BranchServiceTest {
         branchAccountRepository.put(BranchFixture.builder().id(branchId).build());
 
         assertThatThrownBy(() -> branchService.soldOut(branchId, ProductId.of(999L)))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.PRODUCT_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.PRODUCT_NOT_FOUND_ERROR));
     }
 
     @Test
@@ -484,9 +467,8 @@ public class BranchServiceTest {
         productRepository.put(ProductFixture.builder().id(productId).status(ProductStatus.INACTIVE).build());
 
         assertThatThrownBy(() -> branchService.soldOut(branchId, productId))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.PRODUCT_NOT_ACTIVE_ERROR.errorCode));
+                .isInstanceOf(ConflictException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.PRODUCT_NOT_ACTIVE_ERROR));
     }
 
     @Test
@@ -498,9 +480,8 @@ public class BranchServiceTest {
         branchAccountRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> branchService.soldOut(branchId, productId))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.UNKNOWN_ERROR));
     }
 
     // ─── restoreSale ──────────────────────────────────────────────────────────
@@ -519,9 +500,8 @@ public class BranchServiceTest {
     @Test
     public void 판매_재개시_판매_재정의가_없으면_SALES_OVERRIDE_NOT_FOUND_ERROR를_던진다() {
         assertThatThrownBy(() -> branchService.restoreSale(BranchId.of(1L), ProductId.of(10L)))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.SALES_OVERRIDE_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.SALES_OVERRIDE_NOT_FOUND_ERROR));
     }
 
     @Test
@@ -529,8 +509,7 @@ public class BranchServiceTest {
         productSalesOverrideRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> branchService.restoreSale(BranchId.of(1L), ProductId.of(10L)))
-                .isInstanceOf(BranchBusinessException.class)
-                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
-                        .isEqualTo(BranchErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.UNKNOWN_ERROR));
     }
 }

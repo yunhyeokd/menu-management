@@ -1,6 +1,8 @@
 package com.dozycoffee.application.product.service;
 
-public enum ProductErrors {
+import com.dozycoffee.application.common.ServiceError;
+
+public enum ProductErrors implements ServiceError {
 
     UNKNOWN_ERROR(1, "Unknown error"),
 
@@ -20,13 +22,16 @@ public enum ProductErrors {
     EMPTY_OPTION_GROUP_ERROR(33, "No option group items"),
     LINKED_PRODUCT_EXISTS_ERROR(34, "Linked products exist"),
 
-    BRANCH_NOT_FOUND_ERROR(40, "Branch not found"), ;
+    BRANCH_NOT_FOUND_ERROR(40, "Branch not found"),;
 
-    public final int errorCode;
-    public final String message;
+    private final int errorCode;
+    private final String message;
 
     ProductErrors(int errorCode, String message) {
         this.errorCode = errorCode;
         this.message = message;
     }
+
+    @Override public int getErrorCode() { return errorCode; }
+    @Override public String getMessage() { return message; }
 }

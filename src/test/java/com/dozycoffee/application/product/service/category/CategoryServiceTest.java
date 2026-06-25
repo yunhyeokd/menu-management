@@ -1,9 +1,11 @@
 package com.dozycoffee.application.product.service.category;
 
+import com.dozycoffee.application.common.AppException;
+import com.dozycoffee.application.common.ServiceError;
+import com.dozycoffee.application.common.exception.*;
 import com.dozycoffee.application.product.dto.CategoryData;
 import com.dozycoffee.application.product.repository.FakeCategoryRepository;
 import com.dozycoffee.application.product.repository.FakeProductRepository;
-import com.dozycoffee.application.product.service.ProductBusinessException;
 import com.dozycoffee.application.product.service.ProductErrors;
 import com.dozycoffee.domain.product.Category;
 import com.dozycoffee.domain.product.CategoryId;
@@ -35,6 +37,10 @@ public class CategoryServiceTest {
                 () -> CategoryId.of(nextCategoryId++));
     }
 
+    private void assertErrorCode(Throwable e, ServiceError error) {
+        assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
+    }
+
     // ─── create ──────────────────────────────────────────────────────────────
 
     @Test
@@ -51,17 +57,15 @@ public class CategoryServiceTest {
         categoryRepository.put(Category.of(CategoryId.of(1L), "커피", Instant.now()));
 
         assertThatThrownBy(() -> categoryService.create("커피"))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.DUPLICATE_CATEGORY_NAME_ERROR.errorCode));
+                .isInstanceOf(ConflictException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.DUPLICATE_CATEGORY_NAME_ERROR));
     }
 
     @Test
     public void 카테고리_생성시_이름이_유효하지_않으면_INVALID_CATEGORY_ERROR를_던진다() {
         assertThatThrownBy(() -> categoryService.create(""))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.INVALID_CATEGORY_ERROR.errorCode));
+                .isInstanceOf(ValidationException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.INVALID_CATEGORY_ERROR));
     }
 
     @Test
@@ -69,9 +73,8 @@ public class CategoryServiceTest {
         categoryRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> categoryService.create("커피"))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.UNKNOWN_ERROR));
     }
 
     // ─── updateName ──────────────────────────────────────────────────────────
@@ -88,9 +91,8 @@ public class CategoryServiceTest {
     @Test
     public void 카테고리_이름_변경시_대상이_존재하지_않으면_CATEGORY_NOT_FOUND_ERROR를_던진다() {
         assertThatThrownBy(() -> categoryService.updateName(CategoryId.of(999L), "Coffee"))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.CATEGORY_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
     }
 
     @Test
@@ -99,9 +101,8 @@ public class CategoryServiceTest {
         categoryRepository.put(Category.of(CategoryId.of(2L), "음료", Instant.now()));
 
         assertThatThrownBy(() -> categoryService.updateName(CategoryId.of(1L), "음료"))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.DUPLICATE_CATEGORY_NAME_ERROR.errorCode));
+                .isInstanceOf(ConflictException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.DUPLICATE_CATEGORY_NAME_ERROR));
     }
 
     @Test
@@ -109,9 +110,8 @@ public class CategoryServiceTest {
         categoryRepository.put(Category.of(CategoryId.of(1L), "커피", Instant.now()));
 
         assertThatThrownBy(() -> categoryService.updateName(CategoryId.of(1L), ""))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.INVALID_CATEGORY_ERROR.errorCode));
+                .isInstanceOf(ValidationException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.INVALID_CATEGORY_ERROR));
     }
 
     @Test
@@ -120,9 +120,8 @@ public class CategoryServiceTest {
         categoryRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> categoryService.updateName(CategoryId.of(1L), "Coffee"))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.UNKNOWN_ERROR));
     }
 
     // ─── findAll ─────────────────────────────────────────────────────────────
@@ -149,9 +148,8 @@ public class CategoryServiceTest {
         categoryRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> categoryService.findAll())
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.UNKNOWN_ERROR));
     }
 
     // ─── searchByName ────────────────────────────────────────────────────────
@@ -180,9 +178,8 @@ public class CategoryServiceTest {
         categoryRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> categoryService.searchByName("커피"))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.UNKNOWN_ERROR));
     }
 
     // ─── remove ──────────────────────────────────────────────────────────────
@@ -211,9 +208,8 @@ public class CategoryServiceTest {
     @Test
     public void 카테고리_삭제시_대상이_존재하지_않으면_CATEGORY_NOT_FOUND_ERROR를_던진다() {
         assertThatThrownBy(() -> categoryService.remove(CategoryId.of(999L)))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.CATEGORY_NOT_FOUND_ERROR.errorCode));
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
     }
 
     @Test
@@ -222,8 +218,7 @@ public class CategoryServiceTest {
         categoryRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> categoryService.remove(CategoryId.of(1L)))
-                .isInstanceOf(ProductBusinessException.class)
-                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
-                        .isEqualTo(ProductErrors.UNKNOWN_ERROR.errorCode));
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.UNKNOWN_ERROR));
     }
 }

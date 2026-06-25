@@ -1,5 +1,8 @@
 package com.dozycoffee.application.auth;
 
+import com.dozycoffee.application.common.ServiceCode;
+import com.dozycoffee.application.common.exception.AuthenticationException;
+import com.dozycoffee.application.common.exception.AuthorizationException;
 import com.dozycoffee.domain.auth.AuthSession;
 import com.dozycoffee.domain.auth.Credential;
 import com.dozycoffee.domain.auth.Principal;
@@ -46,7 +49,7 @@ public class AuthService implements SessionInvalidationPort {
         Identifier<String> id = () -> username;
         Credential credential = () -> password;
         Principal principal = adminUsernameAuthenticator.authenticate(id, credential)
-                .orElseThrow(() -> AuthBusinessException.with(AuthErrors.INVALID_CREDENTIAL));
+                .orElseThrow(() -> new AuthenticationException(ServiceCode.AUTH, AuthErrors.INVALID_CREDENTIAL));
         AuthSession authSession = AuthSession.create(
                 sessionIdGenerator.generate(principal),
                 principal,
@@ -60,7 +63,7 @@ public class AuthService implements SessionInvalidationPort {
         BranchCode id = BranchCode.of(code);
         Credential credential = () -> authKey;
         Principal principal = branchAuthenticator.authenticate(id, credential)
-                .orElseThrow(() -> AuthBusinessException.with(AuthErrors.INVALID_CREDENTIAL));
+                .orElseThrow(() -> new AuthenticationException(ServiceCode.AUTH, AuthErrors.INVALID_CREDENTIAL));
         AuthSession authSession = AuthSession.create(
                 sessionIdGenerator.generate(principal),
                 principal,
@@ -72,21 +75,21 @@ public class AuthService implements SessionInvalidationPort {
 
     public Principal requirePrincipal(SessionId sessionId) {
         AuthSession authSession = authSessionRepository.findById(sessionId).orElse(null);
-        if (authSession == null) throw AuthBusinessException.with(AuthErrors.UNAUTHENTICATED);
-        if (authSession.isExpired())  throw AuthBusinessException.with(AuthErrors.SESSION_EXPIRED);
+        if (authSession == null) throw new AuthenticationException(ServiceCode.AUTH, AuthErrors.UNAUTHENTICATED);
+        if (authSession.isExpired()) throw new AuthenticationException(ServiceCode.AUTH, AuthErrors.SESSION_EXPIRED);
         return authSession.getPrincipal();
     }
 
     public Optional<Principal> findPrincipal(SessionId sessionId) {
         AuthSession authSession = authSessionRepository.findById(sessionId).orElse(null);
         if (authSession == null) return Optional.empty();
-        if (authSession.isExpired())  return Optional.empty();
+        if (authSession.isExpired()) return Optional.empty();
         return Optional.of(authSession.getPrincipal());
     }
 
     public void authorize(Principal principal, List<String> roles) {
         if (roles.stream().noneMatch(role -> principal.getRole().equals(role))) {
-            throw AuthBusinessException.with(AuthErrors.UNAUTHORIZED);
+            throw new AuthorizationException(ServiceCode.AUTH, AuthErrors.UNAUTHORIZED);
         }
     }
 
