@@ -12,6 +12,10 @@ public class SessionPrincipal implements Principal {
         setRole(role);
     }
 
+    public static SessionPrincipal of(String id, String role) {
+        return new SessionPrincipal(id, role);
+    }
+
     private void setId(String id) {
         if (id == null) {
             throw new AuthException("id cannot be null");
