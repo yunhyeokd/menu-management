@@ -7,7 +7,6 @@ import com.dozycoffee.domain.auth.Credential;
 import com.dozycoffee.domain.auth.Principal;
 import com.dozycoffee.domain.branch.BranchAccount;
 import com.dozycoffee.domain.branch.BranchCode;
-import com.dozycoffee.domain.branch.BranchStatus;
 
 import java.util.Optional;
 
@@ -25,8 +24,7 @@ public class BranchAuthenticator implements Authenticator<BranchCode> {
     public Optional<Principal> authenticate(BranchCode branchCode, Credential credential) {
         BranchAccount branchAccount = branchAccountRepository.findByBranchCode(branchCode)
                 .orElse(null);
-        if (branchAccount == null) return Optional.empty();
-        if (!branchAccount.isActive()) return Optional.empty();
+        if (branchAccount == null || !branchAccount.isActive()) return Optional.empty();
         if (!passwordHasher.matches(credential.getValue(), branchAccount.getAuthKeyHash())) {
             return Optional.empty();
         }

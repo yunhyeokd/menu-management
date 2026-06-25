@@ -129,6 +129,7 @@ public class BranchAccount implements Principal {
             throw new BranchException("Branch is already deleted");
         }
         this.deletedAt = Instant.now();
+        deactivate();
     }
 
     public void reissueAuthKey(String newHash) {
@@ -140,5 +141,9 @@ public class BranchAccount implements Principal {
 
     public boolean isActive() {
         return status == BranchStatus.ACTIVE;
+    }
+
+    public boolean isDeleted() {
+        return deletedAt != null;
     }
 }
