@@ -2,6 +2,7 @@ package com.dozycoffee.application.branch.repository;
 
 import com.dozycoffee.application.common.RepositoryException;
 import com.dozycoffee.domain.branch.BranchAccount;
+import com.dozycoffee.domain.branch.BranchCode;
 import com.dozycoffee.domain.branch.BranchId;
 
 import java.util.LinkedHashMap;
@@ -49,5 +50,13 @@ public class FakeBranchAccountRepository implements BranchAccountRepository {
     public void deleteById(BranchId branchId) {
         checkThrow();
         store.remove(branchId);
+    }
+
+    @Override
+    public Optional<BranchAccount> findByBranchCode(BranchCode branchCode) {
+        checkThrow();
+        return store.values().stream()
+                .filter(account -> account.getCode().equals(branchCode))
+                .findFirst();
     }
 }

@@ -8,6 +8,7 @@ import com.dozycoffee.application.auth.SessionInvalidationPort;
 import com.dozycoffee.application.common.IdentifierGenerator;
 import com.dozycoffee.application.common.RepositoryException;
 import com.dozycoffee.domain.admin.*;
+import com.dozycoffee.domain.auth.Principal;
 
 import java.util.Optional;
 

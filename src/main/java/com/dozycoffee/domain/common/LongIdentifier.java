@@ -27,4 +27,9 @@ public abstract class LongIdentifier implements Identifier<Long> {
         return Objects.hash(getValue());
     }
 
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
 }

@@ -11,4 +11,8 @@ public class AdminId extends LongIdentifier {
         return new AdminId(value);
     }
 
+    public static AdminId of(String value) {
+        return new AdminId(Long.parseLong(value));
+    }
+
 }

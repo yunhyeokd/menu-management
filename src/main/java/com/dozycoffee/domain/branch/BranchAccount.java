@@ -54,6 +54,11 @@ public class BranchAccount implements Principal {
     }
 
     @Override
+    public String getSubject() {
+        return getId().toString();
+    }
+
+    @Override
     public String getRole() {
         return ROLE;
     }
@@ -131,5 +136,9 @@ public class BranchAccount implements Principal {
             throw new BranchException("Branch is already deleted");
         }
         setAuthKeyHash(newHash);
+    }
+
+    public boolean isActive() {
+        return status == BranchStatus.ACTIVE;
     }
 }

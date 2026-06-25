@@ -26,4 +26,9 @@ public abstract class StringIdentifier implements Identifier<String> {
     @Override
     public int hashCode() { return value.hashCode(); }
 
+    @Override
+    public String toString() {
+        return value;
+    }
+
 }
