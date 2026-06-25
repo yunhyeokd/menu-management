@@ -8,7 +8,6 @@ import com.dozycoffee.application.auth.SessionInvalidationPort;
 import com.dozycoffee.application.common.IdentifierGenerator;
 import com.dozycoffee.application.common.RepositoryException;
 import com.dozycoffee.domain.admin.*;
-import com.dozycoffee.domain.auth.Principal;
 
 import java.util.Optional;
 
@@ -206,6 +205,23 @@ public class AdminService {
             }
             adminProfileRepository.deleteById(adminId);
             adminAccountRepository.deleteById(adminId);
+            sessionInvalidationPort.invalidate(adminAccount);
+        } catch (AdminException e) {
+            throw AdminBusinessException.of(AdminErrors.INVALID_ADMIN_ERROR);
+        } catch (RepositoryException e) {
+            throw AdminBusinessException.of(AdminErrors.UNKNOWN_ERROR);
+        }
+    }
+
+    public void changePassword(AdminId adminId, String currentPassword, String newPassword) {
+        try {
+            AdminAccount adminAccount = getAdminAccount(adminId);
+            if (!passwordHasher.matches(currentPassword, adminAccount.getPasswordHash())) {
+                throw AdminBusinessException.of(AdminErrors.AUTHENTICATION_FAILED_ERROR);
+            }
+            String passwordHash = passwordHasher.hash(newPassword);
+            adminAccount.updatePasswordHash(passwordHash);
+            adminAccountRepository.save(adminAccount);
             sessionInvalidationPort.invalidate(adminAccount);
         } catch (AdminException e) {
             throw AdminBusinessException.of(AdminErrors.INVALID_ADMIN_ERROR);

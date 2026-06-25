@@ -4,19 +4,18 @@ import com.dozycoffee.application.admin.repository.AdminAccountRepository;
 import com.dozycoffee.application.auth.Authenticator;
 import com.dozycoffee.application.auth.PasswordHasher;
 import com.dozycoffee.domain.admin.AdminAccount;
-import com.dozycoffee.domain.admin.AdminStatus;
 import com.dozycoffee.domain.auth.Credential;
 import com.dozycoffee.domain.auth.Principal;
 import com.dozycoffee.domain.common.Identifier;
 
 import java.util.Optional;
 
-public class AdminAuthenticator implements Authenticator<Identifier<String>> {
+public class AdminUsernameAuthenticator implements Authenticator<Identifier<String>> {
 
     private final AdminAccountRepository adminAccountRepository;
     private final PasswordHasher passwordHasher;
 
-    public AdminAuthenticator(AdminAccountRepository adminAccountRepository, PasswordHasher passwordHasher) {
+    public AdminUsernameAuthenticator(AdminAccountRepository adminAccountRepository, PasswordHasher passwordHasher) {
         this.adminAccountRepository = adminAccountRepository;
         this.passwordHasher = passwordHasher;
     }

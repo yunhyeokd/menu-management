@@ -394,4 +394,45 @@ public class AdminServiceTest {
                 .isInstanceOf(AdminBusinessException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.UNKNOWN_ERROR));
     }
+
+    // ─── changePassword ───────────────────────────────────────────────────────
+
+    @Test
+    void 비밀번호를_정상_변경한다() {
+        AdminId adminId = AdminId.of(1L);
+        adminAccountRepository.put(AdminFixture.builder().id(adminId).password("hashed-currentPassword").build());
+
+        adminService.changePassword(adminId, "currentPassword", "newPassword");
+
+        AdminAccount updated = adminAccountRepository.findById(adminId).orElseThrow();
+        assertThat(updated.getPasswordHash()).isEqualTo("hashed-newPassword");
+    }
+
+    @Test
+    void 비밀번호_변경시_계정이_없으면_ADMIN_NOT_FOUND를_던진다() {
+        assertThatThrownBy(() -> adminService.changePassword(AdminId.of(999L), "any", "new"))
+                .isInstanceOf(AdminBusinessException.class)
+                .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
+    }
+
+    @Test
+    void 현재_비밀번호가_틀리면_AUTHENTICATION_FAILED_ERROR를_던진다() {
+        AdminId adminId = AdminId.of(1L);
+        adminAccountRepository.put(AdminFixture.builder().id(adminId).password("hashed-correctPassword").build());
+
+        assertThatThrownBy(() -> adminService.changePassword(adminId, "wrongPassword", "newPassword"))
+                .isInstanceOf(AdminBusinessException.class)
+                .satisfies(e -> assertErrorCode(e, AdminErrors.AUTHENTICATION_FAILED_ERROR));
+    }
+
+    @Test
+    void 비밀번호_변경중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
+        AdminId adminId = AdminId.of(1L);
+        adminAccountRepository.put(AdminFixture.builder().id(adminId).password("hashed-currentPassword").build());
+        adminAccountRepository.throwOnNextCall();
+
+        assertThatThrownBy(() -> adminService.changePassword(adminId, "currentPassword", "newPassword"))
+                .isInstanceOf(AdminBusinessException.class)
+                .satisfies(e -> assertErrorCode(e, AdminErrors.UNKNOWN_ERROR));
+    }
 }

@@ -13,6 +13,7 @@ import com.dozycoffee.domain.branch.BranchId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -124,6 +125,25 @@ public class AuthServiceTest {
     void 존재하지_않는_세션ID로_조회시_UNAUTHENTICATED_예외가_발생한다() {
         assertThatThrownBy(() -> authService.requirePrincipal(SessionId.of("unknown")))
                 .satisfies(e -> assertErrorCode(e, AuthErrors.UNAUTHENTICATED));
+    }
+
+    @Test
+    void 만료된_세션으로_requirePrincipal_호출시_SESSION_EXPIRED_예외가_발생한다() {
+        AuthSession expiredSession = AuthSession.of(SessionId.of("expired"), activeAdmin, Instant.now().minusSeconds(1));
+        sessionRepository.save(expiredSession);
+
+        assertThatThrownBy(() -> authService.requirePrincipal(SessionId.of("expired")))
+                .satisfies(e -> assertErrorCode(e, AuthErrors.SESSION_EXPIRED));
+    }
+
+    @Test
+    void 만료된_세션으로_findPrincipal_호출시_빈_Optional을_반환한다() {
+        AuthSession expiredSession = AuthSession.of(SessionId.of("expired"), activeAdmin, Instant.now().minusSeconds(1));
+        sessionRepository.save(expiredSession);
+
+        Optional<Principal> result = authService.findPrincipal(SessionId.of("expired"));
+
+        assertThat(result).isEmpty();
     }
 
     @Test

@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface AuthSessionRepository {
     void save(AuthSession authSession) throws RepositoryException;
-    Optional<Principal> findById(SessionId sessionId) throws RepositoryException;
+    Optional<AuthSession> findById(SessionId sessionId) throws RepositoryException;
     void deleteById(SessionId sessionId) throws RepositoryException;
     void deleteAllByPrincipal(Principal principal) throws RepositoryException;
 }

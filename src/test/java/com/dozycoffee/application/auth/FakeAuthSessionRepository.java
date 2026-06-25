@@ -36,9 +36,9 @@ public class FakeAuthSessionRepository implements AuthSessionRepository {
     }
 
     @Override
-    public Optional<Principal> findById(SessionId sessionId) {
+    public Optional<AuthSession> findById(SessionId sessionId) {
         checkThrow();
-        return Optional.ofNullable(store.get(sessionId)).map(AuthSession::getPrincipal);
+        return Optional.ofNullable(store.get(sessionId));
     }
 
     @Override
