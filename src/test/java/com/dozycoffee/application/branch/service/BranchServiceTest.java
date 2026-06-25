@@ -216,15 +216,17 @@ public class BranchServiceTest {
     @Test
     public void 지점을_정상_소프트_삭제한다() {
         BranchId branchId = BranchId.of(1L);
-        branchAccountRepository.put(BranchFixture.builder().id(branchId).build());
+        BranchAccount account = BranchFixture.builder().id(branchId).build();
+        branchAccountRepository.put(account);
         productRepository.put(ProductFixture.builder().id(ProductId.of(10L)).branchId(branchId).status(ProductStatus.ACTIVE).build());
 
         branchService.softDelete(branchId);
 
-        branchAccountRepository.findById(branchId).ifPresent(account -> {
-            assertThat(account.getDeletedAt()).isNotNull();
+        branchAccountRepository.findById(branchId).ifPresent(a -> {
+            assertThat(a.getDeletedAt()).isNotNull();
         });
         assertThat(productRepository.all()).allMatch(p -> p.getStatus() == ProductStatus.INACTIVE);
+        assertThat(sessionInvalidationPort.wasInvalidated(account)).isTrue();
     }
 
     @Test
@@ -265,22 +267,46 @@ public class BranchServiceTest {
     @Test
     public void 지점을_정상_하드_삭제한다() {
         BranchId branchId = BranchId.of(1L);
-        branchAccountRepository.put(BranchFixture.builder().id(branchId).build());
+        BranchAccount account = BranchFixture.builder().id(branchId).build();
+        branchAccountRepository.put(account);
         branchProfileRepository.put(BranchProfile.create(branchId, "강남점", "서울 강남구 테헤란로 123"));
         productRepository.put(ProductFixture.builder().id(ProductId.of(10L)).branchId(branchId).build());
 
+        branchService.softDelete(branchId);
         branchService.hardDelete(branchId);
 
         assertThat(branchAccountRepository.contains(branchId)).isFalse();
         assertThat(branchProfileRepository.contains(branchId)).isFalse();
         assertThat(productRepository.all()).isEmpty();
+        assertThat(sessionInvalidationPort.wasInvalidated(account)).isTrue();
+    }
+
+    @Test
+    public void 소프트_삭제되지_않은_지점을_하드_삭제하면_INVALID_BRANCH_ERROR를_던진다() {
+        BranchId branchId = BranchId.of(1L);
+        branchAccountRepository.put(BranchFixture.builder().id(branchId).build());
+        branchProfileRepository.put(BranchProfile.create(branchId, "강남점", "서울 강남구 테헤란로 123"));
+        productRepository.put(ProductFixture.builder().id(ProductId.of(10L)).branchId(branchId).build());
+
+        assertThatThrownBy(() -> branchService.hardDelete(BranchId.of(1L)))
+                .isInstanceOf(BranchBusinessException.class)
+                .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
+                        .isEqualTo(BranchErrors.INVALID_BRANCH_ERROR.errorCode));
+
+
     }
 
     @Test
     public void 지점_하드_삭제중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        productRepository.throwOnNextCall();
+        BranchId branchId = BranchId.of(1L);
+        BranchAccount account = BranchFixture.builder().id(branchId).build();
+        account.softDelete();
+        branchAccountRepository.put(account);
+        branchProfileRepository.put(BranchProfile.create(branchId, "강남점", "서울 강남구 테헤란로 123"));
+        productRepository.put(ProductFixture.builder().id(ProductId.of(10L)).branchId(branchId).build());
 
-        assertThatThrownBy(() -> branchService.hardDelete(BranchId.of(1L)))
+        productRepository.throwOnNextCall();
+        assertThatThrownBy(() -> branchService.hardDelete(branchId))
                 .isInstanceOf(BranchBusinessException.class)
                 .satisfies(e -> assertThat(((BranchBusinessException) e).getErrorCode())
                         .isEqualTo(BranchErrors.UNKNOWN_ERROR.errorCode));

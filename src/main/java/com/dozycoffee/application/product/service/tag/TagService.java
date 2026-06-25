@@ -95,7 +95,7 @@ public class TagService {
                     .findAllByTagId(tagId)
                     .stream()
                     .map(ProductTag::getProductId)
-                    .collect(Collectors.toList());
+                    .toList();
         } catch (RepositoryException e) {
             throw ProductBusinessException.of(ProductErrors.UNKNOWN_ERROR);
         }

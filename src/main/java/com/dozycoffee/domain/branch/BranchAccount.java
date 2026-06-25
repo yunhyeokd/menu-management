@@ -143,7 +143,7 @@ public class BranchAccount implements Principal {
         return status == BranchStatus.ACTIVE;
     }
 
-    public boolean isDeleted() {
+    public boolean isSoftDeleted() {
         return deletedAt != null;
     }
 }

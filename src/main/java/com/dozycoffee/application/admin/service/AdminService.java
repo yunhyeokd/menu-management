@@ -183,8 +183,8 @@ public class AdminService {
         try {
             AdminAccount adminAccount = getAdminAccount(adminId);
             adminAccount.softDelete();
-            sessionInvalidationPort.invalidate(adminAccount);
             adminAccountRepository.save(adminAccount);
+            sessionInvalidationPort.invalidate(adminAccount);
         } catch (AdminException e) {
             throw AdminBusinessException.of(AdminErrors.INVALID_ADMIN_ERROR);
         } catch (RepositoryException e) {
@@ -204,9 +204,9 @@ public class AdminService {
             if (!adminAccount.isSoftDeleted()) {
                 throw AdminBusinessException.of(AdminErrors.INVALID_ADMIN_ERROR);
             }
-            sessionInvalidationPort.invalidate(adminAccount);
             adminProfileRepository.deleteById(adminId);
             adminAccountRepository.deleteById(adminId);
+            sessionInvalidationPort.invalidate(adminAccount);
         } catch (AdminException e) {
             throw AdminBusinessException.of(AdminErrors.INVALID_ADMIN_ERROR);
         } catch (RepositoryException e) {
