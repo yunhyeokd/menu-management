@@ -206,14 +206,22 @@ public class ProductService {
         }
     }
 
-    public void changeStatus(ProductId productId, ProductStatus status) {
+    public void activate(ProductId productId) {
         try {
             Product product = getProduct(productId);
-            if (status == ProductStatus.ACTIVE) {
-                product.activate();
-            } else {
-                product.deactivate();
-            }
+            product.activate();
+            productRepository.save(product);
+        } catch (ProductException e) {
+            throw ProductBusinessException.of(ProductErrors.INVALID_PRODUCT_ERROR);
+        } catch (RepositoryException e) {
+            throw ProductBusinessException.of(ProductErrors.UNKNOWN_ERROR);
+        }
+    }
+
+    public void deactivate(ProductId productId) {
+        try {
+            Product product = getProduct(productId);
+            product.deactivate();
             productRepository.save(product);
         } catch (ProductException e) {
             throw ProductBusinessException.of(ProductErrors.INVALID_PRODUCT_ERROR);

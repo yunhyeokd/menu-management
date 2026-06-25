@@ -363,7 +363,7 @@ public class ProductServiceTest {
                 .id(ProductId.of(1L)).kind(ProductKind.COMMON).branchId(null)
                 .status(ProductStatus.INACTIVE).build());
 
-        productService.changeStatus(ProductId.of(1L), ProductStatus.ACTIVE);
+        productService.activate(ProductId.of(1L));
 
         assertThat(productRepository.findById(ProductId.of(1L)).get().getStatus())
                 .isEqualTo(ProductStatus.ACTIVE);
@@ -375,15 +375,23 @@ public class ProductServiceTest {
                 .id(ProductId.of(1L)).kind(ProductKind.COMMON).branchId(null)
                 .status(ProductStatus.ACTIVE).build());
 
-        productService.changeStatus(ProductId.of(1L), ProductStatus.INACTIVE);
+        productService.deactivate(ProductId.of(1L));
 
         assertThat(productRepository.findById(ProductId.of(1L)).get().getStatus())
                 .isEqualTo(ProductStatus.INACTIVE);
     }
 
     @Test
-    public void 상품_상태_변경시_상품이_없으면_PRODUCT_NOT_FOUND_ERROR를_던진다() {
-        assertThatThrownBy(() -> productService.changeStatus(ProductId.of(999L), ProductStatus.ACTIVE))
+    public void 상품_활성화시_상품이_없으면_PRODUCT_NOT_FOUND_ERROR를_던진다() {
+        assertThatThrownBy(() -> productService.activate(ProductId.of(999L)))
+                .isInstanceOf(ProductBusinessException.class)
+                .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
+                        .isEqualTo(ProductErrors.PRODUCT_NOT_FOUND_ERROR.errorCode));
+    }
+
+    @Test
+    public void 상품_비활성화시_상품이_없으면_PRODUCT_NOT_FOUND_ERROR를_던진다() {
+        assertThatThrownBy(() -> productService.deactivate(ProductId.of(999L)))
                 .isInstanceOf(ProductBusinessException.class)
                 .satisfies(e -> assertThat(((ProductBusinessException) e).getErrorCode())
                         .isEqualTo(ProductErrors.PRODUCT_NOT_FOUND_ERROR.errorCode));

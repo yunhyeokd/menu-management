@@ -62,26 +62,24 @@ public class BranchService {
                     .ifPresent(branchProfile -> {
                         throw BranchBusinessException.with(BranchErrors.DUPLICATE_NAME_ERROR);
                     });
-            try {
-                BranchId branchId = idGenerator.generate();
-                BranchCode branchCode = codeGenerator.generate();
-                String rawAuthKey = authKeyGenerator.generate();
-                String authKeyHash = passwordHasher.hash(rawAuthKey);
-                BranchAccount account = BranchAccount.create(branchId, branchCode, authKeyHash);
-                BranchProfile profile = BranchProfile.create(branchId, name, address);
-                branchAccountRepository.save(account);
-                branchProfileRepository.save(profile);
-                return new BranchCreateResult(
-                        account.getId(),
-                        account.getCode(),
-                        rawAuthKey,
-                        profile.getName(),
-                        profile.getAddress(),
-                        account.getCreatedAt()
-                );
-            } catch (BranchException e) {
-                throw BranchBusinessException.with(BranchErrors.INVALID_BRANCH_ERROR);
-            }
+            BranchId branchId = idGenerator.generate();
+            BranchCode branchCode = codeGenerator.generate();
+            String rawAuthKey = authKeyGenerator.generate();
+            String authKeyHash = passwordHasher.hash(rawAuthKey);
+            BranchAccount account = BranchAccount.create(branchId, branchCode, authKeyHash);
+            BranchProfile profile = BranchProfile.create(branchId, name, address);
+            branchAccountRepository.save(account);
+            branchProfileRepository.save(profile);
+            return new BranchCreateResult(
+                    account.getId(),
+                    account.getCode(),
+                    rawAuthKey,
+                    profile.getName(),
+                    profile.getAddress(),
+                    account.getCreatedAt()
+            );
+        } catch (BranchException e) {
+            throw BranchBusinessException.with(BranchErrors.INVALID_BRANCH_ERROR);
         } catch (RepositoryException e) {
             throw BranchBusinessException.with(BranchErrors.UNKNOWN_ERROR);
         }
@@ -115,16 +113,14 @@ public class BranchService {
     public BranchAuthKeyReissueResult reissueAuthKey(BranchId branchId) {
         try {
             BranchAccount account = getBranchAccount(branchId);
-            try {
-                String rawAuthKey = authKeyGenerator.generate();
-                String newHash = passwordHasher.hash(rawAuthKey);
-                account.reissueAuthKey(newHash);
-                branchAccountRepository.save(account);
-                sessionInvalidationPort.invalidate(account);
-                return new BranchAuthKeyReissueResult(account.getId(), account.getCode(), rawAuthKey);
-            } catch (BranchException e) {
-                throw BranchBusinessException.with(BranchErrors.ALREADY_DELETED_ERROR);
-            }
+            String rawAuthKey = authKeyGenerator.generate();
+            String newHash = passwordHasher.hash(rawAuthKey);
+            account.reissueAuthKey(newHash);
+            branchAccountRepository.save(account);
+            sessionInvalidationPort.invalidate(account);
+            return new BranchAuthKeyReissueResult(account.getId(), account.getCode(), rawAuthKey);
+        } catch (BranchException e) {
+            throw BranchBusinessException.with(BranchErrors.ALREADY_DELETED_ERROR);
         } catch (RepositoryException e) {
             throw BranchBusinessException.with(BranchErrors.UNKNOWN_ERROR);
         }
@@ -133,13 +129,11 @@ public class BranchService {
     public void updateProfile(BranchId branchId, BranchProfileUpdateDto updateDto) {
         try {
             BranchProfile branchProfile = getBranchProfile(branchId);
-            try {
-                branchProfile.changeName(updateDto.name());
-                branchProfile.changeAddress(updateDto.address());
-                branchProfileRepository.save(branchProfile);
-            } catch (BranchException e) {
-                throw BranchBusinessException.with(BranchErrors.INVALID_PROFILE_ERROR);
-            }
+            branchProfile.changeName(updateDto.name());
+            branchProfile.changeAddress(updateDto.address());
+            branchProfileRepository.save(branchProfile);
+        } catch (BranchException e) {
+            throw BranchBusinessException.with(BranchErrors.INVALID_PROFILE_ERROR);
         } catch (RepositoryException e) {
             throw BranchBusinessException.with(BranchErrors.UNKNOWN_ERROR);
         }
@@ -148,13 +142,12 @@ public class BranchService {
     public void softDelete(BranchId branchId) {
         try {
             BranchAccount branchAccount = getBranchAccount(branchId);
-            try {
-                productRepository.updateStatusByBranchId(branchId, ProductStatus.INACTIVE);
-                branchAccount.softDelete();
-                branchAccountRepository.save(branchAccount);
-            } catch (BranchException e) {
-                throw BranchBusinessException.with(BranchErrors.ALREADY_DELETED_ERROR);
-            }
+            productRepository.updateStatusByBranchId(branchId, ProductStatus.INACTIVE);
+            branchAccount.softDelete();
+            branchAccountRepository.save(branchAccount);
+            sessionInvalidationPort.invalidate(branchAccount);
+        } catch (BranchException e) {
+            throw BranchBusinessException.with(BranchErrors.ALREADY_DELETED_ERROR);
         } catch (RepositoryException e) {
             throw BranchBusinessException.with(BranchErrors.UNKNOWN_ERROR);
         }
@@ -162,9 +155,14 @@ public class BranchService {
 
     public void hardDelete(BranchId branchId) {
         try {
+            BranchAccount branchAccount = getBranchAccount(branchId);
+            if (!branchAccount.isSoftDeleted()) {
+                throw BranchBusinessException.with(BranchErrors.INVALID_BRANCH_ERROR);
+            }
             productRepository.deleteAllByBranchId(branchId);
             branchProfileRepository.deleteById(branchId);
             branchAccountRepository.deleteById(branchId);
+            sessionInvalidationPort.invalidate(branchAccount);
         } catch (RepositoryException e) {
             throw BranchBusinessException.with(BranchErrors.UNKNOWN_ERROR);
         }
@@ -184,19 +182,18 @@ public class BranchService {
 
     private void suspendSale(BranchId branchId, ProductId productId, ProductSalesOverrideStatus overrideStatus) {
         try {
-            try {
-                Optional<ProductSalesOverride> existing = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId);
-                if (existing.isEmpty()) {
-                    productSalesOverrideRepository.save(ProductSalesOverride.create(productId, branchId, overrideStatus));
-                } else {
-                    ProductSalesOverride salesOverride = existing.get();
-                    if (overrideStatus == salesOverride.getStatus()) return;
-                    salesOverride.updateStatus(overrideStatus);
-                    productSalesOverrideRepository.save(salesOverride);
-                }
-            } catch (BranchException e) {
-                throw BranchBusinessException.with(BranchErrors.INVALID_BRANCH_ERROR);
+
+            Optional<ProductSalesOverride> existing = productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId);
+            if (existing.isEmpty()) {
+                productSalesOverrideRepository.save(ProductSalesOverride.create(productId, branchId, overrideStatus));
+            } else {
+                ProductSalesOverride salesOverride = existing.get();
+                if (overrideStatus == salesOverride.getStatus()) return;
+                salesOverride.updateStatus(overrideStatus);
+                productSalesOverrideRepository.save(salesOverride);
             }
+        } catch (BranchException e) {
+            throw BranchBusinessException.with(BranchErrors.INVALID_BRANCH_ERROR);
         } catch (RepositoryException e) {
             throw BranchBusinessException.with(BranchErrors.UNKNOWN_ERROR);
         }
