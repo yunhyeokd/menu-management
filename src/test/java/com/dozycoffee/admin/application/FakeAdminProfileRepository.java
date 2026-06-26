@@ -1,6 +1,5 @@
-package com.dozycoffee.admin.application.repository;
+package com.dozycoffee.admin.application;
 
-import com.dozycoffee.admin.application.repository.AdminProfileRepository;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.admin.domain.AdminId;
 import com.dozycoffee.admin.domain.AdminProfile;
