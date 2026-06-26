@@ -1,9 +1,9 @@
 package com.dozycoffee.auth.application;
 
-import com.dozycoffee.core.application.RepositoryException;
-import com.dozycoffee.auth.domain.AuthSession;
 import com.dozycoffee.auth.domain.Principal;
-import com.dozycoffee.auth.domain.SessionId;
+import com.dozycoffee.core.application.RepositoryException;
+import com.dozycoffee.core.domain.Session;
+import com.dozycoffee.core.domain.SessionId;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public class FakeAuthSessionRepository implements AuthSessionRepository {
 
-    private final Map<SessionId, AuthSession> store = new LinkedHashMap<>();
+    private final Map<SessionId, Session<Principal>> store = new LinkedHashMap<>();
     private boolean shouldThrow = false;
 
     public void throwOnNextCall() {
@@ -30,13 +30,13 @@ public class FakeAuthSessionRepository implements AuthSessionRepository {
     }
 
     @Override
-    public void save(AuthSession authSession) {
+    public void save(Session<Principal> session) {
         checkThrow();
-        store.put(authSession.getSessionId(), authSession);
+        store.put(session.getSessionId(), session);
     }
 
     @Override
-    public Optional<AuthSession> findById(SessionId sessionId) {
+    public Optional<Session<Principal>> findById(SessionId sessionId) {
         checkThrow();
         return Optional.ofNullable(store.get(sessionId));
     }
@@ -51,8 +51,8 @@ public class FakeAuthSessionRepository implements AuthSessionRepository {
     public void deleteAllByPrincipal(Principal principal) {
         checkThrow();
         store.values().removeIf(session ->
-                session.getPrincipal().getSubject().equals(principal.getSubject()) &&
-                session.getPrincipal().getRole().equals(principal.getRole())
+                session.getContext().getSubject().equals(principal.getSubject()) &&
+                session.getContext().getRole().equals(principal.getRole())
         );
     }
 }
