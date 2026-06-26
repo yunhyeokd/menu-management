@@ -1,4 +1,4 @@
-package com.dozycoffee.domain.common;
+package com.dozycoffee.core.domain;
 
 public abstract class StringIdentifier implements Identifier<String> {
 

@@ -1,8 +1,4 @@
-package com.dozycoffee.domain.admin;
-
-import com.dozycoffee.admin.domain.AdminAccount;
-import com.dozycoffee.admin.domain.AdminId;
-import com.dozycoffee.admin.domain.AdminRole;
+package com.dozycoffee.admin.domain;
 
 public class AdminFixture {
 

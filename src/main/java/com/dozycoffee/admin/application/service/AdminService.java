@@ -2,7 +2,7 @@ package com.dozycoffee.admin.application.service;
 
 import com.dozycoffee.admin.application.dto.*;
 import com.dozycoffee.admin.domain.*;
-import com.dozycoffee.application.admin.dto.*;
+import com.dozycoffee.admin.application.dto.*;
 import com.dozycoffee.admin.application.repository.AdminAccountRepository;
 import com.dozycoffee.admin.application.repository.AdminProfileRepository;
 import com.dozycoffee.auth.application.PasswordHasher;

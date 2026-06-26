@@ -1,8 +1,5 @@
-package com.dozycoffee.domain.admin;
+package com.dozycoffee.admin.domain;
 
-import com.dozycoffee.admin.domain.AdminException;
-import com.dozycoffee.admin.domain.AdminId;
-import com.dozycoffee.admin.domain.AdminProfile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;

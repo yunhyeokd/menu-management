@@ -1,8 +1,8 @@
-package com.dozycoffee.application.auth;
+package com.dozycoffee.auth.application;
 
-import com.dozycoffee.domain.auth.Credential;
-import com.dozycoffee.domain.auth.Principal;
-import com.dozycoffee.domain.common.Identifier;
+import com.dozycoffee.auth.domain.Credential;
+import com.dozycoffee.auth.domain.Principal;
+import com.dozycoffee.core.domain.Identifier;
 
 import java.util.Optional;
 

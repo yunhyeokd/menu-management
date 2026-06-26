@@ -1,6 +1,6 @@
-package com.dozycoffee.application.common;
+package com.dozycoffee.core.application;
 
-import com.dozycoffee.domain.common.Identifier;
+import com.dozycoffee.core.domain.Identifier;
 
 public interface IdentifierGenerator<ID extends Identifier<?>> {
     ID generate();

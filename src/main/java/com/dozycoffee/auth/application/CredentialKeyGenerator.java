@@ -1,4 +1,4 @@
-package com.dozycoffee.application.auth;
+package com.dozycoffee.auth.application;
 
 public interface CredentialKeyGenerator {
     String generate();

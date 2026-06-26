@@ -1,20 +1,18 @@
-package com.dozycoffee.application.branch.service;
+package com.dozycoffee.branch.application.service;
 
 import com.dozycoffee.auth.application.FakeSessionInvalidationPort;
 import com.dozycoffee.auth.application.PasswordHasher;
 import com.dozycoffee.branch.application.dto.BranchAuthKeyReissueResult;
 import com.dozycoffee.branch.application.dto.BranchCreateResult;
 import com.dozycoffee.branch.application.dto.BranchProfileUpdateDto;
-import com.dozycoffee.application.branch.repository.FakeBranchAccountRepository;
-import com.dozycoffee.application.branch.repository.FakeBranchProfileRepository;
-import com.dozycoffee.application.branch.repository.FakeProductSalesOverrideRepository;
-import com.dozycoffee.branch.application.service.BranchErrors;
-import com.dozycoffee.branch.application.service.BranchService;
+import com.dozycoffee.branch.application.repository.FakeBranchAccountRepository;
+import com.dozycoffee.branch.application.repository.FakeBranchProfileRepository;
+import com.dozycoffee.branch.application.repository.FakeProductSalesOverrideRepository;
 import com.dozycoffee.branch.domain.*;
 import com.dozycoffee.core.application.AppException;
 import com.dozycoffee.core.application.ServiceError;
 import com.dozycoffee.core.application.exception.*;
-import com.dozycoffee.application.product.repository.FakeProductRepository;
+import com.dozycoffee.product.application.repository.FakeProductRepository;
 import com.dozycoffee.product.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.dozycoffee.application.product.service.option;
+package com.dozycoffee.product.application.service.option;
 
 import com.dozycoffee.core.application.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
@@ -7,14 +7,14 @@ import com.dozycoffee.core.application.exception.ConflictException;
 import com.dozycoffee.core.application.exception.ResourceNotFoundException;
 import com.dozycoffee.core.application.exception.SystemException;
 import com.dozycoffee.core.application.exception.ValidationException;
-import com.dozycoffee.application.product.dto.OptionGroupCreateCommand;
-import com.dozycoffee.application.product.dto.OptionGroupData;
-import com.dozycoffee.application.product.dto.OptionGroupItemUpdateCommand;
-import com.dozycoffee.application.product.dto.OptionGroupProfileUpdateCommand;
-import com.dozycoffee.application.product.repository.OptionGroupRepository;
-import com.dozycoffee.application.product.repository.OptionItemRepository;
-import com.dozycoffee.application.product.repository.ProductOptionGroupRepository;
-import com.dozycoffee.application.product.service.ProductErrors;
+import com.dozycoffee.product.application.dto.OptionGroupCreateCommand;
+import com.dozycoffee.product.application.dto.OptionGroupData;
+import com.dozycoffee.product.application.dto.OptionGroupItemUpdateCommand;
+import com.dozycoffee.product.application.dto.OptionGroupProfileUpdateCommand;
+import com.dozycoffee.product.application.repository.OptionGroupRepository;
+import com.dozycoffee.product.application.repository.OptionItemRepository;
+import com.dozycoffee.product.application.repository.ProductOptionGroupRepository;
+import com.dozycoffee.product.application.service.ProductErrors;
 import com.dozycoffee.product.domain.*;
 
 import java.util.*;

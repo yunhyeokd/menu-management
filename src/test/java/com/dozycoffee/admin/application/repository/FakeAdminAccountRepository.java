@@ -1,4 +1,4 @@
-package com.dozycoffee.application.admin.repository;
+package com.dozycoffee.admin.application.repository;
 
 import com.dozycoffee.admin.application.repository.AdminAccountRepository;
 import com.dozycoffee.core.application.RepositoryException;

@@ -1,6 +1,5 @@
-package com.dozycoffee.application.auth;
+package com.dozycoffee.auth.application;
 
-import com.dozycoffee.auth.application.*;
 import com.dozycoffee.core.application.AppException;
 import com.dozycoffee.admin.domain.AdminAccount;
 import com.dozycoffee.admin.domain.AdminId;
@@ -9,9 +8,9 @@ import com.dozycoffee.auth.domain.AuthSession;
 import com.dozycoffee.auth.domain.Principal;
 import com.dozycoffee.auth.domain.SessionId;
 import com.dozycoffee.core.domain.Identifier;
-import com.dozycoffee.domain.branch.BranchAccount;
-import com.dozycoffee.domain.branch.BranchCode;
-import com.dozycoffee.domain.branch.BranchId;
+import com.dozycoffee.branch.domain.BranchAccount;
+import com.dozycoffee.branch.domain.BranchCode;
+import com.dozycoffee.branch.domain.BranchId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

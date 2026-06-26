@@ -1,12 +1,12 @@
-package com.dozycoffee.application.branch.service;
+package com.dozycoffee.branch.application.service;
 
 import com.dozycoffee.auth.application.Authenticator;
 import com.dozycoffee.auth.application.PasswordHasher;
-import com.dozycoffee.application.branch.repository.BranchAccountRepository;
+import com.dozycoffee.branch.application.repository.BranchAccountRepository;
 import com.dozycoffee.auth.domain.Credential;
 import com.dozycoffee.auth.domain.Principal;
-import com.dozycoffee.domain.branch.BranchAccount;
-import com.dozycoffee.domain.branch.BranchCode;
+import com.dozycoffee.branch.domain.BranchAccount;
+import com.dozycoffee.branch.domain.BranchCode;
 
 import java.util.Optional;
 

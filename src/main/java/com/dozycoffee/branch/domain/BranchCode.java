@@ -1,4 +1,4 @@
-package com.dozycoffee.domain.branch;
+package com.dozycoffee.branch.domain;
 
 import com.dozycoffee.core.domain.StringIdentifier;
 

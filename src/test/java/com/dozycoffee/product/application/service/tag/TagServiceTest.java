@@ -1,12 +1,12 @@
-package com.dozycoffee.application.product.service.tag;
+package com.dozycoffee.product.application.service.tag;
 
 import com.dozycoffee.core.application.AppException;
 import com.dozycoffee.core.application.ServiceError;
 import com.dozycoffee.core.application.exception.*;
-import com.dozycoffee.application.product.dto.TagData;
-import com.dozycoffee.application.product.repository.FakeProductTagRepository;
-import com.dozycoffee.application.product.repository.FakeTagRepository;
-import com.dozycoffee.application.product.service.ProductErrors;
+import com.dozycoffee.product.application.dto.TagData;
+import com.dozycoffee.product.application.repository.FakeProductTagRepository;
+import com.dozycoffee.product.application.repository.FakeTagRepository;
+import com.dozycoffee.product.application.service.ProductErrors;
 import com.dozycoffee.product.domain.ProductId;
 import com.dozycoffee.product.domain.ProductTag;
 import com.dozycoffee.product.domain.Tag;

@@ -1,10 +1,9 @@
-package com.dozycoffee.application.branch.service;
+package com.dozycoffee.branch.application.service;
 
 import com.dozycoffee.auth.application.PasswordHasher;
-import com.dozycoffee.application.branch.repository.FakeBranchAccountRepository;
+import com.dozycoffee.branch.application.repository.FakeBranchAccountRepository;
 import com.dozycoffee.auth.domain.Credential;
 import com.dozycoffee.auth.domain.Principal;
-import com.dozycoffee.branch.application.service.BranchAuthenticator;
 import com.dozycoffee.branch.domain.BranchAccount;
 import com.dozycoffee.branch.domain.BranchCode;
 import com.dozycoffee.branch.domain.BranchId;

@@ -1,6 +1,6 @@
-package com.dozycoffee.domain.branch;
+package com.dozycoffee.branch.domain;
 
-import com.dozycoffee.domain.product.ProductId;
+import com.dozycoffee.product.domain.ProductId;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;

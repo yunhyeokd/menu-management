@@ -1,4 +1,4 @@
-package com.dozycoffee.domain.auth;
+package com.dozycoffee.auth.domain;
 
 import java.time.Instant;
 

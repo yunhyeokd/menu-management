@@ -1,4 +1,4 @@
-package com.dozycoffee.domain.common;
+package com.dozycoffee.core.domain;
 
 import java.util.Objects;
 

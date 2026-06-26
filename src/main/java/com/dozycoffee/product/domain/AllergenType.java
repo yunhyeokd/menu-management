@@ -1,4 +1,4 @@
-package com.dozycoffee.domain.product;
+package com.dozycoffee.product.domain;
 
 public enum AllergenType {
 

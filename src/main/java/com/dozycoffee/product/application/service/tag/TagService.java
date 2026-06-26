@@ -1,4 +1,4 @@
-package com.dozycoffee.application.product.service.tag;
+package com.dozycoffee.product.application.service.tag;
 
 import com.dozycoffee.core.application.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
@@ -7,10 +7,10 @@ import com.dozycoffee.core.application.exception.ConflictException;
 import com.dozycoffee.core.application.exception.ResourceNotFoundException;
 import com.dozycoffee.core.application.exception.SystemException;
 import com.dozycoffee.core.application.exception.ValidationException;
-import com.dozycoffee.application.product.dto.TagData;
-import com.dozycoffee.application.product.repository.ProductTagRepository;
-import com.dozycoffee.application.product.repository.TagRepository;
-import com.dozycoffee.application.product.service.ProductErrors;
+import com.dozycoffee.product.application.dto.TagData;
+import com.dozycoffee.product.application.repository.ProductTagRepository;
+import com.dozycoffee.product.application.repository.TagRepository;
+import com.dozycoffee.product.application.service.ProductErrors;
 import com.dozycoffee.product.domain.ProductId;
 import com.dozycoffee.product.domain.ProductException;
 import com.dozycoffee.product.domain.ProductTag;

@@ -1,4 +1,4 @@
-package com.dozycoffee.application.branch.service;
+package com.dozycoffee.branch.application.service;
 
 import com.dozycoffee.auth.application.CredentialKeyGenerator;
 

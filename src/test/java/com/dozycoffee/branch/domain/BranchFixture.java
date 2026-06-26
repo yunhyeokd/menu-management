@@ -1,4 +1,4 @@
-package com.dozycoffee.domain.branch;
+package com.dozycoffee.branch.domain;
 
 public class BranchFixture {
 

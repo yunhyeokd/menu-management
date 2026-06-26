@@ -1,6 +1,6 @@
-package com.dozycoffee.domain.auth;
+package com.dozycoffee.auth.domain;
 
-import com.dozycoffee.domain.common.DomainException;
+import com.dozycoffee.core.domain.DomainException;
 
 public class AuthException extends DomainException {
     public AuthException() {

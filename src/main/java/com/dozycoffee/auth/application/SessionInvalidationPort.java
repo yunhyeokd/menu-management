@@ -1,6 +1,6 @@
-package com.dozycoffee.application.auth;
+package com.dozycoffee.auth.application;
 
-import com.dozycoffee.domain.auth.Principal;
+import com.dozycoffee.auth.domain.Principal;
 
 public interface SessionInvalidationPort {
     void invalidate(Principal principal);

@@ -1,13 +1,14 @@
-package com.dozycoffee.application.product.service;
+package com.dozycoffee.product.application.service;
 
 import com.dozycoffee.branch.application.repository.BranchAccountRepository;
 import com.dozycoffee.core.application.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.core.application.ServiceCode;
 import com.dozycoffee.core.application.exception.*;
-import com.dozycoffee.application.product.dto.*;
-import com.dozycoffee.application.product.repository.*;
-import com.dozycoffee.application.product.service.tag.TagService;
+import com.dozycoffee.product.application.dto.*;
+import com.dozycoffee.product.application.dto.*;
+import com.dozycoffee.product.application.repository.*;
+import com.dozycoffee.product.application.service.tag.TagService;
 import com.dozycoffee.product.domain.*;
 
 import java.util.*;

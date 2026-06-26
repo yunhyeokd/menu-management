@@ -1,6 +1,6 @@
-package com.dozycoffee.domain.product;
+package com.dozycoffee.product.domain;
 
-import com.dozycoffee.domain.branch.BranchId;
+import com.dozycoffee.branch.domain.BranchId;
 
 import java.time.Instant;
 import java.util.Objects;

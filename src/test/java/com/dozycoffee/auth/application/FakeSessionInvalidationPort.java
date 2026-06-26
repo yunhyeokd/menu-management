@@ -1,6 +1,5 @@
-package com.dozycoffee.application.auth;
+package com.dozycoffee.auth.application;
 
-import com.dozycoffee.auth.application.SessionInvalidationPort;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.auth.domain.Principal;
 

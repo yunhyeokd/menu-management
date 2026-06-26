@@ -1,6 +1,6 @@
-package com.dozycoffee.application.branch.service;
+package com.dozycoffee.branch.application.service;
 
-import com.dozycoffee.domain.branch.BranchCode;
+import com.dozycoffee.branch.domain.BranchCode;
 
 public interface BranchCodeGenerator {
     BranchCode generate();

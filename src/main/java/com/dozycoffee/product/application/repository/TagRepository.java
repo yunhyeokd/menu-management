@@ -1,4 +1,4 @@
-package com.dozycoffee.application.product.repository;
+package com.dozycoffee.product.application.repository;
 
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.product.domain.Tag;

@@ -1,8 +1,9 @@
-package com.dozycoffee.application.product.repository;
+package com.dozycoffee.product.application.repository;
 
 import com.dozycoffee.core.application.RepositoryException;
-import com.dozycoffee.application.product.dto.ProductDetailResult;
-import com.dozycoffee.application.product.dto.ProductFilterQuery;
+import com.dozycoffee.product.application.dto.ProductDetailResult;
+import com.dozycoffee.product.application.dto.ProductFilterQuery;
+import com.dozycoffee.product.application.repository.ProductQueryRepository;
 
 import java.util.ArrayList;
 import java.util.List;

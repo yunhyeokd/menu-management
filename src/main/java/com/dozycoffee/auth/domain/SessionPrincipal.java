@@ -1,6 +1,4 @@
-package com.dozycoffee.domain.auth;
-
-import com.dozycoffee.domain.common.Identifier;
+package com.dozycoffee.auth.domain;
 
 public class SessionPrincipal implements Principal {
 

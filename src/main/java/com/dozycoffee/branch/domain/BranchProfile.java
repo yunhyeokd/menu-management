@@ -1,4 +1,4 @@
-package com.dozycoffee.domain.branch;
+package com.dozycoffee.branch.domain;
 
 import java.util.Objects;
 import java.util.regex.Pattern;

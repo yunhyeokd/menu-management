@@ -1,22 +1,22 @@
-package com.dozycoffee.application.branch.service;
+package com.dozycoffee.branch.application.service;
 
 import com.dozycoffee.auth.application.SessionInvalidationPort;
-import com.dozycoffee.application.branch.dto.BranchAuthKeyReissueResult;
-import com.dozycoffee.application.branch.dto.BranchCreateResult;
-import com.dozycoffee.application.branch.dto.BranchProfileUpdateDto;
-import com.dozycoffee.application.branch.repository.BranchAccountRepository;
-import com.dozycoffee.application.branch.repository.BranchProfileRepository;
-import com.dozycoffee.application.branch.repository.ProductSalesOverrideRepository;
+import com.dozycoffee.branch.application.dto.BranchAuthKeyReissueResult;
+import com.dozycoffee.branch.application.dto.BranchCreateResult;
+import com.dozycoffee.branch.application.dto.BranchProfileUpdateDto;
+import com.dozycoffee.branch.application.repository.BranchAccountRepository;
+import com.dozycoffee.branch.application.repository.BranchProfileRepository;
+import com.dozycoffee.branch.application.repository.ProductSalesOverrideRepository;
+import com.dozycoffee.branch.domain.*;
 import com.dozycoffee.core.application.IdentifierGenerator;
 import com.dozycoffee.auth.application.PasswordHasher;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.core.application.ServiceCode;
 import com.dozycoffee.core.application.exception.*;
-import com.dozycoffee.application.product.repository.ProductRepository;
-import com.dozycoffee.domain.branch.*;
-import com.dozycoffee.domain.product.Product;
-import com.dozycoffee.domain.product.ProductId;
-import com.dozycoffee.domain.product.ProductStatus;
+import com.dozycoffee.product.application.repository.ProductRepository;
+import com.dozycoffee.product.domain.Product;
+import com.dozycoffee.product.domain.ProductId;
+import com.dozycoffee.product.domain.ProductStatus;
 
 import java.util.HashSet;
 import java.util.List;

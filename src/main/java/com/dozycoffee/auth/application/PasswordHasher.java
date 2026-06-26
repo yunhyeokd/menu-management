@@ -1,4 +1,4 @@
-package com.dozycoffee.application.auth;
+package com.dozycoffee.auth.application;
 
 public interface PasswordHasher {
     String hash(String raw);

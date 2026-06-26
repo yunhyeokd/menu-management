@@ -1,14 +1,14 @@
-package com.dozycoffee.application.auth;
+package com.dozycoffee.auth.application;
 
-import com.dozycoffee.application.common.ServiceCode;
-import com.dozycoffee.application.common.exception.AuthenticationException;
-import com.dozycoffee.application.common.exception.AuthorizationException;
-import com.dozycoffee.domain.auth.AuthSession;
-import com.dozycoffee.domain.auth.Credential;
-import com.dozycoffee.domain.auth.Principal;
-import com.dozycoffee.domain.auth.SessionId;
-import com.dozycoffee.domain.branch.BranchCode;
-import com.dozycoffee.domain.common.Identifier;
+import com.dozycoffee.core.application.ServiceCode;
+import com.dozycoffee.core.application.exception.AuthenticationException;
+import com.dozycoffee.core.application.exception.AuthorizationException;
+import com.dozycoffee.auth.domain.AuthSession;
+import com.dozycoffee.auth.domain.Credential;
+import com.dozycoffee.auth.domain.Principal;
+import com.dozycoffee.auth.domain.SessionId;
+import com.dozycoffee.branch.domain.BranchCode;
+import com.dozycoffee.core.domain.Identifier;
 
 import java.time.Instant;
 import java.util.List;

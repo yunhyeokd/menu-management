@@ -1,8 +1,8 @@
-package com.dozycoffee.application.common.exception;
+package com.dozycoffee.core.application.exception;
 
-import com.dozycoffee.application.common.AppException;
-import com.dozycoffee.application.common.ServiceCode;
-import com.dozycoffee.application.common.ServiceError;
+import com.dozycoffee.core.application.AppException;
+import com.dozycoffee.core.application.ServiceCode;
+import com.dozycoffee.core.application.ServiceError;
 
 public class ConflictException extends AppException {
     public ConflictException(ServiceCode serviceCode, ServiceError error) {

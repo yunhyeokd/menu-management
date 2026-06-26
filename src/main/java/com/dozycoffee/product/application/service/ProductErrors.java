@@ -1,4 +1,4 @@
-package com.dozycoffee.application.product.service;
+package com.dozycoffee.product.application.service;
 
 import com.dozycoffee.core.application.ServiceError;
 

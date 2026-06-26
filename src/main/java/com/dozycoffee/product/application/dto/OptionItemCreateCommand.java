@@ -1,4 +1,4 @@
-package com.dozycoffee.application.product.dto;
+package com.dozycoffee.product.application.dto;
 
 import java.util.Optional;
 

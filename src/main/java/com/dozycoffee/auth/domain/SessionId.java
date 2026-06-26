@@ -1,6 +1,6 @@
-package com.dozycoffee.domain.auth;
+package com.dozycoffee.auth.domain;
 
-import com.dozycoffee.domain.common.StringIdentifier;
+import com.dozycoffee.core.domain.StringIdentifier;
 
 public class SessionId extends StringIdentifier {
     protected SessionId(String value) {

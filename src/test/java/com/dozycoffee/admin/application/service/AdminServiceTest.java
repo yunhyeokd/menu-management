@@ -1,11 +1,9 @@
-package com.dozycoffee.application.admin.service;
+package com.dozycoffee.admin.application.service;
 
 import com.dozycoffee.admin.application.dto.*;
-import com.dozycoffee.admin.application.service.AdminErrors;
-import com.dozycoffee.admin.application.service.AdminService;
 import com.dozycoffee.admin.domain.*;
-import com.dozycoffee.application.admin.repository.FakeAdminAccountRepository;
-import com.dozycoffee.application.admin.repository.FakeAdminProfileRepository;
+import com.dozycoffee.admin.application.repository.FakeAdminAccountRepository;
+import com.dozycoffee.admin.application.repository.FakeAdminProfileRepository;
 import com.dozycoffee.auth.application.FakeSessionInvalidationPort;
 import com.dozycoffee.auth.application.PasswordHasher;
 import com.dozycoffee.core.application.AppException;

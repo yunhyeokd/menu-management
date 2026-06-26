@@ -1,9 +1,9 @@
-package com.dozycoffee.application.auth;
+package com.dozycoffee.auth.application;
 
-import com.dozycoffee.application.common.RepositoryException;
-import com.dozycoffee.domain.auth.AuthSession;
-import com.dozycoffee.domain.auth.Principal;
-import com.dozycoffee.domain.auth.SessionId;
+import com.dozycoffee.core.application.RepositoryException;
+import com.dozycoffee.auth.domain.AuthSession;
+import com.dozycoffee.auth.domain.Principal;
+import com.dozycoffee.auth.domain.SessionId;
 
 import java.util.Optional;
 

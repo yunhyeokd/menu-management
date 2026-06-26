@@ -1,13 +1,13 @@
-package com.dozycoffee.application.product.service.option;
+package com.dozycoffee.product.application.service.option;
 
 import com.dozycoffee.core.application.AppException;
 import com.dozycoffee.core.application.ServiceError;
 import com.dozycoffee.core.application.exception.*;
-import com.dozycoffee.application.product.dto.*;
-import com.dozycoffee.application.product.repository.FakeOptionGroupRepository;
-import com.dozycoffee.application.product.repository.FakeOptionItemRepository;
-import com.dozycoffee.application.product.repository.FakeProductOptionGroupRepository;
-import com.dozycoffee.application.product.service.ProductErrors;
+import com.dozycoffee.product.application.repository.FakeOptionGroupRepository;
+import com.dozycoffee.product.application.repository.FakeOptionItemRepository;
+import com.dozycoffee.product.application.repository.FakeProductOptionGroupRepository;
+import com.dozycoffee.product.application.dto.*;
+import com.dozycoffee.product.application.service.ProductErrors;
 import com.dozycoffee.product.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

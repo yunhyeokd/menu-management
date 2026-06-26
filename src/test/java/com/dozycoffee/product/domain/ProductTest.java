@@ -1,6 +1,6 @@
-package com.dozycoffee.domain.product;
+package com.dozycoffee.product.domain;
 
-import com.dozycoffee.domain.branch.BranchId;
+import com.dozycoffee.branch.domain.BranchId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;

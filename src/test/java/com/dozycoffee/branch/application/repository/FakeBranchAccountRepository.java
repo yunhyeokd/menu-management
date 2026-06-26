@@ -1,4 +1,4 @@
-package com.dozycoffee.application.branch.repository;
+package com.dozycoffee.branch.application.repository;
 
 import com.dozycoffee.branch.application.repository.BranchAccountRepository;
 import com.dozycoffee.core.application.RepositoryException;

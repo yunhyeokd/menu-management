@@ -1,4 +1,4 @@
-package com.dozycoffee.domain.product;
+package com.dozycoffee.product.domain;
 
 import com.dozycoffee.core.domain.LongIdentifier;
 

@@ -1,7 +1,7 @@
-package com.dozycoffee.application.branch.dto;
+package com.dozycoffee.branch.application.dto;
 
-import com.dozycoffee.domain.branch.BranchCode;
-import com.dozycoffee.domain.branch.BranchId;
+import com.dozycoffee.branch.domain.BranchCode;
+import com.dozycoffee.branch.domain.BranchId;
 
 import java.time.Instant;
 

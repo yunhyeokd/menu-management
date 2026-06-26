@@ -1,7 +1,7 @@
-package com.dozycoffee.application.auth;
+package com.dozycoffee.auth.application;
 
-import com.dozycoffee.domain.auth.Principal;
-import com.dozycoffee.domain.auth.SessionId;
+import com.dozycoffee.auth.domain.Principal;
+import com.dozycoffee.auth.domain.SessionId;
 
 public interface SessionIdGenerator {
     SessionId generate(Principal principal);

@@ -1,4 +1,4 @@
-package com.dozycoffee.application.product.service.category;
+package com.dozycoffee.product.application.service.category;
 
 import com.dozycoffee.core.application.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
@@ -7,10 +7,10 @@ import com.dozycoffee.core.application.exception.ConflictException;
 import com.dozycoffee.core.application.exception.ResourceNotFoundException;
 import com.dozycoffee.core.application.exception.SystemException;
 import com.dozycoffee.core.application.exception.ValidationException;
-import com.dozycoffee.application.product.dto.CategoryData;
-import com.dozycoffee.application.product.repository.CategoryRepository;
-import com.dozycoffee.application.product.repository.ProductRepository;
-import com.dozycoffee.application.product.service.ProductErrors;
+import com.dozycoffee.product.application.dto.CategoryData;
+import com.dozycoffee.product.application.repository.CategoryRepository;
+import com.dozycoffee.product.application.repository.ProductRepository;
+import com.dozycoffee.product.application.service.ProductErrors;
 import com.dozycoffee.product.domain.Category;
 import com.dozycoffee.product.domain.CategoryId;
 import com.dozycoffee.product.domain.Product;

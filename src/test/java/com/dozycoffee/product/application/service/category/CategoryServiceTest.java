@@ -1,12 +1,12 @@
-package com.dozycoffee.application.product.service.category;
+package com.dozycoffee.product.application.service.category;
 
 import com.dozycoffee.core.application.AppException;
 import com.dozycoffee.core.application.ServiceError;
 import com.dozycoffee.core.application.exception.*;
-import com.dozycoffee.application.product.dto.CategoryData;
-import com.dozycoffee.application.product.repository.FakeCategoryRepository;
-import com.dozycoffee.application.product.repository.FakeProductRepository;
-import com.dozycoffee.application.product.service.ProductErrors;
+import com.dozycoffee.product.application.dto.CategoryData;
+import com.dozycoffee.product.application.repository.FakeCategoryRepository;
+import com.dozycoffee.product.application.repository.FakeProductRepository;
+import com.dozycoffee.product.application.service.ProductErrors;
 import com.dozycoffee.product.domain.Category;
 import com.dozycoffee.product.domain.CategoryId;
 import com.dozycoffee.product.domain.ProductFixture;

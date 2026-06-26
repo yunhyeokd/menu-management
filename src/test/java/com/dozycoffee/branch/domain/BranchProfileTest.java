@@ -1,4 +1,4 @@
-package com.dozycoffee.domain.branch;
+package com.dozycoffee.branch.domain;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
