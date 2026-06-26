@@ -1,6 +1,7 @@
 package com.dozycoffee.branch.application.service;
 
 import com.dozycoffee.auth.application.SessionInvalidationPort;
+import com.dozycoffee.auth.domain.Credential;
 import com.dozycoffee.branch.application.dto.BranchAuthKeyReissueResult;
 import com.dozycoffee.branch.application.dto.BranchCreateResult;
 import com.dozycoffee.branch.application.dto.BranchProfileUpdateDto;
@@ -66,8 +67,8 @@ public class BranchService {
                     });
             BranchId branchId = idGenerator.generate();
             BranchCode branchCode = codeGenerator.generate();
-            String rawAuthKey = authKeyGenerator.generate();
-            String authKeyHash = passwordHasher.hash(rawAuthKey);
+            Credential rawAuthKey = authKeyGenerator.generate();
+            String authKeyHash = passwordHasher.hash(rawAuthKey.getValue());
             BranchAccount account = BranchAccount.create(branchId, branchCode, authKeyHash);
             BranchProfile profile = BranchProfile.create(branchId, name, address);
             branchAccountRepository.save(account);
@@ -75,7 +76,7 @@ public class BranchService {
             return new BranchCreateResult(
                     account.getId(),
                     account.getCode(),
-                    rawAuthKey,
+                    rawAuthKey.getValue(),
                     profile.getName(),
                     profile.getAddress(),
                     account.getCreatedAt()
@@ -115,12 +116,12 @@ public class BranchService {
     public BranchAuthKeyReissueResult reissueAuthKey(BranchId branchId) {
         try {
             BranchAccount account = getBranchAccount(branchId);
-            String rawAuthKey = authKeyGenerator.generate();
-            String newHash = passwordHasher.hash(rawAuthKey);
+            Credential rawAuthKey = authKeyGenerator.generate();
+            String newHash = passwordHasher.hash(rawAuthKey.getValue());
             account.reissueAuthKey(newHash);
             branchAccountRepository.save(account);
             sessionInvalidationPort.invalidate(account);
-            return new BranchAuthKeyReissueResult(account.getId(), account.getCode(), rawAuthKey);
+            return new BranchAuthKeyReissueResult(account.getId(), account.getCode(), rawAuthKey.getValue());
         } catch (BranchException e) {
             throw new ConflictException(BranchServiceCode.BRN, BranchErrors.ALREADY_DELETED_ERROR);
         } catch (RepositoryException e) {
