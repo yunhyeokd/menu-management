@@ -249,22 +249,9 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 프로필_수정시_일부_필드만_변경한다() {
-        AdminId adminId = AdminId.of(1L);
-        adminRepository.put(staffWithProfile(adminId));
-
-        AdminProfileUpdateResult result = adminService.updateProfile(adminId,
-                new AdminProfileUpdateCommand("김철수", null, null));
-
-        assertThat(result.name()).isEqualTo("김철수");
-        assertThat(result.phone()).isEqualTo("+821012345678");
-        assertThat(result.email()).isEqualTo("admin@dozy.com");
-    }
-
-    @Test
     public void 프로필_수정시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
         assertThatThrownBy(() -> adminService.updateProfile(AdminId.of(999L),
-                new AdminProfileUpdateCommand("김철수", null, null)))
+                new AdminProfileUpdateCommand("김철수", "+821099998888", "new@dozy.com")))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
     }
@@ -275,7 +262,7 @@ public class AdminServiceTest {
         adminRepository.put(staffWithProfile(adminId));
 
         assertThatThrownBy(() -> adminService.updateProfile(adminId,
-                new AdminProfileUpdateCommand(null, "invalid-phone", null)))
+                new AdminProfileUpdateCommand(null, "invalid-phone", "bad-email")))
                 .isInstanceOf(ValidationException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.INVALID_ADMIN_ERROR));
     }
@@ -287,7 +274,7 @@ public class AdminServiceTest {
         adminRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> adminService.updateProfile(adminId,
-                new AdminProfileUpdateCommand("김철수", null, null)))
+                new AdminProfileUpdateCommand("김철수", "+821099998888", "new@dozy.com")))
                 .isInstanceOf(SystemException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.UNKNOWN_ERROR));
     }

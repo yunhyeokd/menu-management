@@ -152,12 +152,7 @@ public class Admin implements Principal {
 
     public void updateProfile(String name, String phone, String email) {
         if (adminRole == AdminRole.SYSTEM) throw new AdminException("cannot update profile on SYSTEM admin");
-        this.profile = AdminProfile.create(
-                profile.getEmployeeNo(),
-                name != null ? name : profile.getName(),
-                phone != null ? phone : profile.getPhone(),
-                email != null ? email : profile.getEmail()
-        );
+        this.profile = AdminProfile.create(profile.getEmployeeNo(), name, phone, email);
     }
 
     public void updateStatus(AdminStatus status) {
