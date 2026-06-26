@@ -19,17 +19,22 @@ src/main/java/com/dozycoffee
 │   └── application/            # AuthenticationService, AuthorizationService, AuthSessionManager
 │                               # AuthSessionRepository, SessionInvalidationPort, PasswordHasher
 ├── admin/
-│   ├── domain/                 # AdminAccount, AdminProfile
+│   ├── domain/                 # Admin (AdminProfile을 VO로 포함)
 │   └── application/            # AdminService, AdminUsernameAuthenticator
+│                               # AdminRepository
 ├── branch/
-│   ├── domain/                 # BranchAccount, BranchProfile, ProductSalesOverride
+│   ├── domain/                 # Branch (BranchProfile을 VO로 포함), ProductSalesOverride
 │   └── application/            # BranchService, BranchOperationService, BranchAuthenticator
+│       │                       # BranchProductQueryPort, BranchProductLifecyclePort
 │       └── model/              # BranchProduct (product aggregate read model)
 ├── product/
-│   ├── domain/                 # Product, Category, Tag, OptionGroup, OptionItem, ...
+│   ├── domain/                 # Product, Category, Tag, OptionGroup (OptionItem을 VO로 포함), ...
 │   └── application/
-│       ├── service/            # ProductService, CategoryService, TagService, OptionService
-│       ├── repository/         # ProductRepository, CategoryRepository, ...
+│       ├── service/            # ProductService, CategoryService
+│       ├── service/tag/        # TagService, ProductTagService
+│       ├── service/option/     # OptionService, ProductOptionGroupService
+│       ├── usecase/            # RegisterCommonProductUseCase, DeleteProductUseCase, ...
+│       ├── repository/         # ProductRepository, CategoryRepository, BranchExistencePort, ...
 │       └── dto/                # ProductData, BranchProductRegisterCommand, ...
 └── core/                       # 공유 커널 — 범용 추상화
     ├── domain/                 # DomainException, Identifier, IdentifierGenerator, Session<T>, SessionId
@@ -58,7 +63,7 @@ product ──→ branch    (Product가 BranchId 참조)
 admin   ──→ auth      (PasswordHasher, SessionInvalidationPort 사용)
 branch  ──→ auth      (PasswordHasher, SessionInvalidationPort 사용)
 branch  ──→ product   (BranchProductQueryPort, BranchProductLifecyclePort — 포트 추상화)
-product ──→ branch    (BranchAccountRepository로 지점 존재 확인)
+product ──→ branch    (BranchExistencePort로 지점 존재 확인)
 ```
 
 서비스 간 직접 참조는 금지하며, 다른 애그리게잇과의 상호작용은 포트 인터페이스를 통해서만 허용합니다.
