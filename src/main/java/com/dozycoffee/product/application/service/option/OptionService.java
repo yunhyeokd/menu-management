@@ -3,7 +3,6 @@ package com.dozycoffee.product.application.service.option;
 import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.product.application.ProductServiceCode;
-import com.dozycoffee.core.application.exception.ConflictException;
 import com.dozycoffee.core.application.exception.ResourceNotFoundException;
 import com.dozycoffee.core.application.exception.SystemException;
 import com.dozycoffee.core.application.exception.ValidationException;
@@ -13,7 +12,6 @@ import com.dozycoffee.product.application.dto.OptionGroupItemUpdateCommand;
 import com.dozycoffee.product.application.dto.OptionGroupProfileUpdateCommand;
 import com.dozycoffee.product.application.repository.OptionGroupRepository;
 import com.dozycoffee.product.application.repository.OptionItemRepository;
-import com.dozycoffee.product.application.repository.ProductOptionGroupRepository;
 import com.dozycoffee.product.application.service.ProductErrors;
 import com.dozycoffee.product.domain.*;
 
@@ -23,20 +21,17 @@ public class OptionService {
 
     private final OptionGroupRepository optionGroupRepository;
     private final OptionItemRepository optionItemRepository;
-    private final ProductOptionGroupRepository productOptionGroupRepository;
     private final IdentifierGenerator<OptionGroupId> optionGroupIdGenerator;
     private final IdentifierGenerator<OptionItemId> optionItemIdGenerator;
 
     public OptionService(
             OptionGroupRepository optionGroupRepository,
             OptionItemRepository optionItemRepository,
-            ProductOptionGroupRepository productOptionGroupRepository,
             IdentifierGenerator<OptionGroupId> optionGroupIdGenerator,
             IdentifierGenerator<OptionItemId> optionItemIdGenerator
     ) {
         this.optionGroupRepository = optionGroupRepository;
         this.optionItemRepository = optionItemRepository;
-        this.productOptionGroupRepository = productOptionGroupRepository;
         this.optionGroupIdGenerator = optionGroupIdGenerator;
         this.optionItemIdGenerator = optionItemIdGenerator;
     }
@@ -160,14 +155,10 @@ public class OptionService {
 
     /*
     옵션 그룹과 그 연관아이템들을 삭제
-    !! 옵션그룹과 연결된 상품 존재 시 예외 발생
+    * 연결된 상품 존재 여부 확인은 호출 전에 수행해야 함 (ProductOptionGroupService.assertNoLinkedProducts)
      */
     public void deleteOptionGroup(OptionGroupId id) {
         try {
-            List<ProductOptionGroup> productOptionGroups = productOptionGroupRepository.findAllByOptionGroupId(id);
-            if (!productOptionGroups.isEmpty()) {
-                throw new ConflictException(ProductServiceCode.PRD, ProductErrors.LINKED_PRODUCT_EXISTS_ERROR);
-            }
             optionItemRepository.deleteByOptionGroupId(id);
             optionGroupRepository.deleteById(id);
         } catch (RepositoryException e) {

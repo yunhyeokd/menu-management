@@ -4,11 +4,8 @@ import com.dozycoffee.core.application.AppException;
 import com.dozycoffee.core.application.ServiceError;
 import com.dozycoffee.core.application.exception.*;
 import com.dozycoffee.product.application.dto.TagData;
-import com.dozycoffee.product.application.repository.FakeProductTagRepository;
 import com.dozycoffee.product.application.repository.FakeTagRepository;
 import com.dozycoffee.product.application.service.ProductErrors;
-import com.dozycoffee.product.domain.ProductId;
-import com.dozycoffee.product.domain.ProductTag;
 import com.dozycoffee.product.domain.Tag;
 import com.dozycoffee.product.domain.TagId;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,17 +20,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class TagServiceTest {
 
     private FakeTagRepository tagRepository;
-    private FakeProductTagRepository productTagRepository;
     private TagService tagService;
     private long nextTagId = 1L;
 
     @BeforeEach
     public void setUp() {
         tagRepository = new FakeTagRepository();
-        productTagRepository = new FakeProductTagRepository();
         nextTagId = 1L;
-        tagService = new TagService(tagRepository, productTagRepository,
-                () -> TagId.of(nextTagId++));
+        tagService = new TagService(tagRepository, () -> TagId.of(nextTagId++));
     }
 
     private void assertErrorCode(Throwable e, ServiceError error) {
@@ -183,51 +177,12 @@ public class TagServiceTest {
     }
 
     @Test
-    public void 태그에_연결된_상품_id_목록을_조회한다() {
-        Tag tag = tagRepository.put(Tag.of(TagId.of(1L), "신제품", Instant.now()));
-        productTagRepository.add(ProductTag.of(ProductId.of(10L), tag.getId(), Instant.now()));
-        productTagRepository.add(ProductTag.of(ProductId.of(20L), tag.getId(), Instant.now()));
-
-        List<ProductId> productIds = tagService.findLinkedProductIds(tag.getId());
-
-        assertThat(productIds).containsExactlyInAnyOrder(ProductId.of(10L), ProductId.of(20L));
-    }
-
-    @Test
-    public void 연결된_상품이_없으면_빈_목록을_반환한다() {
-        Tag tag = tagRepository.put(Tag.of(TagId.of(1L), "신제품", Instant.now()));
-
-        List<ProductId> productIds = tagService.findLinkedProductIds(tag.getId());
-
-        assertThat(productIds).isEmpty();
-    }
-
-    @Test
-    public void 연결_상품_조회시_대상_태그가_존재하지_않으면_TAG_NOT_FOUND_ERROR를_던진다() {
-        assertThatThrownBy(() -> tagService.findLinkedProductIds(TagId.of(999L)))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .satisfies(e -> assertErrorCode(e, ProductErrors.TAG_NOT_FOUND_ERROR));
-    }
-
-    @Test
-    public void 연결_상품_조회중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        Tag tag = tagRepository.put(Tag.of(TagId.of(1L), "신제품", Instant.now()));
-        productTagRepository.throwOnNextCall();
-
-        assertThatThrownBy(() -> tagService.findLinkedProductIds(tag.getId()))
-                .isInstanceOf(SystemException.class)
-                .satisfies(e -> assertErrorCode(e, ProductErrors.UNKNOWN_ERROR));
-    }
-
-    @Test
     public void 태그를_정상_삭제한다() {
         Tag tag = tagRepository.put(Tag.of(TagId.of(1L), "신제품", Instant.now()));
-        productTagRepository.add(ProductTag.of(ProductId.of(10L), tag.getId(), Instant.now()));
 
         tagService.remove(tag.getId());
 
         assertThat(tagRepository.contains(tag.getId())).isFalse();
-        assertThat(productTagRepository.findAllByTagId(tag.getId())).isEmpty();
     }
 
     @Test
@@ -240,7 +195,7 @@ public class TagServiceTest {
     @Test
     public void 태그_삭제중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         Tag tag = tagRepository.put(Tag.of(TagId.of(1L), "신제품", Instant.now()));
-        productTagRepository.throwOnNextCall();
+        tagRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> tagService.remove(tag.getId()))
                 .isInstanceOf(SystemException.class)

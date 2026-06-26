@@ -5,7 +5,6 @@ import com.dozycoffee.core.application.ServiceError;
 import com.dozycoffee.core.application.exception.*;
 import com.dozycoffee.product.application.repository.FakeOptionGroupRepository;
 import com.dozycoffee.product.application.repository.FakeOptionItemRepository;
-import com.dozycoffee.product.application.repository.FakeProductOptionGroupRepository;
 import com.dozycoffee.product.application.dto.*;
 import com.dozycoffee.product.application.service.ProductErrors;
 import com.dozycoffee.product.domain.*;
@@ -23,7 +22,6 @@ public class OptionServiceTest {
 
     private FakeOptionGroupRepository optionGroupRepository;
     private FakeOptionItemRepository optionItemRepository;
-    private FakeProductOptionGroupRepository productOptionGroupRepository;
     private OptionService optionService;
     private long nextOptionGroupId = 1L;
     private long nextOptionItemId = 1L;
@@ -32,13 +30,11 @@ public class OptionServiceTest {
     public void setUp() {
         optionGroupRepository = new FakeOptionGroupRepository();
         optionItemRepository = new FakeOptionItemRepository();
-        productOptionGroupRepository = new FakeProductOptionGroupRepository();
         nextOptionGroupId = 1L;
         nextOptionItemId = 1L;
         optionService = new OptionService(
                 optionGroupRepository,
                 optionItemRepository,
-                productOptionGroupRepository,
                 () -> OptionGroupId.of(nextOptionGroupId++),
                 () -> OptionItemId.of(nextOptionItemId++)
         );
@@ -221,21 +217,9 @@ public class OptionServiceTest {
     }
 
     @Test
-    public void 옵션_그룹_삭제시_연결된_상품이_있으면_LINKED_PRODUCT_EXISTS_ERROR를_던진다() {
-        optionGroupRepository.put(OptionGroup.of(OptionGroupId.of(1L), "사이즈", null, Instant.now()));
-        productOptionGroupRepository.put(ProductOptionGroup.of(
-                ProductId.of(1L), OptionGroupId.of(1L), true, false, Instant.now()
-        ));
-
-        assertThatThrownBy(() -> optionService.deleteOptionGroup(OptionGroupId.of(1L)))
-                .isInstanceOf(ConflictException.class)
-                .satisfies(e -> assertErrorCode(e, ProductErrors.LINKED_PRODUCT_EXISTS_ERROR));
-    }
-
-    @Test
     public void 옵션_그룹_삭제중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         optionGroupRepository.put(OptionGroup.of(OptionGroupId.of(1L), "사이즈", null, Instant.now()));
-        productOptionGroupRepository.throwOnNextCall();
+        optionItemRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> optionService.deleteOptionGroup(OptionGroupId.of(1L)))
                 .isInstanceOf(SystemException.class)
