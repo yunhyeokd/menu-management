@@ -9,16 +9,17 @@ public class ProductOptionGroup {
     private final OptionGroupId optionGroupId;
     private final boolean isRequired;
     private final boolean allowMultiple;
-    private Instant createdAt;
+    private final Instant createdAt;
 
     private ProductOptionGroup(ProductId productId, OptionGroupId optionGroupId, boolean isRequired, boolean allowMultiple, Instant createdAt) {
         if (productId == null) throw new ProductException("productId cannot be null");
         if (optionGroupId == null) throw new ProductException("optionGroupId cannot be null");
+        if (createdAt == null) throw new ProductException("createdAt cannot be null");
         this.productId = productId;
         this.optionGroupId = optionGroupId;
         this.isRequired = isRequired;
         this.allowMultiple = allowMultiple;
-        setCreatedAt(createdAt);
+        this.createdAt = createdAt;
     }
 
     @Override
@@ -60,8 +61,4 @@ public class ProductOptionGroup {
         return createdAt;
     }
 
-    private void setCreatedAt(Instant createdAt) {
-        if (createdAt == null) throw new ProductException("createdAt cannot be null");
-        this.createdAt = createdAt;
-    }
 }
