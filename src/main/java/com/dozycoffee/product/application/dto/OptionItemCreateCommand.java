@@ -4,7 +4,7 @@ import java.util.Optional;
 
 public record OptionItemCreateCommand(
         String name,
-        Optional<String> description,
+        String description,
         int price
 ) {
 }

@@ -4,7 +4,6 @@ import com.dozycoffee.core.application.AppException;
 import com.dozycoffee.core.application.ServiceError;
 import com.dozycoffee.core.application.exception.*;
 import com.dozycoffee.product.application.repository.FakeOptionGroupRepository;
-import com.dozycoffee.product.application.repository.FakeOptionItemRepository;
 import com.dozycoffee.product.application.dto.*;
 import com.dozycoffee.product.application.service.ProductErrors;
 import com.dozycoffee.product.domain.*;
@@ -21,22 +20,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class OptionServiceTest {
 
     private FakeOptionGroupRepository optionGroupRepository;
-    private FakeOptionItemRepository optionItemRepository;
     private OptionService optionService;
     private long nextOptionGroupId = 1L;
-    private long nextOptionItemId = 1L;
 
     @BeforeEach
     public void setUp() {
         optionGroupRepository = new FakeOptionGroupRepository();
-        optionItemRepository = new FakeOptionItemRepository();
         nextOptionGroupId = 1L;
-        nextOptionItemId = 1L;
         optionService = new OptionService(
                 optionGroupRepository,
-                optionItemRepository,
-                () -> OptionGroupId.of(nextOptionGroupId++),
-                () -> OptionItemId.of(nextOptionItemId++)
+                () -> OptionGroupId.of(nextOptionGroupId++)
         );
     }
 
@@ -45,11 +38,19 @@ public class OptionServiceTest {
     }
 
     private OptionGroupCreateCommand createCommand(String name, List<OptionItemCreateCommand> items) {
-        return new OptionGroupCreateCommand(name, Optional.empty(), items);
+        return new OptionGroupCreateCommand(name, null, items);
     }
 
     private OptionItemCreateCommand itemCommand(String name, int price) {
-        return new OptionItemCreateCommand(name, Optional.empty(), price);
+        return new OptionItemCreateCommand(name, null, price);
+    }
+
+    private OptionGroup groupWithItems(OptionGroupId id, String name, List<OptionItem> items) {
+        return OptionGroup.of(id, name, null, items, Instant.now());
+    }
+
+    private OptionItem item(String name) {
+        return OptionItem.of(name, null, 0, Instant.now());
     }
 
     // ─── create ──────────────────────────────────────────────────────────────
@@ -67,12 +68,12 @@ public class OptionServiceTest {
     }
 
     @Test
-    public void 옵션_그룹_생성시_아이템이_없으면_EMPTY_OPTION_GROUP_ERROR를_던진다() {
+    public void 옵션_그룹_생성시_아이템이_없으면_INVALID_OPTION_ERROR를_던진다() {
         OptionGroupCreateCommand command = createCommand("사이즈", List.of());
 
         assertThatThrownBy(() -> optionService.create(command))
                 .isInstanceOf(ValidationException.class)
-                .satisfies(e -> assertErrorCode(e, ProductErrors.EMPTY_OPTION_GROUP_ERROR));
+                .satisfies(e -> assertErrorCode(e, ProductErrors.INVALID_OPTION_ERROR));
     }
 
     @Test
@@ -97,12 +98,8 @@ public class OptionServiceTest {
 
     @Test
     public void 옵션_그룹_전체_목록을_조회한다() {
-        OptionGroup group1 = OptionGroup.of(OptionGroupId.of(1L), "사이즈", null, Instant.now());
-        OptionGroup group2 = OptionGroup.of(OptionGroupId.of(2L), "온도", null, Instant.now());
-        optionGroupRepository.put(group1);
-        optionGroupRepository.put(group2);
-        optionItemRepository.put(OptionItem.of(OptionItemId.of(1L), group1.getId(), "S", null, 0, Instant.now()));
-        optionItemRepository.put(OptionItem.of(OptionItemId.of(2L), group2.getId(), "Hot", null, 0, Instant.now()));
+        optionGroupRepository.put(groupWithItems(OptionGroupId.of(1L), "사이즈", List.of(item("S"))));
+        optionGroupRepository.put(groupWithItems(OptionGroupId.of(2L), "온도", List.of(item("Hot"))));
 
         List<OptionGroupData> result = optionService.findAll();
 
@@ -129,7 +126,7 @@ public class OptionServiceTest {
 
     @Test
     public void 옵션_그룹_프로필을_정상_수정한다() {
-        optionGroupRepository.put(OptionGroup.of(OptionGroupId.of(1L), "사이즈", null, Instant.now()));
+        optionGroupRepository.put(groupWithItems(OptionGroupId.of(1L), "사이즈", List.of(item("S"))));
         OptionGroupProfileUpdateCommand command = new OptionGroupProfileUpdateCommand(
                 OptionGroupId.of(1L), "Size", Optional.of("음료 사이즈")
         );
@@ -154,7 +151,7 @@ public class OptionServiceTest {
 
     @Test
     public void 옵션_그룹_프로필_수정시_이름이_유효하지_않으면_INVALID_OPTION_ERROR를_던진다() {
-        optionGroupRepository.put(OptionGroup.of(OptionGroupId.of(1L), "사이즈", null, Instant.now()));
+        optionGroupRepository.put(groupWithItems(OptionGroupId.of(1L), "사이즈", List.of(item("S"))));
         OptionGroupProfileUpdateCommand command = new OptionGroupProfileUpdateCommand(
                 OptionGroupId.of(1L), "", Optional.empty()
         );
@@ -168,8 +165,7 @@ public class OptionServiceTest {
 
     @Test
     public void 옵션_그룹_아이템을_정상_수정한다() {
-        optionGroupRepository.put(OptionGroup.of(OptionGroupId.of(1L), "사이즈", null, Instant.now()));
-        optionItemRepository.put(OptionItem.of(OptionItemId.of(1L), OptionGroupId.of(1L), "S", null, 0, Instant.now()));
+        optionGroupRepository.put(groupWithItems(OptionGroupId.of(1L), "사이즈", List.of(item("S"))));
         OptionGroupItemUpdateCommand command = new OptionGroupItemUpdateCommand(
                 OptionGroupId.of(1L),
                 List.of(itemCommand("M", 300), itemCommand("L", 500))
@@ -177,19 +173,19 @@ public class OptionServiceTest {
 
         optionService.updateOptionGroupItems(command);
 
-        List<OptionItem> items = optionItemRepository.findAllByOptionGroupId(OptionGroupId.of(1L));
+        List<OptionItem> items = optionGroupRepository.findById(OptionGroupId.of(1L)).get().getItems();
         assertThat(items).hasSize(2);
         assertThat(items).extracting(OptionItem::getName).containsExactlyInAnyOrder("M", "L");
     }
 
     @Test
-    public void 옵션_그룹_아이템_수정시_아이템이_없으면_EMPTY_OPTION_GROUP_ERROR를_던진다() {
-        optionGroupRepository.put(OptionGroup.of(OptionGroupId.of(1L), "사이즈", null, Instant.now()));
+    public void 옵션_그룹_아이템_수정시_아이템이_없으면_INVALID_OPTION_ERROR를_던진다() {
+        optionGroupRepository.put(groupWithItems(OptionGroupId.of(1L), "사이즈", List.of(item("S"))));
         OptionGroupItemUpdateCommand command = new OptionGroupItemUpdateCommand(OptionGroupId.of(1L), List.of());
 
         assertThatThrownBy(() -> optionService.updateOptionGroupItems(command))
                 .isInstanceOf(ValidationException.class)
-                .satisfies(e -> assertErrorCode(e, ProductErrors.EMPTY_OPTION_GROUP_ERROR));
+                .satisfies(e -> assertErrorCode(e, ProductErrors.INVALID_OPTION_ERROR));
     }
 
     @Test
@@ -207,19 +203,17 @@ public class OptionServiceTest {
 
     @Test
     public void 옵션_그룹을_정상_삭제한다() {
-        optionGroupRepository.put(OptionGroup.of(OptionGroupId.of(1L), "사이즈", null, Instant.now()));
-        optionItemRepository.put(OptionItem.of(OptionItemId.of(1L), OptionGroupId.of(1L), "S", null, 0, Instant.now()));
+        optionGroupRepository.put(groupWithItems(OptionGroupId.of(1L), "사이즈", List.of(item("S"))));
 
         optionService.deleteOptionGroup(OptionGroupId.of(1L));
 
         assertThat(optionGroupRepository.contains(OptionGroupId.of(1L))).isFalse();
-        assertThat(optionItemRepository.findAllByOptionGroupId(OptionGroupId.of(1L))).isEmpty();
     }
 
     @Test
     public void 옵션_그룹_삭제중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        optionGroupRepository.put(OptionGroup.of(OptionGroupId.of(1L), "사이즈", null, Instant.now()));
-        optionItemRepository.throwOnNextCall();
+        optionGroupRepository.put(groupWithItems(OptionGroupId.of(1L), "사이즈", List.of(item("S"))));
+        optionGroupRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> optionService.deleteOptionGroup(OptionGroupId.of(1L)))
                 .isInstanceOf(SystemException.class)

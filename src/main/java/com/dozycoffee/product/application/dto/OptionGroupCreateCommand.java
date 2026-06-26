@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public record OptionGroupCreateCommand(
         String name,
-        Optional<String> description,
+        String description,
         List<OptionItemCreateCommand> items
 ) {
 }

@@ -6,6 +6,7 @@ import com.dozycoffee.product.domain.OptionItem;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public record OptionGroupData(
         OptionGroupId id,
@@ -14,12 +15,12 @@ public record OptionGroupData(
         List<OptionItemData> items,
         Instant createdAt
 ) {
-    public static OptionGroupData from(OptionGroup optionGroup, List<OptionItem> optionItems) {
+    public static OptionGroupData from(OptionGroup optionGroup) {
         return new OptionGroupData(
                 optionGroup.getId(),
                 optionGroup.getName(),
                 optionGroup.getDescription(),
-                optionItems.stream().map(OptionItemData::from).toList(),
+                optionGroup.getItems().stream().map(OptionItemData::from).toList(),
                 optionGroup.getCreatedAt()
         );
     }

@@ -33,7 +33,6 @@ public class ProductUseCaseTest {
     private FakeTagRepository tagRepository;
     private FakeProductOptionGroupRepository productOptionGroupRepository;
     private FakeOptionGroupRepository optionGroupRepository;
-    private FakeOptionItemRepository optionItemRepository;
 
     private RegisterCommonProductUseCase registerCommonProductUseCase;
     private RegisterBranchProductUseCase registerBranchProductUseCase;
@@ -46,7 +45,6 @@ public class ProductUseCaseTest {
     private long nextProductId = 1L;
     private long nextTagId = 1L;
     private long nextOptionGroupId = 1L;
-    private long nextOptionItemId = 1L;
 
     @BeforeEach
     void setUp() {
@@ -58,12 +56,10 @@ public class ProductUseCaseTest {
         tagRepository = new FakeTagRepository();
         productOptionGroupRepository = new FakeProductOptionGroupRepository();
         optionGroupRepository = new FakeOptionGroupRepository();
-        optionItemRepository = new FakeOptionItemRepository();
 
         nextProductId = 1L;
         nextTagId = 1L;
         nextOptionGroupId = 1L;
-        nextOptionItemId = 1L;
 
         ProductService productService = new ProductService(
                 productRepository, productQueryRepository, categoryRepository,
@@ -75,9 +71,8 @@ public class ProductUseCaseTest {
                 productOptionGroupRepository, optionGroupRepository
         );
         OptionService optionService = new OptionService(
-                optionGroupRepository, optionItemRepository,
-                () -> OptionGroupId.of(nextOptionGroupId++),
-                () -> OptionItemId.of(nextOptionItemId++)
+                optionGroupRepository,
+                () -> OptionGroupId.of(nextOptionGroupId++)
         );
 
         registerCommonProductUseCase = new RegisterCommonProductUseCase(productService, productTagService, productOptionGroupService);
@@ -102,7 +97,11 @@ public class ProductUseCaseTest {
     }
 
     private OptionGroup savedOptionGroup(long id) {
-        return optionGroupRepository.put(OptionGroup.of(OptionGroupId.of(id), "옵션" + id, null, Instant.now()));
+        return optionGroupRepository.put(OptionGroup.of(
+                OptionGroupId.of(id), "옵션" + id, null,
+                List.of(OptionItem.of("기본", null, 0, Instant.now())),
+                Instant.now()
+        ));
     }
 
     // ─── RegisterCommonProduct ────────────────────────────────────────────────
@@ -243,12 +242,10 @@ public class ProductUseCaseTest {
     @Test
     void 연결된_상품_없으면_옵션그룹을_정상_삭제한다() {
         OptionGroup og = savedOptionGroup(1L);
-        optionItemRepository.put(OptionItem.of(OptionItemId.of(1L), og.getId(), "S", null, 0, Instant.now()));
 
         deleteOptionGroupUseCase.execute(og.getId());
 
         assertThat(optionGroupRepository.contains(og.getId())).isFalse();
-        assertThat(optionItemRepository.findAllByOptionGroupId(og.getId())).isEmpty();
     }
 
     @Test

@@ -37,7 +37,11 @@ public class ProductOptionGroupServiceTest {
     }
 
     private OptionGroup savedOptionGroup(long id) {
-        return optionGroupRepository.put(OptionGroup.of(OptionGroupId.of(id), "옵션그룹" + id, null, Instant.now()));
+        return optionGroupRepository.put(OptionGroup.of(
+                OptionGroupId.of(id), "옵션그룹" + id, null,
+                List.of(OptionItem.of("기본", null, 0, Instant.now())),
+                Instant.now()
+        ));
     }
 
     @Test
