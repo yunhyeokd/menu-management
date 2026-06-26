@@ -4,28 +4,34 @@ public class AdminFixture {
 
     public static AdminId id = AdminId.of(1L);
 
-    public static AdminAccountBuilder builder() {
-        return new AdminAccountBuilder();
+    public static AdminBuilder builder() {
+        return new AdminBuilder();
     }
 
-    public static AdminAccountBuilder system() {
-        return new AdminAccountBuilder().role(AdminRole.SYSTEM);
+    public static AdminBuilder system() {
+        return new AdminBuilder().role(AdminRole.SYSTEM).profile(null);
     }
 
-    public static class AdminAccountBuilder {
+    public static AdminProfile defaultProfile() {
+        return AdminProfile.create("EMP001", "홍길동", "+821012345678", "admin@dozy.com");
+    }
+
+    public static class AdminBuilder {
 
         private AdminId id = AdminFixture.id;
         private AdminRole role = AdminRole.STAFF;
         private String username = "test";
         private String password = "password";
+        private AdminProfile profile = defaultProfile();
 
-        public AdminAccountBuilder id(AdminId id) { this.id = id; return this; }
-        public AdminAccountBuilder role(AdminRole role) { this.role = role; return this; }
-        public AdminAccountBuilder username(String username) { this.username = username; return this; }
-        public AdminAccountBuilder password(String password) { this.password = password; return this; }
+        public AdminBuilder id(AdminId id) { this.id = id; return this; }
+        public AdminBuilder role(AdminRole role) { this.role = role; return this; }
+        public AdminBuilder username(String username) { this.username = username; return this; }
+        public AdminBuilder password(String password) { this.password = password; return this; }
+        public AdminBuilder profile(AdminProfile profile) { this.profile = profile; return this; }
 
-        public AdminAccount build() {
-            return AdminAccount.create(id, role, username, password);
+        public Admin build() {
+            return Admin.create(id, role, username, password, profile);
         }
     }
 }

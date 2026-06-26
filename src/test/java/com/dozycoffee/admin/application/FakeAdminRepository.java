@@ -1,7 +1,7 @@
 package com.dozycoffee.admin.application;
 
 import com.dozycoffee.core.application.RepositoryException;
-import com.dozycoffee.admin.domain.AdminAccount;
+import com.dozycoffee.admin.domain.Admin;
 import com.dozycoffee.admin.domain.AdminId;
 import com.dozycoffee.admin.domain.AdminRole;
 
@@ -9,16 +9,16 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class FakeAdminAccountRepository implements AdminAccountRepository {
+public class FakeAdminRepository implements AdminRepository {
 
-    private final Map<AdminId, AdminAccount> store = new LinkedHashMap<>();
+    private final Map<AdminId, Admin> store = new LinkedHashMap<>();
     private boolean shouldThrow = false;
 
     public void throwOnNextCall() {
         this.shouldThrow = true;
     }
 
-    public AdminAccount put(AdminAccount account) {
+    public Admin put(Admin account) {
         store.put(account.getId(), account);
         return account;
     }
@@ -35,19 +35,19 @@ public class FakeAdminAccountRepository implements AdminAccountRepository {
     }
 
     @Override
-    public void save(AdminAccount newAdminAccount) {
+    public void save(Admin account) {
         checkThrow();
-        store.put(newAdminAccount.getId(), newAdminAccount);
+        store.put(account.getId(), account);
     }
 
     @Override
-    public Optional<AdminAccount> findById(AdminId id) {
+    public Optional<Admin> findById(AdminId id) {
         checkThrow();
         return Optional.ofNullable(store.get(id));
     }
 
     @Override
-    public Optional<AdminAccount> findByUsername(String username) {
+    public Optional<Admin> findByUsername(String username) {
         checkThrow();
         return store.values().stream()
                 .filter(a -> a.getUsername().equals(username))
@@ -55,11 +55,18 @@ public class FakeAdminAccountRepository implements AdminAccountRepository {
     }
 
     @Override
-    public Optional<AdminAccount> findByAdminRole(AdminRole adminRole) {
+    public Optional<Admin> findByRole(AdminRole role) {
         checkThrow();
         return store.values().stream()
-                .filter(a -> a.getAdminRole() == adminRole)
+                .filter(a -> a.getAdminRole() == role)
                 .findFirst();
+    }
+
+    @Override
+    public boolean existsByEmployeeNo(String employeeNo) {
+        checkThrow();
+        return store.values().stream()
+                .anyMatch(a -> a.getProfile() != null && employeeNo.equals(a.getProfile().getEmployeeNo()));
     }
 
     @Override

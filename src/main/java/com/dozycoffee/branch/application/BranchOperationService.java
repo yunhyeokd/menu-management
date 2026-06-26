@@ -13,22 +13,22 @@ import java.util.Set;
 
 public class BranchOperationService {
 
-    private final BranchAccountRepository branchAccountRepository;
+    private final BranchRepository branchRepository;
     private final BranchProductQueryPort productQueryPort;
     private final ProductSalesOverrideRepository productSalesOverrideRepository;
 
     public BranchOperationService(
-            BranchAccountRepository branchAccountRepository,
+            BranchRepository branchRepository,
             BranchProductQueryPort productQueryPort,
             ProductSalesOverrideRepository productSalesOverrideRepository
     ) {
-        this.branchAccountRepository = branchAccountRepository;
+        this.branchRepository = branchRepository;
         this.productQueryPort = productQueryPort;
         this.productSalesOverrideRepository = productSalesOverrideRepository;
     }
 
-    private void assertBranchAccountExists(BranchId branchId) throws RepositoryException {
-        branchAccountRepository.findById(branchId)
+    private void assertBranchExists(BranchId branchId) throws RepositoryException {
+        branchRepository.findById(branchId)
                 .orElseThrow(() -> new ResourceNotFoundException(BranchServiceCode.BRN, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
@@ -39,7 +39,7 @@ public class BranchOperationService {
 
     public List<BranchProduct> findOverridableProducts(BranchId branchId) {
         try {
-            assertBranchAccountExists(branchId);
+            assertBranchExists(branchId);
             Set<BranchProduct> overridableProducts = new HashSet<>();
             overridableProducts.addAll(productQueryPort.findAllActiveCommon());
             overridableProducts.addAll(productQueryPort.findAllActiveBranchExclusive(branchId));
@@ -69,7 +69,7 @@ public class BranchOperationService {
 
     public void hideSale(BranchId branchId, ProductId productId) {
         try {
-            assertBranchAccountExists(branchId);
+            assertBranchExists(branchId);
             BranchProduct product = getProduct(productId);
             if (!product.isActive()) {
                 throw new ConflictException(BranchServiceCode.BRN, BranchErrors.PRODUCT_NOT_ACTIVE_ERROR);
@@ -82,7 +82,7 @@ public class BranchOperationService {
 
     public void soldOut(BranchId branchId, ProductId productId) {
         try {
-            assertBranchAccountExists(branchId);
+            assertBranchExists(branchId);
             BranchProduct product = getProduct(productId);
             if (!product.isActive()) {
                 throw new ConflictException(BranchServiceCode.BRN, BranchErrors.PRODUCT_NOT_ACTIVE_ERROR);

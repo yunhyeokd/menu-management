@@ -11,7 +11,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class AdminProfileTest {
 
     static class Mock {
-        static AdminId adminId = AdminId.of(1L);
         static String employeeNo = "20260001";
         static String name = "John Doe";
         static String phone = "+821012345678";
@@ -20,7 +19,7 @@ public class AdminProfileTest {
 
     @Test
     public void 관리자_프로필을_정상_생성한다() {
-        AdminProfile profile = AdminProfile.create(Mock.adminId, Mock.employeeNo, Mock.name, Mock.phone, Mock.email);
+        AdminProfile profile = AdminProfile.create(Mock.employeeNo, Mock.name, Mock.phone, Mock.email);
         assertThat(profile.getEmployeeNo()).isEqualTo(Mock.employeeNo);
         assertThat(profile.getName()).isEqualTo(Mock.name);
         assertThat(profile.getPhone()).isEqualTo(Mock.phone);
@@ -35,7 +34,7 @@ public class AdminProfileTest {
             "aaaaaaaaaaaaaaaaaaaab"
     })
     public void 프로필_생성시_사원번호가_유효하지_않으면_예외가_발생한다(String employeeNo) {
-        assertThatThrownBy(() -> AdminProfile.create(Mock.adminId, employeeNo, Mock.name, Mock.phone, Mock.email))
+        assertThatThrownBy(() -> AdminProfile.create(employeeNo, Mock.name, Mock.phone, Mock.email))
                 .isInstanceOf(AdminException.class);
     }
 
@@ -50,7 +49,7 @@ public class AdminProfileTest {
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     })
     public void 프로필_생성시_이름이_유효하지_않으면_예외가_발생한다(String name) {
-        assertThatThrownBy(() -> AdminProfile.create(Mock.adminId, Mock.employeeNo, name, Mock.phone, Mock.email))
+        assertThatThrownBy(() -> AdminProfile.create(Mock.employeeNo, name, Mock.phone, Mock.email))
                 .isInstanceOf(AdminException.class);
     }
 
@@ -62,7 +61,7 @@ public class AdminProfileTest {
             "+12345678901234"
     })
     public void 프로필_생성시_유효한_전화번호는_정상_생성된다(String phone) {
-        AdminProfile profile = AdminProfile.create(Mock.adminId, Mock.employeeNo, Mock.name, phone, Mock.email);
+        AdminProfile profile = AdminProfile.create(Mock.employeeNo, Mock.name, phone, Mock.email);
         assertThat(profile.getPhone()).isEqualTo(phone);
     }
 
@@ -77,7 +76,7 @@ public class AdminProfileTest {
             "+82-1012-345678"
     })
     public void 프로필_생성시_전화번호가_유효하지_않으면_예외가_발생한다(String phone) {
-        assertThatThrownBy(() -> AdminProfile.create(Mock.adminId, Mock.employeeNo, Mock.name, phone, Mock.email))
+        assertThatThrownBy(() -> AdminProfile.create(Mock.employeeNo, Mock.name, phone, Mock.email))
                 .isInstanceOf(AdminException.class);
     }
 
@@ -88,7 +87,7 @@ public class AdminProfileTest {
             "user@sub.domain.com"
     })
     public void 프로필_생성시_유효한_이메일은_정상_생성된다(String email) {
-        AdminProfile profile = AdminProfile.create(Mock.adminId, Mock.employeeNo, Mock.name, Mock.phone, email);
+        AdminProfile profile = AdminProfile.create(Mock.employeeNo, Mock.name, Mock.phone, email);
         assertThat(profile.getEmail()).isEqualTo(email);
     }
 
@@ -102,7 +101,7 @@ public class AdminProfileTest {
             "user@example"
     })
     public void 프로필_생성시_이메일이_유효하지_않으면_예외가_발생한다(String email) {
-        assertThatThrownBy(() -> AdminProfile.create(Mock.adminId, Mock.employeeNo, Mock.name, Mock.phone, email))
+        assertThatThrownBy(() -> AdminProfile.create(Mock.employeeNo, Mock.name, Mock.phone, email))
                 .isInstanceOf(AdminException.class);
     }
 
@@ -111,23 +110,23 @@ public class AdminProfileTest {
         String local = "a".repeat(64);
         String domain = "b".repeat(200);
         String email = local + "@" + domain + ".com";
-        assertThatThrownBy(() -> AdminProfile.create(Mock.adminId, Mock.employeeNo, Mock.name, Mock.phone, email))
+        assertThatThrownBy(() -> AdminProfile.create(Mock.employeeNo, Mock.name, Mock.phone, email))
                 .isInstanceOf(AdminException.class);
     }
 
     @Test
-    public void 같은_adminId를_가진_프로필은_동등하다() {
-        AdminProfile a = AdminProfile.of(AdminId.of(1L), Mock.employeeNo, Mock.name, Mock.phone, Mock.email);
-        AdminProfile b = AdminProfile.of(AdminId.of(1L), Mock.employeeNo, Mock.name, Mock.phone, Mock.email);
+    public void 같은_employeeNo를_가진_프로필은_동등하다() {
+        AdminProfile a = AdminProfile.of(Mock.employeeNo, Mock.name, Mock.phone, Mock.email);
+        AdminProfile b = AdminProfile.of(Mock.employeeNo, Mock.name, Mock.phone, Mock.email);
 
         assertThat(a).isEqualTo(b);
         assertThat(a.hashCode()).isEqualTo(b.hashCode());
     }
 
     @Test
-    public void 다른_adminId를_가진_프로필은_동등하지_않다() {
-        AdminProfile a = AdminProfile.of(AdminId.of(1L), Mock.employeeNo, Mock.name, Mock.phone, Mock.email);
-        AdminProfile b = AdminProfile.of(AdminId.of(2L), Mock.employeeNo, Mock.name, Mock.phone, Mock.email);
+    public void 다른_employeeNo를_가진_프로필은_동등하지_않다() {
+        AdminProfile a = AdminProfile.of("EMP001", Mock.name, Mock.phone, Mock.email);
+        AdminProfile b = AdminProfile.of("EMP002", Mock.name, Mock.phone, Mock.email);
 
         assertThat(a).isNotEqualTo(b);
     }

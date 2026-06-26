@@ -17,14 +17,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class BranchOperationServiceTest {
 
-    private FakeBranchAccountRepository branchAccountRepository;
+    private FakeBranchRepository branchAccountRepository;
     private FakeBranchProductQueryPort productQueryPort;
     private FakeProductSalesOverrideRepository productSalesOverrideRepository;
     private BranchOperationService operationService;
 
     @BeforeEach
     void setUp() {
-        branchAccountRepository = new FakeBranchAccountRepository();
+        branchAccountRepository = new FakeBranchRepository();
         productQueryPort = new FakeBranchProductQueryPort();
         productSalesOverrideRepository = new FakeProductSalesOverrideRepository();
         operationService = new BranchOperationService(

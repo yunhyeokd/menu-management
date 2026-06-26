@@ -9,7 +9,8 @@ public enum AdminErrors implements ServiceError {
     ADMIN_NOT_FOUND(3, "Admin Not Found"),
     DUPLICATE_ACCOUNT_ERROR(4, "Duplicate Account"),
     UNABLE_APPROVAL_ERROR(5, "Account is not a subject to approval"),
-    AUTHENTICATION_FAILED_ERROR(6, "Authentication Failed"),;
+    AUTHENTICATION_FAILED_ERROR(6, "Authentication Failed"),
+    DUPLICATE_EMPLOYEE_NO_ERROR(7, "Duplicate Employee Number"),;
 
     private final int errorCode;
     private final String message;

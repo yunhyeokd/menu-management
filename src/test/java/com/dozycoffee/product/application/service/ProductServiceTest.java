@@ -1,15 +1,16 @@
 package com.dozycoffee.product.application.service;
 
-import com.dozycoffee.branch.application.FakeBranchAccountRepository;
+import com.dozycoffee.branch.application.FakeBranchRepository;
 import com.dozycoffee.core.application.AppException;
 import com.dozycoffee.core.application.ServiceError;
 import com.dozycoffee.core.application.exception.*;
 import com.dozycoffee.product.application.repository.*;
 import com.dozycoffee.product.application.dto.*;
 import com.dozycoffee.product.application.service.tag.TagService;
-import com.dozycoffee.branch.domain.BranchAccount;
+import com.dozycoffee.branch.domain.Branch;
 import com.dozycoffee.branch.domain.BranchCode;
 import com.dozycoffee.branch.domain.BranchId;
+
 import com.dozycoffee.branch.domain.BranchStatus;
 import com.dozycoffee.product.domain.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +32,7 @@ public class ProductServiceTest {
     private FakeProductTagRepository productTagRepository;
     private FakeOptionGroupRepository optionGroupRepository;
     private FakeProductOptionGroupRepository productOptionGroupRepository;
-    private FakeBranchAccountRepository branchAccountRepository;
+    private FakeBranchRepository branchAccountRepository;
     private ProductService productService;
 
     private long nextProductId = 1L;
@@ -46,7 +47,7 @@ public class ProductServiceTest {
         productTagRepository = new FakeProductTagRepository();
         optionGroupRepository = new FakeOptionGroupRepository();
         productOptionGroupRepository = new FakeProductOptionGroupRepository();
-        branchAccountRepository = new FakeBranchAccountRepository();
+        branchAccountRepository = new FakeBranchRepository();
         nextProductId = 1L;
         nextTagId = 1L;
 
@@ -74,14 +75,16 @@ public class ProductServiceTest {
         return categoryRepository.put(Category.of(CategoryId.of(1L), "음료", Instant.now()));
     }
 
-    private BranchAccount defaultBranch() {
-        return branchAccountRepository.put(BranchAccount.of(
+    private Branch defaultBranch() {
+        return branchAccountRepository.put(Branch.of(
                 BranchId.of(1L),
                 BranchCode.of("20260001"),
                 "hash",
                 BranchStatus.ACTIVE,
                 Instant.now(),
-                null
+                null,
+                "테스트점",
+                "서울 강남구 테헤란로 1"
         ));
     }
 
