@@ -6,12 +6,16 @@ import java.util.regex.Pattern;
 
 public class Category {
 
-    private CategoryId id;
+    private static final int NAME_MAX_LENGTH = 50;
+    private static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-Zㄱ-힣0-9 ]+$");
+
+    private final CategoryId id;
     private String name;
     private Instant createdAt;
 
     private Category(CategoryId id, String name, Instant createdAt) {
-        setId(id);
+        if (id == null) throw new ProductException("id cannot be null");
+        this.id = id;
         setName(name);
         setCreatedAt(createdAt);
     }
@@ -35,22 +39,6 @@ public class Category {
         return new Category(id, name, Instant.now());
     }
 
-    public CategoryId getId() {
-        return id;
-    }
-
-    private void setId(CategoryId id) {
-        if (id == null) throw new ProductException("id cannot be null");
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    private static final int NAME_MAX_LENGTH = 50;
-    private static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-Zㄱ-힣0-9 ]+$");
-
     private static void validateName(String name) {
         if (name == null || name.isBlank() || name.length() > NAME_MAX_LENGTH) {
             throw new ProductException("invalid name length");
@@ -58,6 +46,14 @@ public class Category {
         if (!NAME_PATTERN.matcher(name).matches() || !name.strip().equals(name)) {
             throw new ProductException("name does not match pattern");
         }
+    }
+
+    public CategoryId getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     private void setName(String name) {

@@ -17,15 +17,16 @@ public class OptionGroup {
     private String name;
     private String description;
     private List<OptionItem> items;
-    private Instant createdAt;
+    private final Instant createdAt;
 
     private OptionGroup(OptionGroupId id, String name, String description, List<OptionItem> items, Instant createdAt) {
         if (id == null) throw new ProductException("id cannot be null");
+        if (createdAt == null) throw new ProductException("createdAt cannot be null");
         this.id = id;
         setName(name);
         setDescription(description);
         setItems(items);
-        setCreatedAt(createdAt);
+        this.createdAt = createdAt;
     }
 
     @Override
@@ -96,11 +97,6 @@ public class OptionGroup {
 
     public Instant getCreatedAt() {
         return createdAt;
-    }
-
-    private void setCreatedAt(Instant createdAt) {
-        if (createdAt == null) throw new ProductException("createdAt cannot be null");
-        this.createdAt = createdAt;
     }
 
     public void updateName(String name) {

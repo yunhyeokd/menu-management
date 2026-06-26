@@ -7,16 +7,19 @@ import java.util.Objects;
 
 public class ProductSalesOverride {
 
-    private ProductId productId;
-    private BranchId branchId;
+    private final ProductId productId;
+    private final BranchId branchId;
     private ProductSalesOverrideStatus status;
-    private Instant createdAt;
+    private final Instant createdAt;
 
     private ProductSalesOverride(ProductId productId, BranchId branchId, ProductSalesOverrideStatus status, Instant createdAt) {
-        setProductId(productId);
-        setBranchId(branchId);
+        if (productId == null) throw new BranchException("productId cannot be null");
+        if (branchId == null) throw new BranchException("branchId cannot be null");
+        if (createdAt == null) throw new BranchException("createdAt cannot be null");
+        this.productId = productId;
+        this.branchId = branchId;
         setStatus(status);
-        setCreatedAt(createdAt);
+        this.createdAt = createdAt;
     }
 
     @Override
@@ -42,26 +45,12 @@ public class ProductSalesOverride {
         return productId;
     }
 
-    private void setProductId(ProductId productId) {
-        if (productId == null) throw new BranchException("productId cannot be null");
-        this.productId = productId;
-    }
-
     public BranchId getBranchId() {
         return branchId;
     }
 
-    private void setBranchId(BranchId branchId) {
-        if (branchId == null) throw new BranchException("branchId cannot be null");
-        this.branchId = branchId;
-    }
-
     public ProductSalesOverrideStatus getStatus() {
         return status;
-    }
-
-    public void updateStatus(ProductSalesOverrideStatus status) {
-        setStatus(status);
     }
 
     private void setStatus(ProductSalesOverrideStatus status) {
@@ -73,8 +62,7 @@ public class ProductSalesOverride {
         return createdAt;
     }
 
-    private void setCreatedAt(Instant createdAt) {
-        if (createdAt == null) throw new BranchException("createdAt cannot be null");
-        this.createdAt = createdAt;
+    public void updateStatus(ProductSalesOverrideStatus status) {
+        setStatus(status);
     }
 }
