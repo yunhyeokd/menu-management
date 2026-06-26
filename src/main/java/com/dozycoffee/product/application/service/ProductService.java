@@ -1,6 +1,6 @@
 package com.dozycoffee.product.application.service;
 
-import com.dozycoffee.branch.application.repository.BranchAccountRepository;
+import com.dozycoffee.branch.application.BranchAccountRepository;
 import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.product.application.ProductServiceCode;

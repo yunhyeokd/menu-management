@@ -1,4 +1,4 @@
-package com.dozycoffee.branch.application.repository;
+package com.dozycoffee.branch.application;
 
 import com.dozycoffee.branch.domain.BranchAccount;
 import com.dozycoffee.branch.domain.BranchCode;

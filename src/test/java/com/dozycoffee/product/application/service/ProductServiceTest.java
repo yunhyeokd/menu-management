@@ -1,12 +1,11 @@
 package com.dozycoffee.product.application.service;
 
-import com.dozycoffee.branch.application.repository.FakeBranchAccountRepository;
+import com.dozycoffee.branch.application.FakeBranchAccountRepository;
 import com.dozycoffee.core.application.AppException;
 import com.dozycoffee.core.application.ServiceError;
 import com.dozycoffee.core.application.exception.*;
 import com.dozycoffee.product.application.repository.*;
 import com.dozycoffee.product.application.dto.*;
-import com.dozycoffee.product.application.repository.*;
 import com.dozycoffee.product.application.service.tag.TagService;
 import com.dozycoffee.branch.domain.BranchAccount;
 import com.dozycoffee.branch.domain.BranchCode;

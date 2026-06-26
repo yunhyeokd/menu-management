@@ -1,6 +1,5 @@
-package com.dozycoffee.branch.application.repository;
+package com.dozycoffee.branch.application;
 
-import com.dozycoffee.branch.application.repository.BranchProfileRepository;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.branch.domain.BranchId;
 import com.dozycoffee.branch.domain.BranchProfile;
