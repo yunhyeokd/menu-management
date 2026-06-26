@@ -1,6 +1,6 @@
 package com.dozycoffee.auth.application;
 
-import com.dozycoffee.admin.domain.AdminAccount;
+import com.dozycoffee.admin.domain.Admin;
 import com.dozycoffee.admin.domain.AdminId;
 import com.dozycoffee.admin.domain.AdminRole;
 import com.dozycoffee.auth.domain.Principal;
@@ -30,12 +30,12 @@ public class AuthSessionManagerTest {
 
     private FakeAuthSessionRepository sessionRepository;
     private AuthSessionManager sessionManager;
-    private AdminAccount activeAdmin;
+    private Admin activeAdmin;
     private Branch activeBranch;
 
     @BeforeEach
     void setUp() {
-        activeAdmin = AdminAccount.create(AdminId.of(1L), AdminRole.SYSTEM, "sysadmin", HASHED_PASSWORD);
+        activeAdmin = Admin.create(AdminId.of(1L), AdminRole.SYSTEM, "sysadmin", HASHED_PASSWORD, null);
         activeBranch = Branch.create(BranchId.of(1L), BranchCode.of(BRANCH_CODE), HASHED_AUTH_KEY, "테스트점", "서울 강남구 테헤란로 1");
 
         sessionRepository = new FakeAuthSessionRepository();

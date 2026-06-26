@@ -9,15 +9,12 @@ import com.dozycoffee.core.application.exception.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class AdminServiceTest {
 
-    private FakeAdminAccountRepository adminAccountRepository;
-    private FakeAdminProfileRepository adminProfileRepository;
+    private FakeAdminRepository adminRepository;
     private FakeSessionInvalidationPort sessionInvalidationPort;
     private PasswordHasher passwordHasher;
 
@@ -27,8 +24,7 @@ public class AdminServiceTest {
 
     @BeforeEach
     public void setUp() {
-        adminAccountRepository = new FakeAdminAccountRepository();
-        adminProfileRepository = new FakeAdminProfileRepository();
+        adminRepository = new FakeAdminRepository();
         sessionInvalidationPort = new FakeSessionInvalidationPort();
         passwordHasher = new PasswordHasher() {
             @Override
@@ -44,16 +40,16 @@ public class AdminServiceTest {
         nextAdminId = 1L;
 
         adminService = new AdminService(
-                adminAccountRepository,
-                adminProfileRepository,
+                adminRepository,
                 () -> AdminId.of(nextAdminId++),
                 passwordHasher,
                 sessionInvalidationPort
         );
     }
 
-    private AdminProfile profile(AdminId id) {
-        return AdminProfile.create(id, "EMP001", "홍길동", "+821012345678", "admin@dozy.com");
+    private Admin staffWithProfile(AdminId id) {
+        AdminProfile profile = AdminProfile.create("EMP001", "홍길동", "+821012345678", "admin@dozy.com");
+        return Admin.create(id, AdminRole.STAFF, "staffuser", "password", profile);
     }
 
     private void assertErrorCode(Throwable e, AdminErrors error) {
@@ -72,14 +68,14 @@ public class AdminServiceTest {
         assertThat(result.username()).isEqualTo("sysadmin");
         assertThat(result.createdAt()).isNotNull();
 
-        AdminAccount saved = adminAccountRepository.findById(result.adminId()).orElseThrow();
+        Admin saved = adminRepository.findById(result.adminId()).orElseThrow();
         assertThat(saved.getStatus()).isEqualTo(AdminStatus.ACTIVE);
         assertThat(saved.getPasswordHash()).isEqualTo("hashed-password");
     }
 
     @Test
     public void 시스템_관리자가_이미_존재하면_DUPLICATE_ACCOUNT_ERROR를_던진다() {
-        adminAccountRepository.put(AdminFixture.system().username("sysadmin").build());
+        adminRepository.put(AdminFixture.system().username("sysadmin").build());
 
         assertThatThrownBy(() -> adminService.registerSystem(
                 new SystemAdminRegisterCommand("another", "password")))
@@ -97,7 +93,7 @@ public class AdminServiceTest {
 
     @Test
     public void 시스템_관리자_생성중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        adminAccountRepository.throwOnNextCall();
+        adminRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> adminService.registerSystem(
                 new SystemAdminRegisterCommand("sysadmin", "password")))
@@ -118,19 +114,29 @@ public class AdminServiceTest {
         assertThat(result.name()).isEqualTo("홍길동");
         assertThat(result.email()).isEqualTo("staff@dozy.com");
 
-        AdminAccount account = adminAccountRepository.findById(result.adminId()).orElseThrow();
+        Admin account = adminRepository.findById(result.adminId()).orElseThrow();
         assertThat(account.getStatus()).isEqualTo(AdminStatus.PENDING);
-        assertThat(adminProfileRepository.contains(result.adminId())).isTrue();
+        assertThat(account.getProfile()).isNotNull();
     }
 
     @Test
     public void 사원_관리자_생성시_username이_중복되면_DUPLICATE_ACCOUNT_ERROR를_던진다() {
-        adminAccountRepository.put(AdminFixture.builder().username("staff01").build());
+        adminRepository.put(AdminFixture.builder().username("staff01").build());
 
         assertThatThrownBy(() -> adminService.registerStaff(new AdminRegisterCommand(
                 "staff01", "password", "EMP002", "김철수", "+821087654321", "kim@dozy.com")))
                 .isInstanceOf(ConflictException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.DUPLICATE_ACCOUNT_ERROR));
+    }
+
+    @Test
+    public void 사원_관리자_생성시_사원번호가_중복되면_DUPLICATE_EMPLOYEE_NO_ERROR를_던진다() {
+        adminRepository.put(AdminFixture.builder().username("other01").build());
+
+        assertThatThrownBy(() -> adminService.registerStaff(new AdminRegisterCommand(
+                "staff01", "password", "EMP001", "김철수", "+821087654321", "kim@dozy.com")))
+                .isInstanceOf(ConflictException.class)
+                .satisfies(e -> assertErrorCode(e, AdminErrors.DUPLICATE_EMPLOYEE_NO_ERROR));
     }
 
     @Test
@@ -143,7 +149,7 @@ public class AdminServiceTest {
 
     @Test
     public void 사원_관리자_생성중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        adminAccountRepository.throwOnNextCall();
+        adminRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> adminService.registerStaff(new AdminRegisterCommand(
                 "staff01", "password", "EMP001", "홍길동", "+821012345678", "staff@dozy.com")))
@@ -156,11 +162,11 @@ public class AdminServiceTest {
     @Test
     public void 계정_생성_요청을_정상_승인한다() {
         AdminId adminId = AdminId.of(1L);
-        adminAccountRepository.put(AdminFixture.builder().id(adminId).build());
+        adminRepository.put(AdminFixture.builder().id(adminId).build());
 
         adminService.approve(adminId);
 
-        AdminAccount account = adminAccountRepository.findById(adminId).orElseThrow();
+        Admin account = adminRepository.findById(adminId).orElseThrow();
         assertThat(account.getStatus()).isEqualTo(AdminStatus.ACTIVE);
     }
 
@@ -174,9 +180,9 @@ public class AdminServiceTest {
     @Test
     public void PENDING_상태가_아닌_계정_승인시_UNABLE_APPROVAL_ERROR를_던진다() {
         AdminId adminId = AdminId.of(1L);
-        AdminAccount account = AdminFixture.builder().id(adminId).build();
+        Admin account = AdminFixture.builder().id(adminId).build();
         account.approve();
-        adminAccountRepository.put(account);
+        adminRepository.put(account);
 
         assertThatThrownBy(() -> adminService.approve(adminId))
                 .isInstanceOf(ConflictException.class)
@@ -186,8 +192,8 @@ public class AdminServiceTest {
     @Test
     public void 승인중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         AdminId adminId = AdminId.of(1L);
-        adminAccountRepository.put(AdminFixture.builder().id(adminId).build());
-        adminAccountRepository.throwOnNextCall();
+        adminRepository.put(AdminFixture.builder().id(adminId).build());
+        adminRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> adminService.approve(adminId))
                 .isInstanceOf(SystemException.class)
@@ -199,11 +205,11 @@ public class AdminServiceTest {
     @Test
     public void 계정_생성_요청을_정상_거절한다() {
         AdminId adminId = AdminId.of(1L);
-        adminAccountRepository.put(AdminFixture.builder().id(adminId).build());
+        adminRepository.put(AdminFixture.builder().id(adminId).build());
 
         adminService.reject(adminId);
 
-        AdminAccount account = adminAccountRepository.findById(adminId).orElseThrow();
+        Admin account = adminRepository.findById(adminId).orElseThrow();
         assertThat(account.getStatus()).isEqualTo(AdminStatus.INACTIVE);
         assertThat(account.isSoftDeleted()).isTrue();
     }
@@ -218,9 +224,9 @@ public class AdminServiceTest {
     @Test
     public void PENDING_상태가_아닌_계정_거절시_UNABLE_APPROVAL_ERROR를_던진다() {
         AdminId adminId = AdminId.of(1L);
-        AdminAccount account = AdminFixture.builder().id(adminId).build();
+        Admin account = AdminFixture.builder().id(adminId).build();
         account.approve();
-        adminAccountRepository.put(account);
+        adminRepository.put(account);
 
         assertThatThrownBy(() -> adminService.reject(adminId))
                 .isInstanceOf(ConflictException.class)
@@ -232,13 +238,10 @@ public class AdminServiceTest {
     @Test
     public void 관리자_프로필을_정상_수정한다() {
         AdminId adminId = AdminId.of(1L);
-        adminProfileRepository.put(profile(adminId));
+        adminRepository.put(staffWithProfile(adminId));
 
         AdminProfileUpdateResult result = adminService.updateProfile(adminId,
-                new AdminProfileUpdateCommand(
-                        Optional.of("김철수"),
-                        Optional.of("+821099998888"),
-                        Optional.of("new@dozy.com")));
+                new AdminProfileUpdateCommand("김철수", "+821099998888", "new@dozy.com"));
 
         assertThat(result.name()).isEqualTo("김철수");
         assertThat(result.phone()).isEqualTo("+821099998888");
@@ -248,13 +251,10 @@ public class AdminServiceTest {
     @Test
     public void 프로필_수정시_일부_필드만_변경한다() {
         AdminId adminId = AdminId.of(1L);
-        adminProfileRepository.put(profile(adminId));
+        adminRepository.put(staffWithProfile(adminId));
 
         AdminProfileUpdateResult result = adminService.updateProfile(adminId,
-                new AdminProfileUpdateCommand(
-                        Optional.of("김철수"),
-                        Optional.empty(),
-                        Optional.empty()));
+                new AdminProfileUpdateCommand("김철수", null, null));
 
         assertThat(result.name()).isEqualTo("김철수");
         assertThat(result.phone()).isEqualTo("+821012345678");
@@ -264,7 +264,7 @@ public class AdminServiceTest {
     @Test
     public void 프로필_수정시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
         assertThatThrownBy(() -> adminService.updateProfile(AdminId.of(999L),
-                new AdminProfileUpdateCommand(Optional.of("김철수"), Optional.empty(), Optional.empty())))
+                new AdminProfileUpdateCommand("김철수", null, null)))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
     }
@@ -272,10 +272,10 @@ public class AdminServiceTest {
     @Test
     public void 프로필_수정시_값이_유효하지_않으면_INVALID_ADMIN_ERROR를_던진다() {
         AdminId adminId = AdminId.of(1L);
-        adminProfileRepository.put(profile(adminId));
+        adminRepository.put(staffWithProfile(adminId));
 
         assertThatThrownBy(() -> adminService.updateProfile(adminId,
-                new AdminProfileUpdateCommand(Optional.empty(), Optional.of("invalid-phone"), Optional.empty())))
+                new AdminProfileUpdateCommand(null, "invalid-phone", null)))
                 .isInstanceOf(ValidationException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.INVALID_ADMIN_ERROR));
     }
@@ -283,11 +283,11 @@ public class AdminServiceTest {
     @Test
     public void 프로필_수정중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         AdminId adminId = AdminId.of(1L);
-        adminProfileRepository.put(profile(adminId));
-        adminProfileRepository.throwOnNextCall();
+        adminRepository.put(staffWithProfile(adminId));
+        adminRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> adminService.updateProfile(adminId,
-                new AdminProfileUpdateCommand(Optional.of("김철수"), Optional.empty(), Optional.empty())))
+                new AdminProfileUpdateCommand("김철수", null, null)))
                 .isInstanceOf(SystemException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.UNKNOWN_ERROR));
     }
@@ -297,11 +297,11 @@ public class AdminServiceTest {
     @Test
     public void 관리자_계정을_정상_소프트_삭제하고_세션을_무효화한다() {
         AdminId adminId = AdminId.of(1L);
-        AdminAccount account = adminAccountRepository.put(AdminFixture.builder().id(adminId).build());
+        Admin account = adminRepository.put(AdminFixture.builder().id(adminId).build());
 
         adminService.softDelete(adminId);
 
-        AdminAccount deleted = adminAccountRepository.findById(adminId).orElseThrow();
+        Admin deleted = adminRepository.findById(adminId).orElseThrow();
         assertThat(deleted.getStatus()).isEqualTo(AdminStatus.INACTIVE);
         assertThat(deleted.isSoftDeleted()).isTrue();
         assertThat(sessionInvalidationPort.wasInvalidated(account)).isTrue();
@@ -317,7 +317,7 @@ public class AdminServiceTest {
     @Test
     public void 시스템_계정_소프트_삭제시_INVALID_ADMIN_ERROR를_던진다() {
         AdminId adminId = AdminId.of(1L);
-        adminAccountRepository.put(AdminFixture.system().id(adminId).build());
+        adminRepository.put(AdminFixture.system().id(adminId).build());
 
         assertThatThrownBy(() -> adminService.softDelete(adminId))
                 .isInstanceOf(ValidationException.class)
@@ -327,9 +327,9 @@ public class AdminServiceTest {
     @Test
     public void 이미_소프트_삭제된_계정을_다시_삭제하면_INVALID_ADMIN_ERROR를_던진다() {
         AdminId adminId = AdminId.of(1L);
-        AdminAccount account = AdminFixture.builder().id(adminId).build();
+        Admin account = AdminFixture.builder().id(adminId).build();
         account.softDelete();
-        adminAccountRepository.put(account);
+        adminRepository.put(account);
 
         assertThatThrownBy(() -> adminService.softDelete(adminId))
                 .isInstanceOf(ValidationException.class)
@@ -339,8 +339,8 @@ public class AdminServiceTest {
     @Test
     public void 소프트_삭제중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         AdminId adminId = AdminId.of(1L);
-        adminAccountRepository.put(AdminFixture.builder().id(adminId).build());
-        adminAccountRepository.throwOnNextCall();
+        adminRepository.put(AdminFixture.builder().id(adminId).build());
+        adminRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> adminService.softDelete(adminId))
                 .isInstanceOf(SystemException.class)
@@ -352,15 +352,13 @@ public class AdminServiceTest {
     @Test
     public void 소프트_삭제된_계정을_정상_하드_삭제한다() {
         AdminId adminId = AdminId.of(1L);
-        AdminAccount account = AdminFixture.builder().id(adminId).build();
+        Admin account = AdminFixture.builder().id(adminId).build();
         account.softDelete();
-        adminAccountRepository.put(account);
-        adminProfileRepository.put(profile(adminId));
+        adminRepository.put(account);
 
         adminService.hardDelete(adminId);
 
-        assertThat(adminAccountRepository.contains(adminId)).isFalse();
-        assertThat(adminProfileRepository.contains(adminId)).isFalse();
+        assertThat(adminRepository.contains(adminId)).isFalse();
         assertThat(sessionInvalidationPort.wasInvalidated(account)).isTrue();
     }
 
@@ -374,7 +372,7 @@ public class AdminServiceTest {
     @Test
     public void 소프트_삭제되지_않은_계정을_하드_삭제하면_INVALID_ADMIN_ERROR를_던진다() {
         AdminId adminId = AdminId.of(1L);
-        adminAccountRepository.put(AdminFixture.builder().id(adminId).build());
+        adminRepository.put(AdminFixture.builder().id(adminId).build());
 
         assertThatThrownBy(() -> adminService.hardDelete(adminId))
                 .isInstanceOf(ConflictException.class)
@@ -384,11 +382,10 @@ public class AdminServiceTest {
     @Test
     public void 하드_삭제중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         AdminId adminId = AdminId.of(1L);
-        AdminAccount account = AdminFixture.builder().id(adminId).build();
+        Admin account = AdminFixture.builder().id(adminId).build();
         account.softDelete();
-        adminAccountRepository.put(account);
-        adminProfileRepository.put(profile(adminId));
-        adminProfileRepository.throwOnNextCall();
+        adminRepository.put(account);
+        adminRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> adminService.hardDelete(adminId))
                 .isInstanceOf(SystemException.class)
@@ -400,11 +397,11 @@ public class AdminServiceTest {
     @Test
     void 비밀번호를_정상_변경한다() {
         AdminId adminId = AdminId.of(1L);
-        adminAccountRepository.put(AdminFixture.builder().id(adminId).password("hashed-currentPassword").build());
+        adminRepository.put(AdminFixture.builder().id(adminId).password("hashed-currentPassword").build());
 
         adminService.changePassword(adminId, "currentPassword", "newPassword");
 
-        AdminAccount updated = adminAccountRepository.findById(adminId).orElseThrow();
+        Admin updated = adminRepository.findById(adminId).orElseThrow();
         assertThat(updated.getPasswordHash()).isEqualTo("hashed-newPassword");
     }
 
@@ -418,7 +415,7 @@ public class AdminServiceTest {
     @Test
     void 현재_비밀번호가_틀리면_AUTHENTICATION_FAILED_ERROR를_던진다() {
         AdminId adminId = AdminId.of(1L);
-        adminAccountRepository.put(AdminFixture.builder().id(adminId).password("hashed-correctPassword").build());
+        adminRepository.put(AdminFixture.builder().id(adminId).password("hashed-correctPassword").build());
 
         assertThatThrownBy(() -> adminService.changePassword(adminId, "wrongPassword", "newPassword"))
                 .isInstanceOf(AuthenticationException.class)
@@ -428,8 +425,8 @@ public class AdminServiceTest {
     @Test
     void 비밀번호_변경중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         AdminId adminId = AdminId.of(1L);
-        adminAccountRepository.put(AdminFixture.builder().id(adminId).password("hashed-currentPassword").build());
-        adminAccountRepository.throwOnNextCall();
+        adminRepository.put(AdminFixture.builder().id(adminId).password("hashed-currentPassword").build());
+        adminRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> adminService.changePassword(adminId, "currentPassword", "newPassword"))
                 .isInstanceOf(SystemException.class)

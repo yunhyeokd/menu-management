@@ -1,6 +1,6 @@
 package com.dozycoffee.auth.application;
 
-import com.dozycoffee.admin.domain.AdminAccount;
+import com.dozycoffee.admin.domain.Admin;
 import com.dozycoffee.admin.domain.AdminId;
 import com.dozycoffee.admin.domain.AdminRole;
 import com.dozycoffee.core.application.AppException;
@@ -15,12 +15,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class AuthorizationServiceTest {
 
     private AuthorizationService authorizationService;
-    private AdminAccount activeAdmin;
+    private Admin activeAdmin;
 
     @BeforeEach
     void setUp() {
         authorizationService = new AuthorizationService();
-        activeAdmin = AdminAccount.create(AdminId.of(1L), AdminRole.SYSTEM, "sysadmin", "hashed-password");
+        activeAdmin = Admin.create(AdminId.of(1L), AdminRole.SYSTEM, "sysadmin", "hashed-password", null);
     }
 
     private void assertErrorCode(Throwable e, AuthErrors error) {

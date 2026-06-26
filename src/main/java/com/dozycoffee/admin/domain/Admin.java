@@ -6,37 +6,48 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class AdminAccount implements Principal {
+public class Admin implements Principal {
 
-    private AdminId id;
-    private AdminRole adminRole;
-    private String username;
+    private final AdminId id;
+    private final AdminRole adminRole;
+    private final String username;
     private String passwordHash;
     private AdminStatus status;
-    private Instant createdAt;
+    private final Instant createdAt;
     private Instant deletedAt;
+    private AdminProfile profile;
 
-    private AdminAccount(
+    private Admin(
             AdminId id,
             AdminRole role,
             String username,
             String passwordHash,
             AdminStatus status,
             Instant createdAt,
-            Instant deletedAt
+            Instant deletedAt,
+            AdminProfile profile
     ) {
-        setId(id);
-        setAdminRole(role);
-        setUsername(username);
-        setPasswordHash(passwordHash);
-        setStatus(status);
-        setCreatedAt(createdAt);
+        if (id == null) throw new AdminException("id cannot be null");
+        if (role == null) throw new AdminException("role cannot be null");
+        validateUsername(username);
+        validatePasswordHash(passwordHash);
+        if (status == null) throw new AdminException("status cannot be null");
+        if (createdAt == null) throw new AdminException("createdAt cannot be null");
+        if (role != AdminRole.SYSTEM && profile == null)
+            throw new AdminException("profile is required for non-SYSTEM admin");
+        this.id = id;
+        this.adminRole = role;
+        this.username = username;
+        this.passwordHash = passwordHash;
+        this.status = status;
+        this.createdAt = createdAt;
         this.deletedAt = deletedAt;
+        this.profile = profile;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof AdminAccount adminAccount)) return false;
+        if (!(o instanceof Admin adminAccount)) return false;
         return Objects.equals(id, adminAccount.id);
     }
 
@@ -45,30 +56,26 @@ public class AdminAccount implements Principal {
         return Objects.hashCode(id);
     }
 
-    public static AdminAccount of(
+    public static Admin of(
             AdminId id,
             AdminRole role,
             String username,
             String password,
             AdminStatus status,
             Instant createdAt,
-            Instant deletedAt
+            Instant deletedAt,
+            AdminProfile profile
     ) {
-        return new AdminAccount(id, role, username, password, status, createdAt, deletedAt);
+        return new Admin(id, role, username, password, status, createdAt, deletedAt, profile);
     }
 
-    public static AdminAccount create(AdminId id, AdminRole role, String username, String password) {
+    public static Admin create(AdminId id, AdminRole role, String username, String password, AdminProfile profile) {
         AdminStatus status = role == AdminRole.SYSTEM ? AdminStatus.ACTIVE : AdminStatus.PENDING;
-        return new AdminAccount(id, role, username, password, status, Instant.now(), null);
+        return new Admin(id, role, username, password, status, Instant.now(), null, profile);
     }
 
     public AdminId getId() {
         return id;
-    }
-
-    private void setId(AdminId id) {
-        if (id == null) throw new AdminException("id cannot be null");
-        this.id = id;
     }
 
     @Override
@@ -83,11 +90,6 @@ public class AdminAccount implements Principal {
 
     public AdminRole getAdminRole() {
         return adminRole;
-    }
-
-    private void setAdminRole(AdminRole adminRole) {
-        if (adminRole == null) throw new AdminException("role cannot be null");
-        this.adminRole = adminRole;
     }
 
     public String getUsername() {
@@ -112,15 +114,9 @@ public class AdminAccount implements Principal {
         }
     }
 
-    private void setUsername(String username) {
-        validateUsername(username);
-        this.username = username;
-    }
-
     public String getPasswordHash() {
         return passwordHash;
     }
-
 
     private static void validatePasswordHash(String passwordHash) {
         if (passwordHash == null || passwordHash.isEmpty()) {
@@ -146,13 +142,22 @@ public class AdminAccount implements Principal {
         return createdAt;
     }
 
-    private void setCreatedAt(Instant createdAt) {
-        if (createdAt == null) throw new AdminException("createdAt cannot be null");
-        this.createdAt = createdAt;
-    }
-
     public Instant getDeletedAt() {
         return deletedAt;
+    }
+
+    public AdminProfile getProfile() {
+        return profile;
+    }
+
+    public void updateProfile(String name, String phone, String email) {
+        if (profile == null) throw new AdminException("cannot update profile on SYSTEM admin");
+        this.profile = AdminProfile.create(
+                profile.getEmployeeNo(),
+                name != null ? name : profile.getName(),
+                phone != null ? phone : profile.getPhone(),
+                email != null ? email : profile.getEmail()
+        );
     }
 
     public void updateStatus(AdminStatus status) {

@@ -17,24 +17,29 @@ public class Branch implements Principal {
     private static final int NAME_MAX_LENGTH = 30;
     private static final int ADDRESS_MAX_LENGTH = 255;
 
-    private BranchId id;
-    private BranchCode code;
+    private final BranchId id;
+    private final BranchCode code;
     private String authKeyHash;
     private BranchStatus status;
-    private Instant createdAt;
+    private final Instant createdAt;
     private Instant deletedAt;
     private String name;
     private String address;
 
     private Branch(BranchId id, BranchCode code, String authKeyHash, BranchStatus status, Instant createdAt, Instant deletedAt, String name, String address) {
-        setId(id);
-        setCode(code);
-        setAuthKeyHash(authKeyHash);
-        setStatus(status);
-        setCreatedAt(createdAt);
+        if (id == null) throw new BranchException("id cannot be null");
+        if (code == null) throw new BranchException("Invalid branch code");
+        if (authKeyHash == null || authKeyHash.isBlank()) throw new BranchException("Invalid branch authKeyHash");
+        if (status == null) throw new BranchException("status cannot be null");
+        if (createdAt == null) throw new BranchException("createdAt cannot be null");
+        this.id = id;
+        this.code = code;
+        this.authKeyHash = authKeyHash;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.deletedAt = deletedAt;
         setName(name);
         setAddress(address);
-        this.deletedAt = deletedAt;
     }
 
     @Override
@@ -78,18 +83,8 @@ public class Branch implements Principal {
         return id;
     }
 
-    private void setId(BranchId id) {
-        if (id == null) throw new BranchException("id cannot be null");
-        this.id = id;
-    }
-
     public BranchCode getCode() {
         return code;
-    }
-
-    private void setCode(BranchCode code) {
-        if (code == null) throw new BranchException("Invalid branch code");
-        this.code = code;
     }
 
     public String getAuthKeyHash() {
@@ -114,11 +109,6 @@ public class Branch implements Principal {
 
     public Instant getCreatedAt() {
         return createdAt;
-    }
-
-    private void setCreatedAt(Instant createdAt) {
-        if (createdAt == null) throw new BranchException("createdAt cannot be null");
-        this.createdAt = createdAt;
     }
 
     public Instant getDeletedAt() {

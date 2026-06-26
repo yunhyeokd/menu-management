@@ -90,6 +90,10 @@ public class BranchService {
     public void updateProfile(BranchId branchId, BranchProfileUpdateCommand command) {
         try {
             Branch branch = getBranch(branchId);
+            branchRepository.findByName(command.name())
+                            .ifPresent(existing -> {
+                                throw new ConflictException(BranchServiceCode.BRN, BranchErrors.DUPLICATE_NAME_ERROR);
+                            });
             branch.changeName(command.name());
             branch.changeAddress(command.address());
             branchRepository.save(branch);

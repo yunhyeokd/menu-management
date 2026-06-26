@@ -179,6 +179,16 @@ public class BranchServiceTest {
     }
 
     @Test
+    public void 지점_프로필_수정시_이름이_중복되면_DUPLICATE_NAME_ERROR를_던진다() {
+        Branch branch = BranchFixture.builder().id(BranchId.of(99L)).name("강남점").build();
+        branchRepository.put(branch);
+
+        assertThatThrownBy(() -> branchService.updateProfile(branch.getId(), new BranchProfileUpdateCommand("강남점", "서울 강남구 테헤란로 123")))
+                .isInstanceOf(ConflictException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.DUPLICATE_NAME_ERROR));
+    }
+
+    @Test
     public void 지점_프로필_수정중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         BranchId branchId = BranchId.of(1L);
         branchRepository.put(BranchFixture.builder().id(branchId).name("강남점").build());
