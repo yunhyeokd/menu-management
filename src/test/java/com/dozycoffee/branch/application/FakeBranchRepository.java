@@ -1,26 +1,26 @@
 package com.dozycoffee.branch.application;
 
-import com.dozycoffee.core.application.RepositoryException;
-import com.dozycoffee.branch.domain.BranchAccount;
+import com.dozycoffee.branch.domain.Branch;
 import com.dozycoffee.branch.domain.BranchCode;
 import com.dozycoffee.branch.domain.BranchId;
+import com.dozycoffee.core.application.RepositoryException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class FakeBranchAccountRepository implements BranchAccountRepository {
+public class FakeBranchRepository implements BranchRepository {
 
-    private final Map<BranchId, BranchAccount> store = new LinkedHashMap<>();
+    private final Map<BranchId, Branch> store = new LinkedHashMap<>();
     private boolean shouldThrow = false;
 
     public void throwOnNextCall() {
         this.shouldThrow = true;
     }
 
-    public BranchAccount put(BranchAccount account) {
-        store.put(account.getId(), account);
-        return account;
+    public Branch put(Branch branch) {
+        store.put(branch.getId(), branch);
+        return branch;
     }
 
     public boolean contains(BranchId id) {
@@ -35,28 +35,36 @@ public class FakeBranchAccountRepository implements BranchAccountRepository {
     }
 
     @Override
-    public void save(BranchAccount branchAccount) {
+    public void save(Branch branch) {
         checkThrow();
-        store.put(branchAccount.getId(), branchAccount);
+        store.put(branch.getId(), branch);
     }
 
     @Override
-    public Optional<BranchAccount> findById(BranchId branchId) {
+    public Optional<Branch> findById(BranchId branchId) {
         checkThrow();
         return Optional.ofNullable(store.get(branchId));
+    }
+
+    @Override
+    public Optional<Branch> findByCode(BranchCode code) {
+        checkThrow();
+        return store.values().stream()
+                .filter(b -> b.getCode().equals(code))
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Branch> findByName(String name) {
+        checkThrow();
+        return store.values().stream()
+                .filter(b -> b.getName().equals(name))
+                .findFirst();
     }
 
     @Override
     public void deleteById(BranchId branchId) {
         checkThrow();
         store.remove(branchId);
-    }
-
-    @Override
-    public Optional<BranchAccount> findByBranchCode(BranchCode branchCode) {
-        checkThrow();
-        return store.values().stream()
-                .filter(account -> account.getCode().equals(branchCode))
-                .findFirst();
     }
 }

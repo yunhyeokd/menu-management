@@ -1,6 +1,6 @@
 package com.dozycoffee.product.application.service;
 
-import com.dozycoffee.branch.application.BranchAccountRepository;
+import com.dozycoffee.branch.application.BranchRepository;
 import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.product.application.ProductServiceCode;
@@ -20,11 +20,11 @@ public class ProductService {
     private final ProductTagRepository productTagRepository;
     private final OptionGroupRepository optionGroupRepository;
     private final ProductOptionGroupRepository productOptionGroupRepository;
-    private final BranchAccountRepository branchAccountRepository;
+    private final BranchRepository branchAccountRepository;
     private final IdentifierGenerator<ProductId> idGenerator;
     private final TagService tagService;
 
-    public ProductService(ProductRepository productRepository, ProductQueryRepository productQueryRepository, CategoryRepository categoryRepository, TagRepository tagRepository, ProductTagRepository productTagRepository, OptionGroupRepository optionGroupRepository, ProductOptionGroupRepository productOptionGroupRepository, BranchAccountRepository branchAccountRepository, IdentifierGenerator<ProductId> idGenerator, TagService tagService) {
+    public ProductService(ProductRepository productRepository, ProductQueryRepository productQueryRepository, CategoryRepository categoryRepository, TagRepository tagRepository, ProductTagRepository productTagRepository, OptionGroupRepository optionGroupRepository, ProductOptionGroupRepository productOptionGroupRepository, BranchRepository branchAccountRepository, IdentifierGenerator<ProductId> idGenerator, TagService tagService) {
         this.productRepository = productRepository;
         this.productQueryRepository = productQueryRepository;
         this.categoryRepository = categoryRepository;

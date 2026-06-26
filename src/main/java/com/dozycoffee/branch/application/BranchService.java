@@ -13,8 +13,7 @@ import com.dozycoffee.core.domain.IdentifierGenerator;
 
 public class BranchService {
 
-    private final BranchAccountRepository branchAccountRepository;
-    private final BranchProfileRepository branchProfileRepository;
+    private final BranchRepository branchRepository;
     private final BranchProductLifecyclePort productLifecyclePort;
     private final IdentifierGenerator<BranchId> idGenerator;
     private final BranchCodeGenerator codeGenerator;
@@ -23,8 +22,7 @@ public class BranchService {
     private final SessionInvalidationPort sessionInvalidationPort;
 
     public BranchService(
-            BranchAccountRepository branchAccountRepository,
-            BranchProfileRepository branchProfileRepository,
+            BranchRepository branchRepository,
             BranchProductLifecyclePort productLifecyclePort,
             IdentifierGenerator<BranchId> idGenerator,
             BranchCodeGenerator codeGenerator,
@@ -32,8 +30,7 @@ public class BranchService {
             PasswordHasher passwordHasher,
             SessionInvalidationPort sessionInvalidationPort
     ) {
-        this.branchAccountRepository = branchAccountRepository;
-        this.branchProfileRepository = branchProfileRepository;
+        this.branchRepository = branchRepository;
         this.productLifecyclePort = productLifecyclePort;
         this.idGenerator = idGenerator;
         this.codeGenerator = codeGenerator;
@@ -42,38 +39,30 @@ public class BranchService {
         this.sessionInvalidationPort = sessionInvalidationPort;
     }
 
-    private BranchAccount getBranchAccount(BranchId branchId) {
-        return branchAccountRepository.findById(branchId)
-                .orElseThrow(() -> new ResourceNotFoundException(BranchServiceCode.BRN, BranchErrors.BRANCH_NOT_FOUND_ERROR));
-    }
-
-    private BranchProfile getBranchProfile(BranchId branchId) throws RepositoryException {
-        return branchProfileRepository.findById(branchId)
+    private Branch getBranch(BranchId branchId) throws RepositoryException {
+        return branchRepository.findById(branchId)
                 .orElseThrow(() -> new ResourceNotFoundException(BranchServiceCode.BRN, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     public BranchCreateResult create(String name, String address) {
         try {
-            branchProfileRepository
-                    .findByName(name)
-                    .ifPresent(branchProfile -> {
+            branchRepository.findByName(name)
+                    .ifPresent(existing -> {
                         throw new ConflictException(BranchServiceCode.BRN, BranchErrors.DUPLICATE_NAME_ERROR);
                     });
             BranchId branchId = idGenerator.generate();
             BranchCode branchCode = codeGenerator.generate();
             Credential rawAuthKey = authKeyGenerator.generate();
             String authKeyHash = passwordHasher.hash(rawAuthKey.getValue());
-            BranchAccount account = BranchAccount.create(branchId, branchCode, authKeyHash);
-            BranchProfile profile = BranchProfile.create(branchId, name, address);
-            branchAccountRepository.save(account);
-            branchProfileRepository.save(profile);
+            Branch branch = Branch.create(branchId, branchCode, authKeyHash, name, address);
+            branchRepository.save(branch);
             return new BranchCreateResult(
-                    account.getId(),
-                    account.getCode(),
+                    branch.getId(),
+                    branch.getCode(),
                     rawAuthKey.getValue(),
-                    profile.getName(),
-                    profile.getAddress(),
-                    account.getCreatedAt()
+                    branch.getName(),
+                    branch.getAddress(),
+                    branch.getCreatedAt()
             );
         } catch (BranchException e) {
             throw new ValidationException(BranchServiceCode.BRN, BranchErrors.INVALID_BRANCH_ERROR);
@@ -84,13 +73,13 @@ public class BranchService {
 
     public BranchAuthKeyReissueResult reissueAuthKey(BranchId branchId) {
         try {
-            BranchAccount account = getBranchAccount(branchId);
+            Branch branch = getBranch(branchId);
             Credential rawAuthKey = authKeyGenerator.generate();
             String newHash = passwordHasher.hash(rawAuthKey.getValue());
-            account.reissueAuthKey(newHash);
-            branchAccountRepository.save(account);
-            sessionInvalidationPort.invalidate(account);
-            return new BranchAuthKeyReissueResult(account.getId(), account.getCode(), rawAuthKey.getValue());
+            branch.reissueAuthKey(newHash);
+            branchRepository.save(branch);
+            sessionInvalidationPort.invalidate(branch);
+            return new BranchAuthKeyReissueResult(branch.getId(), branch.getCode(), rawAuthKey.getValue());
         } catch (BranchException e) {
             throw new ConflictException(BranchServiceCode.BRN, BranchErrors.ALREADY_DELETED_ERROR);
         } catch (RepositoryException e) {
@@ -100,10 +89,10 @@ public class BranchService {
 
     public void updateProfile(BranchId branchId, BranchProfileUpdateCommand command) {
         try {
-            BranchProfile branchProfile = getBranchProfile(branchId);
-            branchProfile.changeName(command.name());
-            branchProfile.changeAddress(command.address());
-            branchProfileRepository.save(branchProfile);
+            Branch branch = getBranch(branchId);
+            branch.changeName(command.name());
+            branch.changeAddress(command.address());
+            branchRepository.save(branch);
         } catch (BranchException e) {
             throw new ValidationException(BranchServiceCode.BRN, BranchErrors.INVALID_PROFILE_ERROR);
         } catch (RepositoryException e) {
@@ -113,11 +102,11 @@ public class BranchService {
 
     public void softDelete(BranchId branchId) {
         try {
-            BranchAccount branchAccount = getBranchAccount(branchId);
+            Branch branch = getBranch(branchId);
             productLifecyclePort.deactivateAllByBranchId(branchId);
-            branchAccount.softDelete();
-            branchAccountRepository.save(branchAccount);
-            sessionInvalidationPort.invalidate(branchAccount);
+            branch.softDelete();
+            branchRepository.save(branch);
+            sessionInvalidationPort.invalidate(branch);
         } catch (BranchException e) {
             throw new ConflictException(BranchServiceCode.BRN, BranchErrors.ALREADY_DELETED_ERROR);
         } catch (RepositoryException e) {
@@ -127,14 +116,13 @@ public class BranchService {
 
     public void hardDelete(BranchId branchId) {
         try {
-            BranchAccount branchAccount = getBranchAccount(branchId);
-            if (!branchAccount.isSoftDeleted()) {
+            Branch branch = getBranch(branchId);
+            if (!branch.isSoftDeleted()) {
                 throw new ConflictException(BranchServiceCode.BRN, BranchErrors.INVALID_BRANCH_ERROR);
             }
             productLifecyclePort.deleteAllByBranchId(branchId);
-            branchProfileRepository.deleteById(branchId);
-            branchAccountRepository.deleteById(branchId);
-            sessionInvalidationPort.invalidate(branchAccount);
+            branchRepository.deleteById(branchId);
+            sessionInvalidationPort.invalidate(branch);
         } catch (RepositoryException e) {
             throw new SystemException(BranchServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
         }

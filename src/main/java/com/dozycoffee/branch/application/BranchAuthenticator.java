@@ -4,30 +4,28 @@ import com.dozycoffee.auth.domain.Authenticator;
 import com.dozycoffee.auth.application.PasswordHasher;
 import com.dozycoffee.auth.domain.Credential;
 import com.dozycoffee.auth.domain.Principal;
-import com.dozycoffee.branch.domain.BranchAccount;
+import com.dozycoffee.branch.domain.Branch;
 import com.dozycoffee.branch.domain.BranchCode;
 
 import java.util.Optional;
 
 public class BranchAuthenticator implements Authenticator<BranchCode> {
 
-    private final BranchAccountRepository branchAccountRepository;
+    private final BranchRepository branchRepository;
     private final PasswordHasher passwordHasher;
 
-    public BranchAuthenticator(BranchAccountRepository branchAccountRepository, PasswordHasher passwordHasher) {
-        this.branchAccountRepository = branchAccountRepository;
+    public BranchAuthenticator(BranchRepository branchRepository, PasswordHasher passwordHasher) {
+        this.branchRepository = branchRepository;
         this.passwordHasher = passwordHasher;
     }
 
     @Override
     public Optional<Principal> authenticate(BranchCode branchCode, Credential credential) {
-        BranchAccount branchAccount = branchAccountRepository.findByBranchCode(branchCode)
-                .orElse(null);
-        if (branchAccount == null || !branchAccount.isActive()) return Optional.empty();
-        if (!passwordHasher.matches(credential.getValue(), branchAccount.getAuthKeyHash())) {
+        Branch branch = branchRepository.findByCode(branchCode).orElse(null);
+        if (branch == null || !branch.isActive()) return Optional.empty();
+        if (!passwordHasher.matches(credential.getValue(), branch.getAuthKeyHash())) {
             return Optional.empty();
         }
-        return Optional.of(branchAccount);
+        return Optional.of(branch);
     }
-
 }
