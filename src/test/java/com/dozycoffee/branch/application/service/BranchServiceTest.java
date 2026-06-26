@@ -67,7 +67,7 @@ public class BranchServiceTest {
                 productSalesOverrideRepository,
                 () -> BranchId.of(nextBranchId++),
                 () -> BranchCode.of(String.format("2026%04d", nextCodeSeq++)),
-                () -> "raw-auth-key",
+                () -> () -> "raw-auth-key",
                 passwordHasher,
                 sessionInvalidationPort
         );

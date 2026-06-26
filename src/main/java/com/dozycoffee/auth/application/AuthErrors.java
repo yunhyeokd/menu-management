@@ -5,6 +5,7 @@ import com.dozycoffee.core.application.ServiceError;
 public enum AuthErrors implements ServiceError {
 
     UNKNOWN_ERROR(1, "Unknown error"),
+    UNSUPPORTED_ROLE(6, "Unsupported role"),
     UNAUTHENTICATED(2, "Unauthenticated"),
     UNAUTHORIZED(3, "Unauthorized"),
     INVALID_CREDENTIAL(4, "Invalid credential"),

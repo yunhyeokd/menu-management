@@ -1,11 +1,10 @@
 package com.dozycoffee.product.application.service;
 
 import com.dozycoffee.branch.application.repository.BranchAccountRepository;
-import com.dozycoffee.core.application.IdentifierGenerator;
+import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
-import com.dozycoffee.core.application.ServiceCode;
+import com.dozycoffee.product.application.ProductServiceCode;
 import com.dozycoffee.core.application.exception.*;
-import com.dozycoffee.product.application.dto.*;
 import com.dozycoffee.product.application.dto.*;
 import com.dozycoffee.product.application.repository.*;
 import com.dozycoffee.product.application.service.tag.TagService;
@@ -42,7 +41,7 @@ public class ProductService {
     !! Product 미존재 시 예외 발생
      */
     private Product getProduct(ProductId id) {
-        return productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ServiceCode.PRD, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
+        return productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
     }
 
     /*
@@ -80,7 +79,7 @@ public class ProductService {
     private void saveOptionGroups(ProductId productId, List<OptionGroupLinkSpec> specs) {
         for (OptionGroupLinkSpec spec : specs) {
             optionGroupRepository.findById(spec.optionGroupId())
-                    .orElseThrow(() -> new ResourceNotFoundException(ServiceCode.PRD, ProductErrors.OPTION_GROUP_NOT_FOUND_ERROR));
+                    .orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.OPTION_GROUP_NOT_FOUND_ERROR));
             productOptionGroupRepository.save(ProductOptionGroup.create(
                     productId,
                     spec.optionGroupId(),
@@ -100,16 +99,16 @@ public class ProductService {
             productOptionGroupRepository.deleteAllByProductId(productId);
             saveOptionGroups(productId, specs);
         } catch (ProductException e) {
-            throw new ValidationException(ServiceCode.PRD, ProductErrors.INVALID_PRODUCT_ERROR);
+            throw new ValidationException(ProductServiceCode.PRD, ProductErrors.INVALID_PRODUCT_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 
     public ProductData registerCommonProduct(CommonProductRegisterCommand command) {
         try {
             categoryRepository.findById(command.categoryId())
-                    .orElseThrow(() -> new ResourceNotFoundException(ServiceCode.PRD, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
+                    .orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
             ProductId productId = idGenerator.generate();
             Product product = Product.createCommonProduct(
                     productId,
@@ -126,18 +125,18 @@ public class ProductService {
             saveOptionGroups(productId, command.optionGroups());
             return ProductData.from(product, tags);
         } catch (ProductException e) {
-            throw new ValidationException(ServiceCode.PRD, ProductErrors.INVALID_PRODUCT_ERROR);
+            throw new ValidationException(ProductServiceCode.PRD, ProductErrors.INVALID_PRODUCT_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 
     public ProductData registerBranchProduct(BranchProductRegisterCommand command) {
         try {
             categoryRepository.findById(command.categoryId())
-                    .orElseThrow(() -> new ResourceNotFoundException(ServiceCode.PRD, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
+                    .orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
             branchAccountRepository.findById(command.branchId())
-                    .orElseThrow(() -> new ResourceNotFoundException(ServiceCode.PRD, ProductErrors.BRANCH_NOT_FOUND_ERROR));
+                    .orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.BRANCH_NOT_FOUND_ERROR));
 
             ProductId productId = idGenerator.generate();
             Product product = Product.createBranchProduct(
@@ -156,9 +155,9 @@ public class ProductService {
             saveOptionGroups(productId, command.optionGroups());
             return ProductData.from(product, tags);
         } catch (ProductException e) {
-            throw new ValidationException(ServiceCode.PRD, ProductErrors.INVALID_PRODUCT_ERROR);
+            throw new ValidationException(ProductServiceCode.PRD, ProductErrors.INVALID_PRODUCT_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -166,7 +165,7 @@ public class ProductService {
         try {
             return productQueryRepository.findByFilter(query);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -175,7 +174,7 @@ public class ProductService {
             Product product = getProduct(command.id());
             categoryRepository
                     .findById(command.categoryId())
-                    .orElseThrow(() -> new ResourceNotFoundException(ServiceCode.PRD, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
+                    .orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
             product.updateName(command.name());
             product.updateDescription(command.description());
             product.updateImageUrl(command.imageUrl());
@@ -188,9 +187,9 @@ public class ProductService {
             List<TagData> tags = replaceProductTags(product.getId(), command.tags());
             return ProductData.from(product, tags);
         } catch (ProductException e) {
-            throw new ValidationException(ServiceCode.PRD, ProductErrors.INVALID_PRODUCT_ERROR);
+            throw new ValidationException(ProductServiceCode.PRD, ProductErrors.INVALID_PRODUCT_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -201,9 +200,9 @@ public class ProductService {
             productOptionGroupRepository.deleteAllByProductId(productId);
             productRepository.deleteById(productId);
         } catch (ProductException e) {
-            throw new ValidationException(ServiceCode.PRD, ProductErrors.INVALID_PRODUCT_ERROR);
+            throw new ValidationException(ProductServiceCode.PRD, ProductErrors.INVALID_PRODUCT_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -213,9 +212,9 @@ public class ProductService {
             product.activate();
             productRepository.save(product);
         } catch (ProductException e) {
-            throw new ValidationException(ServiceCode.PRD, ProductErrors.INVALID_PRODUCT_ERROR);
+            throw new ValidationException(ProductServiceCode.PRD, ProductErrors.INVALID_PRODUCT_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -225,9 +224,9 @@ public class ProductService {
             product.deactivate();
             productRepository.save(product);
         } catch (ProductException e) {
-            throw new ValidationException(ServiceCode.PRD, ProductErrors.INVALID_PRODUCT_ERROR);
+            throw new ValidationException(ProductServiceCode.PRD, ProductErrors.INVALID_PRODUCT_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 

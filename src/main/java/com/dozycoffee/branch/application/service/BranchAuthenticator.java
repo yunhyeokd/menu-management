@@ -1,6 +1,6 @@
 package com.dozycoffee.branch.application.service;
 
-import com.dozycoffee.auth.application.Authenticator;
+import com.dozycoffee.auth.domain.Authenticator;
 import com.dozycoffee.auth.application.PasswordHasher;
 import com.dozycoffee.branch.application.repository.BranchAccountRepository;
 import com.dozycoffee.auth.domain.Credential;
