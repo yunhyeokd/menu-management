@@ -1,6 +1,5 @@
-package com.dozycoffee.admin.application.service;
+package com.dozycoffee.admin.application;
 
-import com.dozycoffee.admin.application.repository.AdminAccountRepository;
 import com.dozycoffee.auth.domain.Authenticator;
 import com.dozycoffee.auth.application.PasswordHasher;
 import com.dozycoffee.admin.domain.AdminAccount;

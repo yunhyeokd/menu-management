@@ -1,14 +1,11 @@
-package com.dozycoffee.admin.application.service;
+package com.dozycoffee.admin.application;
 
 import com.dozycoffee.admin.application.dto.*;
 import com.dozycoffee.admin.domain.*;
-import com.dozycoffee.admin.application.repository.AdminAccountRepository;
-import com.dozycoffee.admin.application.repository.AdminProfileRepository;
 import com.dozycoffee.auth.application.PasswordHasher;
 import com.dozycoffee.auth.application.SessionInvalidationPort;
 import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
-import com.dozycoffee.admin.application.AdminServiceCode;
 import com.dozycoffee.core.application.exception.*;
 
 import java.util.Optional;

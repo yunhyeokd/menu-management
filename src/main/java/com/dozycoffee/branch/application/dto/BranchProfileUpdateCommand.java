@@ -1,6 +1,6 @@
 package com.dozycoffee.branch.application.dto;
 
-public record BranchProfileUpdateDto(
+public record BranchProfileUpdateCommand(
         String name,
         String address
 ) {

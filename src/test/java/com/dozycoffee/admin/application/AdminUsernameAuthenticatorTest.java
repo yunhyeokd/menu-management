@@ -1,6 +1,5 @@
-package com.dozycoffee.admin.application.service;
+package com.dozycoffee.admin.application;
 
-import com.dozycoffee.admin.application.repository.FakeAdminAccountRepository;
 import com.dozycoffee.auth.application.PasswordHasher;
 import com.dozycoffee.admin.domain.AdminAccount;
 import com.dozycoffee.admin.domain.AdminId;
