@@ -1,8 +1,8 @@
 package com.dozycoffee.product.application.service.category;
 
-import com.dozycoffee.core.application.IdentifierGenerator;
+import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
-import com.dozycoffee.core.application.ServiceCode;
+import com.dozycoffee.product.application.ProductServiceCode;
 import com.dozycoffee.core.application.exception.ConflictException;
 import com.dozycoffee.core.application.exception.ResourceNotFoundException;
 import com.dozycoffee.core.application.exception.SystemException;
@@ -37,36 +37,36 @@ public class CategoryService {
     public CategoryData create(String categoryName) {
         try {
             if (categoryRepository.findByName(categoryName).isPresent()) {
-                throw new ConflictException(ServiceCode.PRD, ProductErrors.DUPLICATE_CATEGORY_NAME_ERROR);
+                throw new ConflictException(ProductServiceCode.PRD, ProductErrors.DUPLICATE_CATEGORY_NAME_ERROR);
             }
             try {
                 Category category = Category.create(idGenerator.generate(), categoryName);
                 categoryRepository.save(category);
                 return CategoryData.from(category);
             } catch (ProductException e) {
-                throw new ValidationException(ServiceCode.PRD, ProductErrors.INVALID_CATEGORY_ERROR);
+                throw new ValidationException(ProductServiceCode.PRD, ProductErrors.INVALID_CATEGORY_ERROR);
             }
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 
     public CategoryData updateName(CategoryId id, String newName) {
         try {
             Category category = categoryRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException(ServiceCode.PRD, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
+                    .orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
             if (categoryRepository.findByName(newName).isPresent()) {
-                throw new ConflictException(ServiceCode.PRD, ProductErrors.DUPLICATE_CATEGORY_NAME_ERROR);
+                throw new ConflictException(ProductServiceCode.PRD, ProductErrors.DUPLICATE_CATEGORY_NAME_ERROR);
             }
             try {
                 category.updateName(newName);
                 categoryRepository.save(category);
                 return CategoryData.from(category);
             } catch (ProductException e) {
-                throw new ValidationException(ServiceCode.PRD, ProductErrors.INVALID_CATEGORY_ERROR);
+                throw new ValidationException(ProductServiceCode.PRD, ProductErrors.INVALID_CATEGORY_ERROR);
             }
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -76,7 +76,7 @@ public class CategoryService {
                     .map(CategoryData::from)
                     .toList();
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -86,14 +86,14 @@ public class CategoryService {
                     .map(CategoryData::from)
                     .toList();
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 
     public void remove(CategoryId categoryId) {
         try {
             Category category = categoryRepository.findById(categoryId)
-                    .orElseThrow(() -> new ResourceNotFoundException(ServiceCode.PRD, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
+                    .orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
             List<Product> products = productRepository.findAllByCategoryId(category.getId());
             for (Product product : products) {
                 product.deactivate();
@@ -101,7 +101,7 @@ public class CategoryService {
             }
             categoryRepository.deleteById(categoryId);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 }

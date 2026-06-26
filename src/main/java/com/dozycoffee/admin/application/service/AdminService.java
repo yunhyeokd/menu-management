@@ -2,14 +2,13 @@ package com.dozycoffee.admin.application.service;
 
 import com.dozycoffee.admin.application.dto.*;
 import com.dozycoffee.admin.domain.*;
-import com.dozycoffee.admin.application.dto.*;
 import com.dozycoffee.admin.application.repository.AdminAccountRepository;
 import com.dozycoffee.admin.application.repository.AdminProfileRepository;
 import com.dozycoffee.auth.application.PasswordHasher;
 import com.dozycoffee.auth.application.SessionInvalidationPort;
-import com.dozycoffee.core.application.IdentifierGenerator;
+import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
-import com.dozycoffee.core.application.ServiceCode;
+import com.dozycoffee.admin.application.AdminServiceCode;
 import com.dozycoffee.core.application.exception.*;
 
 import java.util.Optional;
@@ -38,11 +37,11 @@ public class AdminService {
 
     private AdminAccount getAdminAccount(AdminId adminId) {
         Optional<AdminAccount> adminAccount = adminAccountRepository.findById(adminId);
-        return adminAccount.orElseThrow(() -> new ResourceNotFoundException(ServiceCode.ADM, AdminErrors.ADMIN_NOT_FOUND));
+        return adminAccount.orElseThrow(() -> new ResourceNotFoundException(AdminServiceCode.ADM, AdminErrors.ADMIN_NOT_FOUND));
     }
 
     private AdminProfile getAdminProfile(AdminId adminId) {
-        return adminProfileRepository.findById(adminId).orElseThrow(() -> new ResourceNotFoundException(ServiceCode.ADM, AdminErrors.ADMIN_NOT_FOUND));
+        return adminProfileRepository.findById(adminId).orElseThrow(() -> new ResourceNotFoundException(AdminServiceCode.ADM, AdminErrors.ADMIN_NOT_FOUND));
     }
 
     /*
@@ -53,7 +52,7 @@ public class AdminService {
         try {
             adminAccountRepository.findByAdminRole(AdminRole.SYSTEM)
                     .ifPresent(adminAccount -> {
-                        throw new ConflictException(ServiceCode.ADM, AdminErrors.DUPLICATE_ACCOUNT_ERROR);
+                        throw new ConflictException(AdminServiceCode.ADM, AdminErrors.DUPLICATE_ACCOUNT_ERROR);
                     });
 
             AdminId adminId = idGenerator.generate();
@@ -72,9 +71,9 @@ public class AdminService {
                     adminAccount.getCreatedAt()
             );
         } catch (AdminException e) {
-            throw new ValidationException(ServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
+            throw new ValidationException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
+            throw new SystemException(AdminServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -86,7 +85,7 @@ public class AdminService {
         try {
             adminAccountRepository.findByUsername(command.username())
                     .ifPresent(adminAccount -> {
-                        throw new ConflictException(ServiceCode.ADM, AdminErrors.DUPLICATE_ACCOUNT_ERROR);
+                        throw new ConflictException(AdminServiceCode.ADM, AdminErrors.DUPLICATE_ACCOUNT_ERROR);
                     });
             AdminId adminId = idGenerator.generate();
             String passwordHash = passwordHasher.hash(command.password());
@@ -109,9 +108,9 @@ public class AdminService {
                     newAdminAccount.getCreatedAt()
             );
         } catch (AdminException e) {
-            throw new ValidationException(ServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
+            throw new ValidationException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
+            throw new SystemException(AdminServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -126,9 +125,9 @@ public class AdminService {
             adminAccount.approve();
             adminAccountRepository.save(adminAccount);
         } catch (AdminException e) {
-            throw new ConflictException(ServiceCode.ADM, AdminErrors.UNABLE_APPROVAL_ERROR);
+            throw new ConflictException(AdminServiceCode.ADM, AdminErrors.UNABLE_APPROVAL_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
+            throw new SystemException(AdminServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -143,9 +142,9 @@ public class AdminService {
             adminAccount.reject();
             adminAccountRepository.save(adminAccount);
         } catch (AdminException e) {
-            throw new ConflictException(ServiceCode.ADM, AdminErrors.UNABLE_APPROVAL_ERROR);
+            throw new ConflictException(AdminServiceCode.ADM, AdminErrors.UNABLE_APPROVAL_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
+            throw new SystemException(AdminServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -167,9 +166,9 @@ public class AdminService {
                     adminProfile.getEmail()
             );
         } catch (AdminException e) {
-            throw new ValidationException(ServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
+            throw new ValidationException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
+            throw new SystemException(AdminServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -187,9 +186,9 @@ public class AdminService {
             adminAccountRepository.save(adminAccount);
             sessionInvalidationPort.invalidate(adminAccount);
         } catch (AdminException e) {
-            throw new ValidationException(ServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
+            throw new ValidationException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
+            throw new SystemException(AdminServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -203,15 +202,15 @@ public class AdminService {
         try {
             AdminAccount adminAccount = getAdminAccount(adminId);
             if (!adminAccount.isSoftDeleted()) {
-                throw new ConflictException(ServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
+                throw new ConflictException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
             }
             adminProfileRepository.deleteById(adminId);
             adminAccountRepository.deleteById(adminId);
             sessionInvalidationPort.invalidate(adminAccount);
         } catch (AdminException e) {
-            throw new ValidationException(ServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
+            throw new ValidationException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
+            throw new SystemException(AdminServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -219,16 +218,16 @@ public class AdminService {
         try {
             AdminAccount adminAccount = getAdminAccount(adminId);
             if (!passwordHasher.matches(currentPassword, adminAccount.getPasswordHash())) {
-                throw new AuthenticationException(ServiceCode.ADM, AdminErrors.AUTHENTICATION_FAILED_ERROR);
+                throw new AuthenticationException(AdminServiceCode.ADM, AdminErrors.AUTHENTICATION_FAILED_ERROR);
             }
             String passwordHash = passwordHasher.hash(newPassword);
             adminAccount.updatePasswordHash(passwordHash);
             adminAccountRepository.save(adminAccount);
             sessionInvalidationPort.invalidate(adminAccount);
         } catch (AdminException e) {
-            throw new ValidationException(ServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
+            throw new ValidationException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
+            throw new SystemException(AdminServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
         }
     }
 

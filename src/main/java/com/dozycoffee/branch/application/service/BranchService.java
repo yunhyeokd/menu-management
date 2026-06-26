@@ -8,10 +8,10 @@ import com.dozycoffee.branch.application.repository.BranchAccountRepository;
 import com.dozycoffee.branch.application.repository.BranchProfileRepository;
 import com.dozycoffee.branch.application.repository.ProductSalesOverrideRepository;
 import com.dozycoffee.branch.domain.*;
-import com.dozycoffee.core.application.IdentifierGenerator;
+import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.auth.application.PasswordHasher;
 import com.dozycoffee.core.application.RepositoryException;
-import com.dozycoffee.core.application.ServiceCode;
+import com.dozycoffee.branch.application.BranchServiceCode;
 import com.dozycoffee.core.application.exception.*;
 import com.dozycoffee.product.application.repository.ProductRepository;
 import com.dozycoffee.product.domain.Product;
@@ -62,7 +62,7 @@ public class BranchService {
             branchProfileRepository
                     .findByName(name)
                     .ifPresent(branchProfile -> {
-                        throw new ConflictException(ServiceCode.BRN, BranchErrors.DUPLICATE_NAME_ERROR);
+                        throw new ConflictException(BranchServiceCode.BRN, BranchErrors.DUPLICATE_NAME_ERROR);
                     });
             BranchId branchId = idGenerator.generate();
             BranchCode branchCode = codeGenerator.generate();
@@ -81,35 +81,35 @@ public class BranchService {
                     account.getCreatedAt()
             );
         } catch (BranchException e) {
-            throw new ValidationException(ServiceCode.BRN, BranchErrors.INVALID_BRANCH_ERROR);
+            throw new ValidationException(BranchServiceCode.BRN, BranchErrors.INVALID_BRANCH_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
+            throw new SystemException(BranchServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
         }
     }
 
     private void assertBranchAccountExists(BranchId branchId) throws RepositoryException {
         branchAccountRepository.findById(branchId)
-                .orElseThrow(() -> new ResourceNotFoundException(ServiceCode.BRN, BranchErrors.BRANCH_NOT_FOUND_ERROR));
+                .orElseThrow(() -> new ResourceNotFoundException(BranchServiceCode.BRN, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     private void assertProductExists(ProductId productId) throws RepositoryException {
         productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException(ServiceCode.BRN, BranchErrors.PRODUCT_NOT_FOUND_ERROR));
+                .orElseThrow(() -> new ResourceNotFoundException(BranchServiceCode.BRN, BranchErrors.PRODUCT_NOT_FOUND_ERROR));
     }
 
     private BranchAccount getBranchAccount(BranchId branchId) {
         return branchAccountRepository.findById(branchId)
-                .orElseThrow(() -> new ResourceNotFoundException(ServiceCode.BRN, BranchErrors.BRANCH_NOT_FOUND_ERROR));
+                .orElseThrow(() -> new ResourceNotFoundException(BranchServiceCode.BRN, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     private BranchProfile getBranchProfile(BranchId branchId) throws RepositoryException {
         return branchProfileRepository.findById(branchId)
-                .orElseThrow(() -> new ResourceNotFoundException(ServiceCode.BRN, BranchErrors.BRANCH_NOT_FOUND_ERROR));
+                .orElseThrow(() -> new ResourceNotFoundException(BranchServiceCode.BRN, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     private Product getProduct(ProductId productId) throws RepositoryException {
         return productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException(ServiceCode.BRN, BranchErrors.PRODUCT_NOT_FOUND_ERROR));
+                .orElseThrow(() -> new ResourceNotFoundException(BranchServiceCode.BRN, BranchErrors.PRODUCT_NOT_FOUND_ERROR));
     }
 
     public BranchAuthKeyReissueResult reissueAuthKey(BranchId branchId) {
@@ -122,9 +122,9 @@ public class BranchService {
             sessionInvalidationPort.invalidate(account);
             return new BranchAuthKeyReissueResult(account.getId(), account.getCode(), rawAuthKey);
         } catch (BranchException e) {
-            throw new ConflictException(ServiceCode.BRN, BranchErrors.ALREADY_DELETED_ERROR);
+            throw new ConflictException(BranchServiceCode.BRN, BranchErrors.ALREADY_DELETED_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
+            throw new SystemException(BranchServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -135,9 +135,9 @@ public class BranchService {
             branchProfile.changeAddress(updateDto.address());
             branchProfileRepository.save(branchProfile);
         } catch (BranchException e) {
-            throw new ValidationException(ServiceCode.BRN, BranchErrors.INVALID_PROFILE_ERROR);
+            throw new ValidationException(BranchServiceCode.BRN, BranchErrors.INVALID_PROFILE_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
+            throw new SystemException(BranchServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -149,9 +149,9 @@ public class BranchService {
             branchAccountRepository.save(branchAccount);
             sessionInvalidationPort.invalidate(branchAccount);
         } catch (BranchException e) {
-            throw new ConflictException(ServiceCode.BRN, BranchErrors.ALREADY_DELETED_ERROR);
+            throw new ConflictException(BranchServiceCode.BRN, BranchErrors.ALREADY_DELETED_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
+            throw new SystemException(BranchServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -159,14 +159,14 @@ public class BranchService {
         try {
             BranchAccount branchAccount = getBranchAccount(branchId);
             if (!branchAccount.isSoftDeleted()) {
-                throw new ConflictException(ServiceCode.BRN, BranchErrors.INVALID_BRANCH_ERROR);
+                throw new ConflictException(BranchServiceCode.BRN, BranchErrors.INVALID_BRANCH_ERROR);
             }
             productRepository.deleteAllByBranchId(branchId);
             branchProfileRepository.deleteById(branchId);
             branchAccountRepository.deleteById(branchId);
             sessionInvalidationPort.invalidate(branchAccount);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
+            throw new SystemException(BranchServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -178,7 +178,7 @@ public class BranchService {
             overridableProducts.addAll(productRepository.findAllActiveBranchExclusive(branchId));
             return overridableProducts.stream().toList();
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
+            throw new SystemException(BranchServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -194,9 +194,9 @@ public class BranchService {
                 productSalesOverrideRepository.save(salesOverride);
             }
         } catch (BranchException e) {
-            throw new ValidationException(ServiceCode.BRN, BranchErrors.INVALID_BRANCH_ERROR);
+            throw new ValidationException(BranchServiceCode.BRN, BranchErrors.INVALID_BRANCH_ERROR);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
+            throw new SystemException(BranchServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -205,11 +205,11 @@ public class BranchService {
             assertBranchAccountExists(branchId);
             Product product = getProduct(productId);
             if (product.getStatus() != ProductStatus.ACTIVE) {
-                throw new ConflictException(ServiceCode.BRN, BranchErrors.PRODUCT_NOT_ACTIVE_ERROR);
+                throw new ConflictException(BranchServiceCode.BRN, BranchErrors.PRODUCT_NOT_ACTIVE_ERROR);
             }
             suspendSale(branchId, productId, ProductSalesOverrideStatus.HIDDEN);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
+            throw new SystemException(BranchServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
         }
     }
 
@@ -218,21 +218,21 @@ public class BranchService {
             assertBranchAccountExists(branchId);
             Product product = getProduct(productId);
             if (product.getStatus() != ProductStatus.ACTIVE) {
-                throw new ConflictException(ServiceCode.BRN, BranchErrors.PRODUCT_NOT_ACTIVE_ERROR);
+                throw new ConflictException(BranchServiceCode.BRN, BranchErrors.PRODUCT_NOT_ACTIVE_ERROR);
             }
             suspendSale(branchId, productId, ProductSalesOverrideStatus.SOLD_OUT);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
+            throw new SystemException(BranchServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
         }
     }
 
     public void restoreSale(BranchId branchId, ProductId productId) {
         try {
             productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId)
-                    .orElseThrow(() -> new ResourceNotFoundException(ServiceCode.BRN, BranchErrors.SALES_OVERRIDE_NOT_FOUND_ERROR));
+                    .orElseThrow(() -> new ResourceNotFoundException(BranchServiceCode.BRN, BranchErrors.SALES_OVERRIDE_NOT_FOUND_ERROR));
             productSalesOverrideRepository.deleteByBranchIdAndProductId(branchId, productId);
         } catch (RepositoryException e) {
-            throw new SystemException(ServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
+            throw new SystemException(BranchServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
         }
     }
 }

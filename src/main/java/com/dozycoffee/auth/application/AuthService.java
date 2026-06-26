@@ -1,6 +1,6 @@
 package com.dozycoffee.auth.application;
 
-import com.dozycoffee.core.application.ServiceCode;
+import com.dozycoffee.auth.application.AuthServiceCode;
 import com.dozycoffee.core.application.exception.AuthenticationException;
 import com.dozycoffee.core.application.exception.AuthorizationException;
 import com.dozycoffee.auth.domain.AuthSession;
@@ -49,7 +49,7 @@ public class AuthService implements SessionInvalidationPort {
         Identifier<String> id = () -> username;
         Credential credential = () -> password;
         Principal principal = adminUsernameAuthenticator.authenticate(id, credential)
-                .orElseThrow(() -> new AuthenticationException(ServiceCode.AUTH, AuthErrors.INVALID_CREDENTIAL));
+                .orElseThrow(() -> new AuthenticationException(AuthServiceCode.AUTH, AuthErrors.INVALID_CREDENTIAL));
         AuthSession authSession = AuthSession.create(
                 sessionIdGenerator.generate(principal),
                 principal,
@@ -63,7 +63,7 @@ public class AuthService implements SessionInvalidationPort {
         BranchCode id = BranchCode.of(code);
         Credential credential = () -> authKey;
         Principal principal = branchAuthenticator.authenticate(id, credential)
-                .orElseThrow(() -> new AuthenticationException(ServiceCode.AUTH, AuthErrors.INVALID_CREDENTIAL));
+                .orElseThrow(() -> new AuthenticationException(AuthServiceCode.AUTH, AuthErrors.INVALID_CREDENTIAL));
         AuthSession authSession = AuthSession.create(
                 sessionIdGenerator.generate(principal),
                 principal,
@@ -75,8 +75,8 @@ public class AuthService implements SessionInvalidationPort {
 
     public Principal requirePrincipal(SessionId sessionId) {
         AuthSession authSession = authSessionRepository.findById(sessionId).orElse(null);
-        if (authSession == null) throw new AuthenticationException(ServiceCode.AUTH, AuthErrors.UNAUTHENTICATED);
-        if (authSession.isExpired()) throw new AuthenticationException(ServiceCode.AUTH, AuthErrors.SESSION_EXPIRED);
+        if (authSession == null) throw new AuthenticationException(AuthServiceCode.AUTH, AuthErrors.UNAUTHENTICATED);
+        if (authSession.isExpired()) throw new AuthenticationException(AuthServiceCode.AUTH, AuthErrors.SESSION_EXPIRED);
         return authSession.getPrincipal();
     }
 
@@ -89,7 +89,7 @@ public class AuthService implements SessionInvalidationPort {
 
     public void authorize(Principal principal, List<String> roles) {
         if (roles.stream().noneMatch(role -> principal.getRole().equals(role))) {
-            throw new AuthorizationException(ServiceCode.AUTH, AuthErrors.UNAUTHORIZED);
+            throw new AuthorizationException(AuthServiceCode.AUTH, AuthErrors.UNAUTHORIZED);
         }
     }
 
