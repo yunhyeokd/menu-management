@@ -63,4 +63,12 @@ public class OptionItemTest {
         OptionItem item2 = OptionItem.of(validName, validDescription, validPrice + 100, Instant.now());
         assertThat(item1).isNotEqualTo(item2);
     }
+
+    @Test
+    public void 동등한_옵션아이템은_해시값이_동일하다() {
+        OptionItem item1 = OptionItem.of(validName, validDescription, validPrice, Instant.now());
+        OptionItem item2 = OptionItem.of(validName, validDescription, validPrice, Instant.now());
+        assertThat(item1).isEqualTo(item2);
+        assertThat(item1.hashCode()).isEqualTo(item2.hashCode());
+    }
 }
