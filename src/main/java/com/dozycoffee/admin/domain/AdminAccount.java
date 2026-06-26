@@ -1,0 +1,201 @@
+package com.dozycoffee.admin.domain;
+
+import com.dozycoffee.auth.domain.Principal;
+
+import java.time.Instant;
+import java.util.Objects;
+import java.util.regex.Pattern;
+
+public class AdminAccount implements Principal {
+
+    private AdminId id;
+    private AdminRole adminRole;
+    private String username;
+    private String passwordHash;
+    private AdminStatus status;
+    private Instant createdAt;
+    private Instant deletedAt;
+
+    private AdminAccount(
+            AdminId id,
+            AdminRole role,
+            String username,
+            String passwordHash,
+            AdminStatus status,
+            Instant createdAt,
+            Instant deletedAt
+    ) {
+        setId(id);
+        setAdminRole(role);
+        setUsername(username);
+        setPasswordHash(passwordHash);
+        setStatus(status);
+        setCreatedAt(createdAt);
+        this.deletedAt = deletedAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof AdminAccount adminAccount)) return false;
+        return Objects.equals(id, adminAccount.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    public static AdminAccount of(
+            AdminId id,
+            AdminRole role,
+            String username,
+            String password,
+            AdminStatus status,
+            Instant createdAt,
+            Instant deletedAt
+    ) {
+        return new AdminAccount(id, role, username, password, status, createdAt, deletedAt);
+    }
+
+    public static AdminAccount create(AdminId id, AdminRole role, String username, String password) {
+        AdminStatus status = role == AdminRole.SYSTEM ? AdminStatus.ACTIVE : AdminStatus.PENDING;
+        return new AdminAccount(id, role, username, password, status, Instant.now(), null);
+    }
+
+    public AdminId getId() {
+        return id;
+    }
+
+    private void setId(AdminId id) {
+        if (id == null) throw new AdminException("id cannot be null");
+        this.id = id;
+    }
+
+    @Override
+    public String getSubject() {
+        return getId().toString();
+    }
+
+    @Override
+    public String getRole() {
+        return adminRole.name();
+    }
+
+    public AdminRole getAdminRole() {
+        return adminRole;
+    }
+
+    private void setAdminRole(AdminRole adminRole) {
+        if (adminRole == null) throw new AdminException("role cannot be null");
+        this.adminRole = adminRole;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    private static final Pattern USERNAME_PATTERN =
+            Pattern.compile("^[a-z][a-z0-9_]+$");
+
+    private static final int USERNAME_MIN_LENGTH = 4;
+    private static final int USERNAME_MAX_LENGTH = 20;
+
+    private static void validateUsername(String username) {
+        if (username == null) {
+            throw new AdminException("username cannot be null");
+        }
+        if (username.length() < USERNAME_MIN_LENGTH || username.length() > USERNAME_MAX_LENGTH) {
+            throw new AdminException("username length must be between 4 and 20 characters");
+        }
+        if (!USERNAME_PATTERN.matcher(username).matches()) {
+            throw new AdminException("Invalid username");
+        }
+    }
+
+    private void setUsername(String username) {
+        validateUsername(username);
+        this.username = username;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+
+    private static void validatePasswordHash(String passwordHash) {
+        if (passwordHash == null || passwordHash.isEmpty()) {
+            throw new AdminException("Password is required");
+        }
+    }
+
+    private void setPasswordHash(String passwordHash) {
+        validatePasswordHash(passwordHash);
+        this.passwordHash = passwordHash;
+    }
+
+    public AdminStatus getStatus() {
+        return status;
+    }
+
+    private void setStatus(AdminStatus status) {
+        if (status == null) throw new AdminException("status cannot be null");
+        this.status = status;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    private void setCreatedAt(Instant createdAt) {
+        if (createdAt == null) throw new AdminException("createdAt cannot be null");
+        this.createdAt = createdAt;
+    }
+
+    public Instant getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void updateStatus(AdminStatus status) {
+        if (adminRole == AdminRole.SYSTEM) {
+            throw new AdminException("system admin status cannot be updated");
+        }
+        setStatus(status);
+    }
+
+    public void updatePasswordHash(String passwordHash) {
+        setPasswordHash(passwordHash);
+    }
+
+    public void softDelete() {
+        if (adminRole == AdminRole.SYSTEM) {
+            throw new AdminException("system admin status cannot be deleted");
+        }
+        if (deletedAt != null) {
+            throw new AdminException("admin account is already deleted");
+        }
+        updateStatus(AdminStatus.INACTIVE);
+        deletedAt = Instant.now();
+    }
+
+    public void approve() {
+        if (status != AdminStatus.PENDING) {
+            throw new AdminException("attempt to approve non-pending status");
+        }
+        updateStatus(AdminStatus.ACTIVE);
+    }
+
+    public void reject() {
+        if (status != AdminStatus.PENDING) {
+            throw new AdminException("attempt to reject non-pending status");
+        }
+        softDelete();
+    }
+
+    public boolean isSoftDeleted() {
+        return deletedAt != null;
+    }
+
+    public boolean isActive() {
+        return status == AdminStatus.ACTIVE;
+    }
+}
