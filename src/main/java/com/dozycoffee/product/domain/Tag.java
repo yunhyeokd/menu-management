@@ -6,14 +6,19 @@ import java.util.regex.Pattern;
 
 public class Tag {
 
-    private TagId id;
+    private static final int NAME_MAX_LENGTH = 30;
+    private static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-Zㄱ-힣0-9]+$");
+
+    private final TagId id;
     private String name;
-    private Instant createdAt;
+    private final Instant createdAt;
 
     private Tag(TagId id, String name, Instant createdAt) {
-        setId(id);
+        if (id == null) throw new ProductException("id cannot be null");
+        if (createdAt == null) throw new ProductException("createdAt cannot be null");
+        this.id = id;
         setName(name);
-        setCreatedAt(createdAt);
+        this.createdAt = createdAt;
     }
 
     @Override
@@ -35,22 +40,6 @@ public class Tag {
         return new Tag(id, name, Instant.now());
     }
 
-    public TagId getId() {
-        return id;
-    }
-
-    private void setId(TagId id) {
-        if (id == null) throw new ProductException("id cannot be null");
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    private static final int NAME_MAX_LENGTH = 30;
-    private static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-Zㄱ-힣0-9]+$");
-
     private static void validateName(String name) {
         if (name == null || name.isBlank() || name.length() > NAME_MAX_LENGTH) {
             throw new ProductException("invalid name length");
@@ -60,6 +49,14 @@ public class Tag {
         }
     }
 
+    public TagId getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     private void setName(String name) {
         validateName(name);
         this.name = name;
@@ -67,11 +64,6 @@ public class Tag {
 
     public Instant getCreatedAt() {
         return createdAt;
-    }
-
-    private void setCreatedAt(Instant createdAt) {
-        if (createdAt == null) throw new ProductException("createdAt cannot be null");
-        this.createdAt = createdAt;
     }
 
     public void updateName(String newTagName) {

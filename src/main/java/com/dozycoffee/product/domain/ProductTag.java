@@ -5,14 +5,17 @@ import java.util.Objects;
 
 public class ProductTag {
 
-    private ProductId productId;
-    private TagId tagId;
-    private Instant createdAt;
+    private final ProductId productId;
+    private final TagId tagId;
+    private final Instant createdAt;
 
     private ProductTag(ProductId productId, TagId tagId, Instant createdAt) {
-        setProductId(productId);
-        setTagId(tagId);
-        setCreatedAt(createdAt);
+        if (productId == null) throw new ProductException("Product id cannot be null");
+        if (tagId == null) throw new ProductException("Tag id cannot be null");
+        if (createdAt == null) throw new ProductException("CreatedAt cannot be null");
+        this.productId = productId;
+        this.tagId = tagId;
+        this.createdAt = createdAt;
     }
 
     @Override
@@ -37,27 +40,10 @@ public class ProductTag {
     public ProductId getProductId() {
         return productId;
     }
-
-    private void setProductId(ProductId productId) {
-        if (productId == null) throw new ProductException("productId cannot be null");
-        this.productId = productId;
-    }
-
     public TagId getTagId() {
         return tagId;
     }
-
-    private void setTagId(TagId tagId) {
-        if (tagId == null) throw new ProductException("tagId cannot be null");
-        this.tagId = tagId;
-    }
-
     public Instant getCreatedAt() {
         return createdAt;
-    }
-
-    private void setCreatedAt(Instant createdAt) {
-        if (createdAt == null) throw new ProductException("createdAt cannot be null");
-        this.createdAt = createdAt;
     }
 }

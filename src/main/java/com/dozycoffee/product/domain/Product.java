@@ -8,7 +8,13 @@ import java.util.regex.Pattern;
 
 public class Product {
 
-    private ProductId id;
+    private static final int NAME_MAX_LENGTH = 100;
+    private static final Pattern NAME_PATTERN = Pattern.compile("[a-zA-Zㄱ-힣0-9\\-() ]+");
+    private static final int DESC_MAX_LENGTH = 1000;
+    private static final Pattern IMAGE_URL_PATTERN = Pattern.compile("^https://[a-zA-Z0-9\\-.]+(?::[0-9]+)?(?:/[^\\s]*)?$");
+    private static final int IMAGE_URL_MAX_LENGTH = 1000;
+
+    private final ProductId id;
     private String name;
     private String description;
     private String imageUrl;
@@ -19,10 +25,12 @@ public class Product {
     private ProductKind kind;
     private BranchId branchId;
     private ProductStatus status;
-    private Instant createdAt;
+    private final Instant createdAt;
 
     private Product(ProductId id, String name, String description, String imageUrl, CategoryId categoryId, int price, Integer kcal, AllergenInfo allergenInfo, ProductKind kind, BranchId branchId, ProductStatus status, Instant createdAt) {
-        setId(id);
+        if (id == null) throw new ProductException("id cannot be null");
+        if (createdAt == null) throw new ProductException("createdAt cannot be null");
+        this.id = id;
         setName(name);
         setDescription(description);
         setImageUrl(imageUrl);
@@ -30,10 +38,10 @@ public class Product {
         setPrice(price);
         setKcal(kcal);
         setStatus(status);
-        setCreatedAt(createdAt);
         setCategoryId(categoryId);
         setAllergenInfo(allergenInfo);
         setBranchId(branchId);
+        this.createdAt = createdAt;
     }
 
     @Override
@@ -76,26 +84,37 @@ public class Product {
         }
     }
 
-    public ProductId getId() {
-        return id;
-    }
-
-    private void setId(ProductId id) {
-        if (id == null) throw new ProductException("id cannot be null");
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    private static final int NAME_MAX_LENGTH = 100;
-    private static final Pattern NAME_PATTERN = Pattern.compile("[a-zA-Zㄱ-힣0-9\\-() ]+");
-
     private static void validateName(String name) {
         if (name == null || name.isBlank()) throw new ProductException("Product name is null or blank");
         if (name.length() > NAME_MAX_LENGTH) throw new ProductException("Product name is too long");
         if (!NAME_PATTERN.matcher(name).matches() || !name.strip().equals(name)) throw new ProductException("Product name is invalid");
+    }
+
+    private static void validateDescription(String description) {
+        if (description != null && description.length() > DESC_MAX_LENGTH) throw new ProductException("Product description is too long");
+    }
+
+    private static void validateImageUrl(String imageUrl) {
+        if (imageUrl != null) {
+            if (!IMAGE_URL_PATTERN.matcher(imageUrl).matches()) throw new ProductException("Product image url is invalid");
+            if (imageUrl.length() > IMAGE_URL_MAX_LENGTH) throw new ProductException("Product image url is too long");
+        }
+    }
+
+    private static void validatePrice(int price) {
+        if (price < 0) throw new ProductException("Product price is negative");
+    }
+
+    private static void validateKcal(Integer kcal) {
+        if (kcal != null && kcal < 0) throw new ProductException("Product kcal is negative");
+    }
+
+    public ProductId getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     private void setName(String name) {
@@ -107,12 +126,6 @@ public class Product {
         return description;
     }
 
-    private static final int DESC_MAX_LENGTH = 1000;
-
-    private static void validateDescription(String description) {
-        if (description != null && description.length() > DESC_MAX_LENGTH) throw new ProductException("Product description is too long");
-    }
-
     private void setDescription(String description) {
         validateDescription(description);
         this.description = description;
@@ -120,16 +133,6 @@ public class Product {
 
     public String getImageUrl() {
         return imageUrl;
-    }
-
-    private static final Pattern IMAGE_URL_PATTERN = Pattern.compile("^https://[a-zA-Z0-9\\-.]+(?::[0-9]+)?(?:/[^\\s]*)?$");
-    private static final int IMAGE_URL_MAX_LENGTH = 1000;
-
-    private static void validateImageUrl(String imageUrl) {
-        if (imageUrl != null) {
-            if (!IMAGE_URL_PATTERN.matcher(imageUrl).matches()) throw new ProductException("Product image url is invalid");
-            if (imageUrl.length() > IMAGE_URL_MAX_LENGTH) throw new ProductException("Product image url is too long");
-        }
     }
 
     private void setImageUrl(String imageUrl) {
@@ -149,10 +152,6 @@ public class Product {
         return price;
     }
 
-    private static void validatePrice(int price) {
-        if (price < 0) throw new ProductException("Product price is negative");
-    }
-
     private void setPrice(int price) {
         validatePrice(price);
         this.price = price;
@@ -160,10 +159,6 @@ public class Product {
 
     public Integer getKcal() {
         return kcal;
-    }
-
-    private static void validateKcal(Integer kcal) {
-        if (kcal != null && kcal < 0) throw new ProductException("Product kcal is negative");
     }
 
     private void setKcal(Integer kcal) {
@@ -207,11 +202,6 @@ public class Product {
 
     public Instant getCreatedAt() {
         return createdAt;
-    }
-
-    private void setCreatedAt(Instant createdAt) {
-        if (createdAt == null) throw new ProductException("Product createdAt is null");
-        this.createdAt = createdAt;
     }
 
     public void activate() {
