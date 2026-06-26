@@ -5,18 +5,20 @@ import java.util.Objects;
 
 public class ProductOptionGroup {
 
-    private ProductId productId;
-    private OptionGroupId optionGroupId;
-    private boolean isRequired;
-    private boolean allowMultiple;
+    private final ProductId productId;
+    private final OptionGroupId optionGroupId;
+    private final boolean isRequired;
+    private final boolean allowMultiple;
     private Instant createdAt;
 
     private ProductOptionGroup(ProductId productId, OptionGroupId optionGroupId, boolean isRequired, boolean allowMultiple, Instant createdAt) {
-        setProductId(productId);
-        setOptionGroupId(optionGroupId);
-        setCreatedAt(createdAt);
+        if (productId == null) throw new ProductException("productId cannot be null");
+        if (optionGroupId == null) throw new ProductException("optionGroupId cannot be null");
+        this.productId = productId;
+        this.optionGroupId = optionGroupId;
         this.isRequired = isRequired;
         this.allowMultiple = allowMultiple;
+        setCreatedAt(createdAt);
     }
 
     @Override
@@ -42,18 +44,8 @@ public class ProductOptionGroup {
         return productId;
     }
 
-    private void setProductId(ProductId productId) {
-        if (productId == null) throw new ProductException("productId cannot be null");
-        this.productId = productId;
-    }
-
     public OptionGroupId getOptionGroupId() {
         return optionGroupId;
-    }
-
-    private void setOptionGroupId(OptionGroupId optionGroupId) {
-        if (optionGroupId == null) throw new ProductException("option group id cannot be null");
-        this.optionGroupId = optionGroupId;
     }
 
     public boolean isRequired() {
