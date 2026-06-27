@@ -1,5 +1,6 @@
 package com.dozycoffee.product.application.service.tag;
 
+import com.dozycoffee.core.application.ServiceCode;
 import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.product.application.ProductServiceCode;
@@ -24,6 +25,15 @@ public class TagService {
     public TagService(TagRepository tagRepository, IdentifierGenerator<TagId> idGenerator) {
         this.tagRepository = tagRepository;
         this.idGenerator = idGenerator;
+    }
+
+    public void assertExists(TagId tagId) {
+        try {
+            if (!tagRepository.existsById(tagId))
+                throw new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.TAG_NOT_FOUND_ERROR);
+        } catch (RepositoryException e) {
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+        }
     }
 
     public TagData create(String tagName) {
@@ -99,8 +109,7 @@ public class TagService {
 
     public void remove(TagId tagId) {
         try {
-            tagRepository.findById(tagId)
-                    .orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.TAG_NOT_FOUND_ERROR));
+            assertExists(tagId);
             tagRepository.deleteById(tagId);
         } catch (RepositoryException e) {
             throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);

@@ -44,6 +44,12 @@ public class FakeTagRepository implements TagRepository {
     }
 
     @Override
+    public boolean existsById(TagId tagId) throws RepositoryException {
+        checkThrow();
+        return store.containsKey(tagId);
+    }
+
+    @Override
     public List<Tag> findAll() throws RepositoryException {
         checkThrow();
         return new ArrayList<>(store.values());

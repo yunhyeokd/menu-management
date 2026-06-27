@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public interface TagRepository {
     void save(Tag tag) throws RepositoryException;
+
+    boolean existsById(TagId tagId) throws RepositoryException;
     List<Tag> findAll() throws RepositoryException;
     List<Tag> searchByName(String tagName) throws RepositoryException;
     Optional<Tag> findById(TagId tagId) throws RepositoryException;

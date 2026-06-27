@@ -43,6 +43,12 @@ public class FakeProductRepository implements ProductRepository {
     }
 
     @Override
+    public boolean existsById(ProductId productId) throws RepositoryException {
+        checkThrow();
+        return store.containsKey(productId);
+    }
+
+    @Override
     public Optional<Product> findById(ProductId productId) throws RepositoryException {
         checkThrow();
         return Optional.ofNullable(store.get(productId));

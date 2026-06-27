@@ -32,6 +32,15 @@ public class ProductService {
         this.idGenerator = idGenerator;
     }
 
+    public void assertExists(ProductId productId) {
+        try {
+            if (!productRepository.existsById(productId))
+                throw new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.PRODUCT_NOT_FOUND_ERROR);
+        } catch (RepositoryException e) {
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+        }
+    }
+
     private Product getProduct(ProductId id) {
         return productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
     }
@@ -105,7 +114,7 @@ public class ProductService {
 
     public void deleteById(ProductId productId) {
         try {
-            getProduct(productId);
+            assertExists(productId);
             productRepository.deleteById(productId);
         } catch (ProductException e) {
             throw new ValidationException(ProductServiceCode.PRD, ProductErrors.INVALID_PRODUCT_ERROR);
