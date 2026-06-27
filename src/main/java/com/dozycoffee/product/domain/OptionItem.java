@@ -36,7 +36,7 @@ public class OptionItem {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name);
+        return Objects.hash(name, description, price);
     }
 
     public static OptionItem of(String name, String description, int price, Instant createdAt) {

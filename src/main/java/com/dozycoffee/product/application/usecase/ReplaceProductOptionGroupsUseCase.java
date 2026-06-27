@@ -21,7 +21,7 @@ public class ReplaceProductOptionGroupsUseCase {
     }
 
     public void execute(ProductId productId, List<OptionGroupLinkSpec> specs) {
-        productService.findById(productId);
+        productService.assertExists(productId);
         productOptionGroupService.replaceOptionGroups(productId, specs);
     }
 }

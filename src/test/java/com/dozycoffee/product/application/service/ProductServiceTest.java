@@ -56,18 +56,19 @@ public class ProductServiceTest {
         branchExistencePort.register(BranchId.of(1L));
     }
 
-    // ─── registerCommonProduct ────────────────────────────────────────────────
+    // ─── register ────────────────────────────────────────────────────────────
 
     @Test
     public void 공통_상품을_정상_생성한다() {
         defaultCategory();
-        CommonProductRegisterCommand command = new CommonProductRegisterCommand(
+        ProductRegisterCommand command = new ProductRegisterCommand(
+                ProductKind.COMMON, null,
                 "아메리카노", null, null,
                 CategoryId.of(1L), 3000, null, null,
                 Set.of(), List.of()
         );
 
-        Product result = productService.registerCommonProduct(command);
+        Product result = productService.register(command);
 
         assertThat(result.getName()).isEqualTo("아메리카노");
         assertThat(result.getId()).isEqualTo(ProductId.of(1L));
@@ -75,77 +76,65 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void 공통_상품_생성시_카테고리가_없으면_CATEGORY_NOT_FOUND_ERROR를_던진다() {
-        CommonProductRegisterCommand command = new CommonProductRegisterCommand(
-                "아메리카노", null, null,
-                CategoryId.of(999L), 3000, null, null,
-                Set.of(), List.of()
-        );
-
-        assertThatThrownBy(() -> productService.registerCommonProduct(command))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .satisfies(e -> assertErrorCode(e, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
-    }
-
-    @Test
-    public void 공통_상품_생성중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        defaultCategory();
-        productRepository.throwOnNextCall();
-        CommonProductRegisterCommand command = new CommonProductRegisterCommand(
-                "아메리카노", null, null,
-                CategoryId.of(1L), 3000, null, null,
-                Set.of(), List.of()
-        );
-
-        assertThatThrownBy(() -> productService.registerCommonProduct(command))
-                .isInstanceOf(SystemException.class)
-                .satisfies(e -> assertErrorCode(e, ProductErrors.UNKNOWN_ERROR));
-    }
-
-    // ─── registerBranchProduct ────────────────────────────────────────────────
-
-    @Test
     public void 지점_전용_상품을_정상_생성한다() {
         defaultCategory();
         defaultBranch();
-        BranchProductRegisterCommand command = new BranchProductRegisterCommand(
-                BranchId.of(1L), "지점전용라떼", null, null,
+        ProductRegisterCommand command = new ProductRegisterCommand(
+                ProductKind.BRANCH_EXCLUSIVE, BranchId.of(1L),
+                "지점전용라떼", null, null,
                 CategoryId.of(1L), 4500, null, null,
                 Set.of(), List.of()
         );
 
-        Product result = productService.registerBranchProduct(command);
+        Product result = productService.register(command);
 
         assertThat(result.getName()).isEqualTo("지점전용라떼");
         assertThat(productRepository.findById(ProductId.of(1L))).isPresent();
     }
 
     @Test
+    public void 상품_생성시_카테고리가_없으면_CATEGORY_NOT_FOUND_ERROR를_던진다() {
+        ProductRegisterCommand command = new ProductRegisterCommand(
+                ProductKind.COMMON, null,
+                "아메리카노", null, null,
+                CategoryId.of(999L), 3000, null, null,
+                Set.of(), List.of()
+        );
+
+        assertThatThrownBy(() -> productService.register(command))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
+    }
+
+    @Test
     public void 지점_전용_상품_생성시_지점이_없으면_BRANCH_NOT_FOUND_ERROR를_던진다() {
         defaultCategory();
-        BranchProductRegisterCommand command = new BranchProductRegisterCommand(
-                BranchId.of(999L), "지점전용라떼", null, null,
+        ProductRegisterCommand command = new ProductRegisterCommand(
+                ProductKind.BRANCH_EXCLUSIVE, BranchId.of(999L),
+                "지점전용라떼", null, null,
                 CategoryId.of(1L), 4500, null, null,
                 Set.of(), List.of()
         );
 
-        assertThatThrownBy(() -> productService.registerBranchProduct(command))
+        assertThatThrownBy(() -> productService.register(command))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     @Test
-    public void 지점_전용_상품_생성시_카테고리가_없으면_CATEGORY_NOT_FOUND_ERROR를_던진다() {
-        defaultBranch();
-        BranchProductRegisterCommand command = new BranchProductRegisterCommand(
-                BranchId.of(1L), "지점전용라떼", null, null,
-                CategoryId.of(999L), 4500, null, null,
+    public void 상품_생성중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
+        defaultCategory();
+        productRepository.throwOnNextCall();
+        ProductRegisterCommand command = new ProductRegisterCommand(
+                ProductKind.COMMON, null,
+                "아메리카노", null, null,
+                CategoryId.of(1L), 3000, null, null,
                 Set.of(), List.of()
         );
 
-        assertThatThrownBy(() -> productService.registerBranchProduct(command))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .satisfies(e -> assertErrorCode(e, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
+        assertThatThrownBy(() -> productService.register(command))
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, ProductErrors.UNKNOWN_ERROR));
     }
 
     // ─── searchProducts ───────────────────────────────────────────────────────

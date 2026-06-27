@@ -22,6 +22,7 @@ public class DeleteProductUseCase {
     }
 
     public void execute(ProductId productId) {
+        productService.assertExists(productId);
         productTagService.deleteAllByProductId(productId);
         productOptionGroupService.deleteAllByProductId(productId);
         productService.deleteById(productId);

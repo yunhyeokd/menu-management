@@ -101,11 +101,11 @@ public class ProductFixture {
         }
 
         public Product createCommonProduct() {
-            return Product.createCommonProduct(id, name, description, imageUrl, categoryId, price, kcal, allergenInfo);
+            return Product.create(id, name, description, imageUrl, categoryId, price, kcal, allergenInfo, ProductKind.COMMON, null);
         }
 
         public Product createBranchProduct() {
-            return Product.createBranchProduct(id, name, description, imageUrl, categoryId, price, kcal, allergenInfo, branchId);
+            return Product.create(id, name, description, imageUrl, categoryId, price, kcal, allergenInfo, ProductKind.BRANCH_EXCLUSIVE, branchId);
         }
 
         public Product build() {

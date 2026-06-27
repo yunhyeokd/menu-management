@@ -32,44 +32,28 @@ public class ProductService {
         this.idGenerator = idGenerator;
     }
 
-    private Product getProduct(ProductId id) {
-        return productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
-    }
-
-    public Product registerCommonProduct(CommonProductRegisterCommand command) {
+    public void assertExists(ProductId productId) {
         try {
-            categoryRepository.findById(command.categoryId())
-                    .orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
-            ProductId productId = idGenerator.generate();
-            Product product = Product.createCommonProduct(
-                    productId,
-                    command.name(),
-                    command.description(),
-                    command.imageUrl(),
-                    command.categoryId(),
-                    command.price(),
-                    command.kcal(),
-                    command.allergenInfo()
-            );
-            productRepository.save(product);
-            return product;
-        } catch (ProductException e) {
-            throw new ValidationException(ProductServiceCode.PRD, ProductErrors.INVALID_PRODUCT_ERROR);
+            if (!productRepository.existsById(productId))
+                throw new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.PRODUCT_NOT_FOUND_ERROR);
         } catch (RepositoryException e) {
             throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
     }
 
-    public Product registerBranchProduct(BranchProductRegisterCommand command) {
+    private Product getProduct(ProductId id) {
+        return productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
+    }
+
+    public Product register(ProductRegisterCommand command) {
         try {
             categoryRepository.findById(command.categoryId())
                     .orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
-            if (!branchExistencePort.existsById(command.branchId())) {
+            if (command.branchId() != null && !branchExistencePort.existsById(command.branchId())) {
                 throw new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.BRANCH_NOT_FOUND_ERROR);
             }
-
             ProductId productId = idGenerator.generate();
-            Product product = Product.createBranchProduct(
+            Product product = Product.create(
                     productId,
                     command.name(),
                     command.description(),
@@ -78,6 +62,7 @@ public class ProductService {
                     command.price(),
                     command.kcal(),
                     command.allergenInfo(),
+                    command.kind(),
                     command.branchId()
             );
             productRepository.save(product);
@@ -129,7 +114,7 @@ public class ProductService {
 
     public void deleteById(ProductId productId) {
         try {
-            getProduct(productId);
+            assertExists(productId);
             productRepository.deleteById(productId);
         } catch (ProductException e) {
             throw new ValidationException(ProductServiceCode.PRD, ProductErrors.INVALID_PRODUCT_ERROR);

@@ -15,6 +15,7 @@ public class DeleteTagUseCase {
     }
 
     public void execute(TagId tagId) {
+        tagService.assertExists(tagId);
         productTagService.deleteAllByTagId(tagId);
         tagService.remove(tagId);
     }
