@@ -3,11 +3,13 @@ package com.dozycoffee.product.application.dto;
 import com.dozycoffee.branch.domain.BranchId;
 import com.dozycoffee.product.domain.AllergenInfo;
 import com.dozycoffee.product.domain.CategoryId;
+import com.dozycoffee.product.domain.ProductKind;
 
 import java.util.List;
 import java.util.Set;
 
-public record BranchProductRegisterCommand(
+public record ProductRegisterCommand(
+        ProductKind kind,
         BranchId branchId,
         String name,
         String description,

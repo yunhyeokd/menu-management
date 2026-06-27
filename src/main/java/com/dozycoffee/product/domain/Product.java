@@ -61,12 +61,9 @@ public class Product {
         return new Product(id, name, description, imageUrl, categoryId, price, kcal, allergenInfo, kind, branchId, status, createdAt);
     }
 
-    public static Product createCommonProduct(ProductId id, String name, String description, String imageUrl, CategoryId categoryId, int price, Integer kcal, AllergenInfo allergenInfo) {
-        return new Product(id, name, description, imageUrl, categoryId, price, kcal, allergenInfo, ProductKind.COMMON, null, ProductStatus.INACTIVE, Instant.now());
-    }
-
-    public static Product createBranchProduct(ProductId id, String name, String description, String imageUrl, CategoryId categoryId, int price, Integer kcal, AllergenInfo allergenInfo, BranchId branchId) {
-        return new Product(id, name, description, imageUrl, categoryId, price, kcal, allergenInfo, ProductKind.BRANCH_EXCLUSIVE, branchId, ProductStatus.INACTIVE, Instant.now());
+    public static Product create(ProductId id, String name, String description, String imageUrl, CategoryId categoryId, int price, Integer kcal, AllergenInfo allergenInfo, ProductKind kind, BranchId branchId) {
+        validateKindConflict(kind, branchId);
+        return new Product(id, name, description, imageUrl, categoryId, price, kcal, allergenInfo, kind, branchId, ProductStatus.INACTIVE, Instant.now());
     }
 
     private static void validateKindConflict(ProductKind kind, BranchId branchId) {

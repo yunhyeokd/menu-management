@@ -34,8 +34,7 @@ public class ProductUseCaseTest {
     private FakeProductOptionGroupRepository productOptionGroupRepository;
     private FakeOptionGroupRepository optionGroupRepository;
 
-    private RegisterCommonProductUseCase registerCommonProductUseCase;
-    private RegisterBranchProductUseCase registerBranchProductUseCase;
+    private RegisterProductUseCase registerProductUseCase;
     private UpdateProductProfileUseCase updateProductProfileUseCase;
     private DeleteProductUseCase deleteProductUseCase;
     private ReplaceProductOptionGroupsUseCase replaceProductOptionGroupsUseCase;
@@ -75,8 +74,7 @@ public class ProductUseCaseTest {
                 () -> OptionGroupId.of(nextOptionGroupId++)
         );
 
-        registerCommonProductUseCase = new RegisterCommonProductUseCase(productService, productTagService, productOptionGroupService);
-        registerBranchProductUseCase = new RegisterBranchProductUseCase(productService, productTagService, productOptionGroupService);
+        registerProductUseCase = new RegisterProductUseCase(productService, productTagService, productOptionGroupService);
         updateProductProfileUseCase = new UpdateProductProfileUseCase(productService, productTagService);
         deleteProductUseCase = new DeleteProductUseCase(productService, productTagService, productOptionGroupService);
         replaceProductOptionGroupsUseCase = new ReplaceProductOptionGroupsUseCase(productService, productOptionGroupService);
@@ -111,7 +109,8 @@ public class ProductUseCaseTest {
         defaultCategory();
         OptionGroup og = savedOptionGroup(1L);
 
-        ProductData result = registerCommonProductUseCase.execute(new CommonProductRegisterCommand(
+        ProductData result = registerProductUseCase.execute(new ProductRegisterCommand(
+                ProductKind.COMMON, null,
                 "아메리카노", null, null, CategoryId.of(1L), 3000, null, null,
                 Set.of("신제품"), List.of(new OptionGroupLinkSpec(og.getId(), true, false))
         ));
@@ -123,31 +122,31 @@ public class ProductUseCaseTest {
     }
 
     @Test
-    void 공통_상품_등록시_옵션그룹이_없으면_OPTION_GROUP_NOT_FOUND_ERROR를_던진다() {
-        defaultCategory();
-
-        assertThatThrownBy(() -> registerCommonProductUseCase.execute(new CommonProductRegisterCommand(
-                "아메리카노", null, null, CategoryId.of(1L), 3000, null, null,
-                Set.of(), List.of(new OptionGroupLinkSpec(OptionGroupId.of(999L), true, false))
-        )))
-                .isInstanceOf(ResourceNotFoundException.class);
-    }
-
-    // ─── RegisterBranchProduct ────────────────────────────────────────────────
-
-    @Test
     void 지점_전용_상품을_태그와_함께_등록한다() {
         defaultCategory();
         defaultBranch();
 
-        ProductData result = registerBranchProductUseCase.execute(new BranchProductRegisterCommand(
-                BranchId.of(1L), "지점전용라떼", null, null,
+        ProductData result = registerProductUseCase.execute(new ProductRegisterCommand(
+                ProductKind.BRANCH_EXCLUSIVE, BranchId.of(1L),
+                "지점전용라떼", null, null,
                 CategoryId.of(1L), 4500, null, null,
                 Set.of("프리미엄"), List.of()
         ));
 
         assertThat(result.name()).isEqualTo("지점전용라떼");
         assertThat(result.tags()).hasSize(1);
+    }
+
+    @Test
+    void 상품_등록시_옵션그룹이_없으면_OPTION_GROUP_NOT_FOUND_ERROR를_던진다() {
+        defaultCategory();
+
+        assertThatThrownBy(() -> registerProductUseCase.execute(new ProductRegisterCommand(
+                ProductKind.COMMON, null,
+                "아메리카노", null, null, CategoryId.of(1L), 3000, null, null,
+                Set.of(), List.of(new OptionGroupLinkSpec(OptionGroupId.of(999L), true, false))
+        )))
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     // ─── UpdateProductProfile ─────────────────────────────────────────────────
