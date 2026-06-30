@@ -1,4 +1,4 @@
-package com.dozycoffee.infrastructure;
+package com.dozycoffee.infrastructure.generator;
 
 import com.dozycoffee.admin.domain.AdminId;
 import com.dozycoffee.branch.domain.BranchId;

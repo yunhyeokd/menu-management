@@ -1,4 +1,4 @@
-package com.dozycoffee.infrastructure;
+package com.dozycoffee.infrastructure.generator;
 
 import com.dozycoffee.core.domain.Identifier;
 import com.dozycoffee.core.domain.IdentifierGenerator;
