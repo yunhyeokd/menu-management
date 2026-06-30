@@ -17,7 +17,7 @@
             <arg name="optionGroupId" column="option_group_id" javaType="String"/>
             <arg name="name"          column="name"            javaType="String"/>
             <arg name="description"   column="description"     javaType="String"/>
-            <arg name="price"         column="price"           javaType="int"/>
+            <arg name="price"         column="price"           javaType="_int"/>
             <arg name="createdAt"     column="created_at"      javaType="java.time.Instant"/>
         </constructor>
     </resultMap>
