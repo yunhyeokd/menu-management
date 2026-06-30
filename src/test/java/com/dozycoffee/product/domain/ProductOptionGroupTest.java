@@ -10,8 +10,8 @@ public class ProductOptionGroupTest {
 
     @Test
     public void 상품_옵션그룹을_정상_생성한다() {
-        ProductId productId = ProductId.of(1L);
-        OptionGroupId optionGroupId = OptionGroupId.of(1L);
+        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
+        OptionGroupId optionGroupId = OptionGroupId.of("00000000-0000-0000-0000-000000000001");
         boolean isRequired = true;
         boolean allowMultiple = false;
 
@@ -26,8 +26,8 @@ public class ProductOptionGroupTest {
 
     @Test
     public void 복합키가_같은_상품_옵션그룹은_동등하다() {
-        ProductId productId = ProductId.of(1L);
-        OptionGroupId optionGroupId = OptionGroupId.of(1L);
+        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
+        OptionGroupId optionGroupId = OptionGroupId.of("00000000-0000-0000-0000-000000000001");
         Instant createdAt = Instant.now();
 
         ProductOptionGroup productOptionGroup1 = ProductOptionGroup.of(productId, optionGroupId, true, false, createdAt);
@@ -38,11 +38,11 @@ public class ProductOptionGroupTest {
 
     @Test
     public void optionGroupId가_다른_상품_옵션그룹은_동등하지_않다() {
-        ProductId productId = ProductId.of(1L);
+        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
         Instant createdAt = Instant.now();
 
-        ProductOptionGroup productOptionGroup1 = ProductOptionGroup.of(productId, OptionGroupId.of(1L), true, false, createdAt);
-        ProductOptionGroup productOptionGroup2 = ProductOptionGroup.of(productId, OptionGroupId.of(2L), true, false, createdAt);
+        ProductOptionGroup productOptionGroup1 = ProductOptionGroup.of(productId, OptionGroupId.of("00000000-0000-0000-0000-000000000001"), true, false, createdAt);
+        ProductOptionGroup productOptionGroup2 = ProductOptionGroup.of(productId, OptionGroupId.of("00000000-0000-0000-0000-000000000002"), true, false, createdAt);
 
         assertThat(productOptionGroup1).isNotEqualTo(productOptionGroup2);
     }

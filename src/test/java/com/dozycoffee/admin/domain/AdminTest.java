@@ -19,7 +19,7 @@ public class AdminTest {
 
     @Test
     public void 관리자_계정을_정상_생성한다() {
-        Admin adminAccount = Admin.create(AdminId.of(1L), AdminRole.STAFF, "test", "password", defaultProfile());
+        Admin adminAccount = Admin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.STAFF, "test", "password", defaultProfile());
 
         assertThat(adminAccount.getUsername()).isEqualTo("test");
         assertThat(adminAccount.getRole()).isEqualTo("STAFF");
@@ -56,21 +56,21 @@ public class AdminTest {
 
     @Test
     public void STAFF_계정_생성시_profile이_null이면_예외가_발생한다() {
-        assertThatThrownBy(() -> Admin.create(AdminId.of(1L), AdminRole.STAFF, "test", "password", null))
+        assertThatThrownBy(() -> Admin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.STAFF, "test", "password", null))
                 .isInstanceOf(AdminException.class);
     }
 
     @Test
     public void SYSTEM_계정은_profile이_null이어도_생성된다() {
-        Admin system = Admin.create(AdminId.of(1L), AdminRole.SYSTEM, "sysadmin", "password", null);
+        Admin system = Admin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.SYSTEM, "sysadmin", "password", null);
         assertThat(system.getProfile()).isNull();
     }
 
     @Test
     public void 같은_id를_가진_계정은_동등하다() {
         AdminProfile profile = defaultProfile();
-        Admin a = Admin.of(AdminId.of(1L), AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
-        Admin b = Admin.of(AdminId.of(1L), AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
+        Admin a = Admin.of(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
+        Admin b = Admin.of(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
 
         assertThat(a).isEqualTo(b);
         assertThat(a.hashCode()).isEqualTo(b.hashCode());
@@ -79,8 +79,8 @@ public class AdminTest {
     @Test
     public void 다른_id를_가진_계정은_동등하지_않다() {
         AdminProfile profile = defaultProfile();
-        Admin a = Admin.of(AdminId.of(1L), AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
-        Admin b = Admin.of(AdminId.of(2L), AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
+        Admin a = Admin.of(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
+        Admin b = Admin.of(AdminId.of("00000000-0000-0000-0000-000000000002"), AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
 
         assertThat(a).isNotEqualTo(b);
     }

@@ -37,8 +37,8 @@ public class AuthenticationServiceTest {
 
     @BeforeEach
     void setUp() {
-        activeAdmin = Admin.create(AdminId.of(1L), AdminRole.SYSTEM, "sysadmin", HASHED_PASSWORD, null);
-        activeBranch = Branch.create(BranchId.of(1L), BranchCode.of(BRANCH_CODE), HASHED_AUTH_KEY, "테스트점", "서울 강남구 테헤란로 1");
+        activeAdmin = Admin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.SYSTEM, "sysadmin", HASHED_PASSWORD, null);
+        activeBranch = Branch.create(BranchId.of("00000000-0000-0000-0000-000000000001"), BranchCode.of(BRANCH_CODE), HASHED_AUTH_KEY, "테스트점", "서울 강남구 테헤란로 1");
 
         AuthenticationResolver adminResolver = (id, credential) -> {
             if ("sysadmin".equals(id) && HASHED_PASSWORD.equals("hashed-" + credential.getValue())) {

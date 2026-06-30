@@ -2,7 +2,7 @@ package com.dozycoffee.branch.domain;
 
 public class BranchFixture {
 
-    public static BranchId id = BranchId.of(1L);
+    public static BranchId id = BranchId.of("00000000-0000-0000-0000-000000000001");
     public static BranchCode code = BranchCode.of("20260001");
     public static String authKeyHash = "authKeyHash";
     public static String name = "어린이대공원";

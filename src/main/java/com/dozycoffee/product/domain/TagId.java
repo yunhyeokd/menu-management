@@ -1,14 +1,14 @@
 package com.dozycoffee.product.domain;
 
-import com.dozycoffee.core.domain.LongIdentifier;
+import com.dozycoffee.core.domain.UuidIdentifier;
 
-public class TagId extends LongIdentifier {
+public class TagId extends UuidIdentifier {
 
-    private TagId(long value) {
+    private TagId(String value) {
         super(value);
     }
 
-    public static TagId of(long value) {
+    public static TagId of(String value) {
         return new TagId(value);
     }
 }

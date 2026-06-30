@@ -34,7 +34,7 @@ public class CategoryServiceTest {
         productRepository = new FakeProductRepository();
         nextCategoryId = 1L;
         categoryService = new CategoryService(categoryRepository, productRepository,
-                () -> CategoryId.of(nextCategoryId++));
+                () -> CategoryId.of(String.format("00000000-0000-0000-0000-%012d", nextCategoryId++)));
     }
 
     private void assertErrorCode(Throwable e, ServiceError error) {
@@ -54,7 +54,7 @@ public class CategoryServiceTest {
 
     @Test
     public void 카테고리_생성시_이름이_중복되면_DUPLICATE_CATEGORY_NAME_ERROR를_던진다() {
-        categoryRepository.put(Category.of(CategoryId.of(1L), "커피", Instant.now()));
+        categoryRepository.put(Category.of(CategoryId.of("00000000-0000-0000-0000-000000000001"), "커피", Instant.now()));
 
         assertThatThrownBy(() -> categoryService.create("커피"))
                 .isInstanceOf(ConflictException.class)
@@ -81,7 +81,7 @@ public class CategoryServiceTest {
 
     @Test
     public void 카테고리_이름을_정상_변경한다() {
-        Category category = categoryRepository.put(Category.of(CategoryId.of(1L), "커피", Instant.now()));
+        Category category = categoryRepository.put(Category.of(CategoryId.of("00000000-0000-0000-0000-000000000001"), "커피", Instant.now()));
 
         categoryService.updateName(category.getId(), "Coffee");
 
@@ -90,36 +90,36 @@ public class CategoryServiceTest {
 
     @Test
     public void 카테고리_이름_변경시_대상이_존재하지_않으면_CATEGORY_NOT_FOUND_ERROR를_던진다() {
-        assertThatThrownBy(() -> categoryService.updateName(CategoryId.of(999L), "Coffee"))
+        assertThatThrownBy(() -> categoryService.updateName(CategoryId.of("00000000-0000-0000-0000-000000000999"), "Coffee"))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
     }
 
     @Test
     public void 카테고리_이름_변경시_새_이름이_중복되면_DUPLICATE_CATEGORY_NAME_ERROR를_던진다() {
-        categoryRepository.put(Category.of(CategoryId.of(1L), "커피", Instant.now()));
-        categoryRepository.put(Category.of(CategoryId.of(2L), "음료", Instant.now()));
+        categoryRepository.put(Category.of(CategoryId.of("00000000-0000-0000-0000-000000000001"), "커피", Instant.now()));
+        categoryRepository.put(Category.of(CategoryId.of("00000000-0000-0000-0000-000000000002"), "음료", Instant.now()));
 
-        assertThatThrownBy(() -> categoryService.updateName(CategoryId.of(1L), "음료"))
+        assertThatThrownBy(() -> categoryService.updateName(CategoryId.of("00000000-0000-0000-0000-000000000001"), "음료"))
                 .isInstanceOf(ConflictException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.DUPLICATE_CATEGORY_NAME_ERROR));
     }
 
     @Test
     public void 카테고리_이름_변경시_새_이름이_유효하지_않으면_INVALID_CATEGORY_ERROR를_던진다() {
-        categoryRepository.put(Category.of(CategoryId.of(1L), "커피", Instant.now()));
+        categoryRepository.put(Category.of(CategoryId.of("00000000-0000-0000-0000-000000000001"), "커피", Instant.now()));
 
-        assertThatThrownBy(() -> categoryService.updateName(CategoryId.of(1L), ""))
+        assertThatThrownBy(() -> categoryService.updateName(CategoryId.of("00000000-0000-0000-0000-000000000001"), ""))
                 .isInstanceOf(ValidationException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.INVALID_CATEGORY_ERROR));
     }
 
     @Test
     public void 카테고리_이름_변경중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        categoryRepository.put(Category.of(CategoryId.of(1L), "커피", Instant.now()));
+        categoryRepository.put(Category.of(CategoryId.of("00000000-0000-0000-0000-000000000001"), "커피", Instant.now()));
         categoryRepository.throwOnNextCall();
 
-        assertThatThrownBy(() -> categoryService.updateName(CategoryId.of(1L), "Coffee"))
+        assertThatThrownBy(() -> categoryService.updateName(CategoryId.of("00000000-0000-0000-0000-000000000001"), "Coffee"))
                 .isInstanceOf(SystemException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.UNKNOWN_ERROR));
     }
@@ -128,8 +128,8 @@ public class CategoryServiceTest {
 
     @Test
     public void 카테고리_전체_목록을_조회한다() {
-        categoryRepository.put(Category.of(CategoryId.of(1L), "커피", Instant.now()));
-        categoryRepository.put(Category.of(CategoryId.of(2L), "음료", Instant.now()));
+        categoryRepository.put(Category.of(CategoryId.of("00000000-0000-0000-0000-000000000001"), "커피", Instant.now()));
+        categoryRepository.put(Category.of(CategoryId.of("00000000-0000-0000-0000-000000000002"), "음료", Instant.now()));
 
         List<CategoryData> categories = categoryService.findAll();
 
@@ -156,8 +156,8 @@ public class CategoryServiceTest {
 
     @Test
     public void 이름으로_카테고리를_검색한다() {
-        categoryRepository.put(Category.of(CategoryId.of(1L), "아이스커피", Instant.now()));
-        categoryRepository.put(Category.of(CategoryId.of(2L), "음료", Instant.now()));
+        categoryRepository.put(Category.of(CategoryId.of("00000000-0000-0000-0000-000000000001"), "아이스커피", Instant.now()));
+        categoryRepository.put(Category.of(CategoryId.of("00000000-0000-0000-0000-000000000002"), "음료", Instant.now()));
 
         List<CategoryData> result = categoryService.searchByName("커피");
 
@@ -166,7 +166,7 @@ public class CategoryServiceTest {
 
     @Test
     public void 이름으로_검색시_일치하는_카테고리가_없으면_빈_목록을_반환한다() {
-        categoryRepository.put(Category.of(CategoryId.of(1L), "커피", Instant.now()));
+        categoryRepository.put(Category.of(CategoryId.of("00000000-0000-0000-0000-000000000001"), "커피", Instant.now()));
 
         List<CategoryData> result = categoryService.searchByName("존재하지않음");
 
@@ -186,7 +186,7 @@ public class CategoryServiceTest {
 
     @Test
     public void 카테고리를_정상_삭제한다() {
-        Category category = categoryRepository.put(Category.of(CategoryId.of(1L), "커피", Instant.now()));
+        Category category = categoryRepository.put(Category.of(CategoryId.of("00000000-0000-0000-0000-000000000001"), "커피", Instant.now()));
 
         categoryService.remove(category.getId());
 
@@ -195,9 +195,9 @@ public class CategoryServiceTest {
 
     @Test
     public void 카테고리_삭제시_연결된_상품이_비활성화된다() {
-        Category category = categoryRepository.put(Category.of(CategoryId.of(1L), "커피", Instant.now()));
-        productRepository.put(ProductFixture.builder().id(ProductId.of(1L)).categoryId(CategoryId.of(1L)).status(ProductStatus.ACTIVE).build());
-        productRepository.put(ProductFixture.builder().id(ProductId.of(2L)).categoryId(CategoryId.of(1L)).status(ProductStatus.ACTIVE).build());
+        Category category = categoryRepository.put(Category.of(CategoryId.of("00000000-0000-0000-0000-000000000001"), "커피", Instant.now()));
+        productRepository.put(ProductFixture.builder().id(ProductId.of("00000000-0000-0000-0000-000000000001")).categoryId(CategoryId.of("00000000-0000-0000-0000-000000000001")).status(ProductStatus.ACTIVE).build());
+        productRepository.put(ProductFixture.builder().id(ProductId.of("00000000-0000-0000-0000-000000000002")).categoryId(CategoryId.of("00000000-0000-0000-0000-000000000001")).status(ProductStatus.ACTIVE).build());
 
         categoryService.remove(category.getId());
 
@@ -207,17 +207,17 @@ public class CategoryServiceTest {
 
     @Test
     public void 카테고리_삭제시_대상이_존재하지_않으면_CATEGORY_NOT_FOUND_ERROR를_던진다() {
-        assertThatThrownBy(() -> categoryService.remove(CategoryId.of(999L)))
+        assertThatThrownBy(() -> categoryService.remove(CategoryId.of("00000000-0000-0000-0000-000000000999")))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
     }
 
     @Test
     public void 카테고리_삭제중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        categoryRepository.put(Category.of(CategoryId.of(1L), "커피", Instant.now()));
+        categoryRepository.put(Category.of(CategoryId.of("00000000-0000-0000-0000-000000000001"), "커피", Instant.now()));
         categoryRepository.throwOnNextCall();
 
-        assertThatThrownBy(() -> categoryService.remove(CategoryId.of(1L)))
+        assertThatThrownBy(() -> categoryService.remove(CategoryId.of("00000000-0000-0000-0000-000000000001")))
                 .isInstanceOf(SystemException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.UNKNOWN_ERROR));
     }

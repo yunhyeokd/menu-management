@@ -1,14 +1,14 @@
 package com.dozycoffee.product.domain;
 
-import com.dozycoffee.core.domain.LongIdentifier;
+import com.dozycoffee.core.domain.UuidIdentifier;
 
-public class CategoryId extends LongIdentifier {
+public class CategoryId extends UuidIdentifier {
 
-    private CategoryId(long value) {
+    private CategoryId(String value) {
         super(value);
     }
 
-    public static CategoryId of(long value) {
+    public static CategoryId of(String value) {
         return new CategoryId(value);
     }
 }

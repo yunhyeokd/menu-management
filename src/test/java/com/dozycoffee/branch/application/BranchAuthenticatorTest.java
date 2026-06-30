@@ -38,8 +38,8 @@ public class BranchAuthenticatorTest {
 
         branchAuthenticator = new BranchAuthenticator(branchRepository, passwordHasher);
 
-        activeBranch = Branch.create(BranchId.of(1L), ACTIVE_CODE, HASHED_AUTH_KEY, BranchFixture.name, BranchFixture.address);
-        deletedBranch = Branch.create(BranchId.of(2L), DELETED_CODE, HASHED_AUTH_KEY, BranchFixture.name, BranchFixture.address);
+        activeBranch = Branch.create(BranchId.of("00000000-0000-0000-0000-000000000001"), ACTIVE_CODE, HASHED_AUTH_KEY, BranchFixture.name, BranchFixture.address);
+        deletedBranch = Branch.create(BranchId.of("00000000-0000-0000-0000-000000000002"), DELETED_CODE, HASHED_AUTH_KEY, BranchFixture.name, BranchFixture.address);
         deletedBranch.softDelete();
 
         branchRepository.put(activeBranch);

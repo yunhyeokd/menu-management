@@ -37,9 +37,9 @@ public class AdminUsernameAuthenticatorTest {
 
         adminUsernameAuthenticator = new AdminUsernameAuthenticator(adminRepository, passwordHasher);
 
-        activeAdmin = Admin.create(AdminId.of(1L), AdminRole.SYSTEM, "sysadmin", HASHED_PASSWORD, null);
+        activeAdmin = Admin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.SYSTEM, "sysadmin", HASHED_PASSWORD, null);
         AdminProfile staffProfile = AdminProfile.create("EMP001", "홍길동", "+821012345678", "staff@dozy.com");
-        pendingAdmin = Admin.create(AdminId.of(2L), AdminRole.STAFF, "staffadmin", HASHED_PASSWORD, staffProfile);
+        pendingAdmin = Admin.create(AdminId.of("00000000-0000-0000-0000-000000000002"), AdminRole.STAFF, "staffadmin", HASHED_PASSWORD, staffProfile);
 
         adminRepository.put(activeAdmin);
         adminRepository.put(pendingAdmin);

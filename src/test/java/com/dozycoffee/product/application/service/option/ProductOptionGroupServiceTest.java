@@ -37,8 +37,9 @@ public class ProductOptionGroupServiceTest {
     }
 
     private OptionGroup savedOptionGroup(long id) {
+        String sid = String.format("00000000-0000-0000-0000-%012d", id);
         return optionGroupRepository.put(OptionGroup.of(
-                OptionGroupId.of(id), "옵션그룹" + id, null,
+                OptionGroupId.of(sid), "옵션그룹" + id, null,
                 List.of(OptionItem.of("기본", null, 0, Instant.now())),
                 Instant.now()
         ));
@@ -46,7 +47,7 @@ public class ProductOptionGroupServiceTest {
 
     @Test
     void 상품에_옵션그룹을_연결한다() {
-        ProductId productId = ProductId.of(1L);
+        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
         OptionGroup og = savedOptionGroup(10L);
 
         productOptionGroupService.saveOptionGroups(productId, List.of(
@@ -59,8 +60,8 @@ public class ProductOptionGroupServiceTest {
     @Test
     void 옵션그룹_연결시_존재하지_않는_옵션그룹이면_OPTION_GROUP_NOT_FOUND_ERROR를_던진다() {
         assertThatThrownBy(() -> productOptionGroupService.saveOptionGroups(
-                ProductId.of(1L),
-                List.of(new OptionGroupLinkSpec(OptionGroupId.of(999L), true, false))
+                ProductId.of("00000000-0000-0000-0000-000000000001"),
+                List.of(new OptionGroupLinkSpec(OptionGroupId.of("00000000-0000-0000-0000-000000000999"), true, false))
         ))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.OPTION_GROUP_NOT_FOUND_ERROR));
@@ -68,7 +69,7 @@ public class ProductOptionGroupServiceTest {
 
     @Test
     void 상품의_옵션그룹을_교체한다() {
-        ProductId productId = ProductId.of(1L);
+        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
         OptionGroup old = savedOptionGroup(10L);
         OptionGroup newOg = savedOptionGroup(20L);
         productOptionGroupRepository.put(ProductOptionGroup.of(productId, old.getId(), true, false, Instant.now()));
@@ -83,7 +84,7 @@ public class ProductOptionGroupServiceTest {
 
     @Test
     void 상품에_연결된_모든_옵션그룹을_삭제한다() {
-        ProductId productId = ProductId.of(1L);
+        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
         OptionGroup og = savedOptionGroup(10L);
         productOptionGroupRepository.put(ProductOptionGroup.of(productId, og.getId(), true, false, Instant.now()));
 
@@ -95,7 +96,7 @@ public class ProductOptionGroupServiceTest {
     @Test
     void 연결된_상품이_있으면_LINKED_PRODUCT_EXISTS_ERROR를_던진다() {
         OptionGroup og = savedOptionGroup(10L);
-        productOptionGroupRepository.put(ProductOptionGroup.of(ProductId.of(1L), og.getId(), true, false, Instant.now()));
+        productOptionGroupRepository.put(ProductOptionGroup.of(ProductId.of("00000000-0000-0000-0000-000000000001"), og.getId(), true, false, Instant.now()));
 
         assertThatThrownBy(() -> productOptionGroupService.assertNoLinkedProducts(og.getId()))
                 .isInstanceOf(ConflictException.class)
@@ -113,7 +114,7 @@ public class ProductOptionGroupServiceTest {
     void 옵션그룹_연결시_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         productOptionGroupRepository.throwOnNextCall();
 
-        assertThatThrownBy(() -> productOptionGroupService.deleteAllByProductId(ProductId.of(1L)))
+        assertThatThrownBy(() -> productOptionGroupService.deleteAllByProductId(ProductId.of("00000000-0000-0000-0000-000000000001")))
                 .isInstanceOf(SystemException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.UNKNOWN_ERROR));
     }

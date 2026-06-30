@@ -2,7 +2,7 @@ package com.dozycoffee.admin.domain;
 
 public class AdminFixture {
 
-    public static AdminId id = AdminId.of(1L);
+    public static AdminId id = AdminId.of("00000000-0000-0000-0000-000000000001");
 
     public static AdminBuilder builder() {
         return new AdminBuilder();
