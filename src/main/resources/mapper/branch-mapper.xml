@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dozycoffee.infrastructure.persistance.mapper.BranchMapper">
+
+    <resultMap id="branchRow" type="com.dozycoffee.infrastructure.persistance.entity.BranchRow">
+        <constructor>
+            <idArg column="branch_id" javaType="Long"/>
+            <arg column="branch_code" javaType="String"/>
+            <arg column="auth_key_hash" javaType="String"/>
+            <arg column="status" javaType="String"/>
+            <arg column="created_at" javaType="java.time.Instant"/>
+            <arg column="deleted_at" javaType="java.time.Instant"/>
+            <arg column="name" javaType="String"/>
+            <arg column="address" javaType="String"/>
+        </constructor>
+    </resultMap>
+
+    <insert id="upsert">
+        insert into branch_account (branch_id, branch_code, auth_key_hash, status, created_at, deleted_at, name, address)
+        values (uuid_to_bin(#{branchId}), #{code}, #{authKeyHash}, #{status}, #{createdAt}, #{deletedAt}, #{name}, #{address})
+        on duplicate key update
+            auth_key_hash = values(auth_key_hash),
+            status        = values(status),
+            deleted_at    = values(deleted_at),
+            name          = values(name),
+            address       = values(address)
+    </insert>
+
+    <select id="findById" resultMap="branchRow">
+        select branch_id,
+               branch_code,
+               auth_key_hash,
+               status,
+               created_at,
+               deleted_at,
+               name,
+               address
+        from branch_account
+        where branch_id = #{branchId}
+    </select>
+
+    <select id="findByCode" resultMap="branchRow">
+        select branch_id,
+               branch_code,
+               auth_key_hash,
+               status,
+               created_at,
+               deleted_at,
+               name,
+               address
+        from branch_account
+        where branch_code = #{code}
+    </select>
+
+    <select id="findByName" resultMap="branchRow">
+        select branch_id,
+               branch_code,
+               auth_key_hash,
+               status,
+               created_at,
+               deleted_at,
+               name,
+               address
+        from branch_account
+        where name = #{name}
+    </select>
+
+    <delete id="deleteById">
+        delete
+        from branch_account
+        where branch_id = #{branchId}
+    </delete>
+
+</mapper>

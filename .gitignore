@@ -20,3 +20,5 @@ CLAUDE.md
 # ENV
 .env
 .env.*
+
+sql/

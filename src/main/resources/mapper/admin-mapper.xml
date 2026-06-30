@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dozycoffee.infrastructure.persistance.mapper.AdminMapper">
+    <resultMap id="adminRow" type="com.dozycoffee.infrastructure.persistance.entity.AdminRow">
+        <constructor>
+            <idArg name="adminId"     column="admin_id"      javaType="String"/>
+            <arg   name="role"        column="admin_role"    javaType="String"/>
+            <arg   name="status"      column="status"        javaType="String"/>
+            <arg   name="username"    column="username"      javaType="String"/>
+            <arg   name="passwordHash" column="password_hash" javaType="String"/>
+            <arg   name="deletedAt"   column="deleted_at"    javaType="java.time.Instant"/>
+            <arg   name="createdAt"   column="created_at"    javaType="java.time.Instant"/>
+            <arg   name="employeeNo"  column="employee_no"   javaType="String"/>
+            <arg   name="name"        column="name"          javaType="String"/>
+            <arg   name="phone"       column="phone"         javaType="String"/>
+            <arg   name="email"       column="email"         javaType="String"/>
+        </constructor>
+    </resultMap>
+    <insert id="upsertAccount">
+        INSERT INTO admin_account (admin_id, admin_role, status, username, password_hash, created_at, deleted_at)
+        VALUES (UUID_TO_BIN(#{adminId}), #{role}, #{status}, #{username}, #{passwordHash}, #{createdAt}, #{deletedAt})
+        ON DUPLICATE KEY UPDATE
+            admin_role    = VALUES(admin_role),
+            status        = VALUES(status),
+            username      = VALUES(username),
+            password_hash = VALUES(password_hash),
+            deleted_at    = VALUES(deleted_at)
+    </insert>
+
+    <insert id="upsertProfile">
+        insert into admin_profile (admin_id, employee_no, name, phone, email)
+        values (uuid_to_bin(#{adminId}), #{employeeNo}, #{name}, #{phone}, #{email})
+        on duplicate key update
+            name  = values(name),
+            phone = values(phone),
+            email = values(email)
+    </insert>
+
+    <select id="findById" resultMap="adminRow">
+        SELECT BIN_TO_UUID(aa.admin_id) AS admin_id,
+               aa.admin_role, aa.status, aa.username, aa.password_hash, aa.deleted_at, aa.created_at,
+               ap.employee_no, ap.name, ap.phone, ap.email
+        FROM admin_account aa
+        LEFT JOIN admin_profile ap ON aa.admin_id = ap.admin_id
+        WHERE aa.admin_id = UUID_TO_BIN(#{adminId})
+    </select>
+
+    <select id="findByUsername" resultMap="adminRow">
+        SELECT BIN_TO_UUID(aa.admin_id) AS admin_id,
+               aa.admin_role, aa.status, aa.username, aa.password_hash, aa.deleted_at, aa.created_at,
+               ap.employee_no, ap.name, ap.phone, ap.email
+        FROM admin_account aa
+        LEFT JOIN admin_profile ap ON aa.admin_id = ap.admin_id
+        WHERE aa.username = #{username}
+    </select>
+
+    <select id="findByRole" resultMap="adminRow">
+        SELECT BIN_TO_UUID(aa.admin_id) AS admin_id,
+               aa.admin_role, aa.status, aa.username, aa.password_hash, aa.deleted_at, aa.created_at,
+               ap.employee_no, ap.name, ap.phone, ap.email
+        FROM admin_account aa
+        LEFT JOIN admin_profile ap ON aa.admin_id = ap.admin_id
+        WHERE aa.admin_role = #{role}
+        LIMIT 1
+    </select>
+
+    <select id="existsByEmployeeNo" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM admin_profile
+        WHERE employee_no = #{employeeNo}
+    </select>
+
+    <delete id="deleteAccountById">
+        DELETE FROM admin_account WHERE admin_id = UUID_TO_BIN(#{adminId})
+    </delete>
+
+    <delete id="deleteProfileById">
+        DELETE FROM admin_profile WHERE admin_id = UUID_TO_BIN(#{adminId})
+    </delete>
+</mapper>

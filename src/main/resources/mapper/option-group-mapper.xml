@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dozycoffee.infrastructure.persistance.mapper.OptionGroupMapper">
+
+    <resultMap id="optionGroupRow" type="com.dozycoffee.infrastructure.persistance.entity.OptionGroupRow">
+        <constructor>
+            <idArg name="optionGroupId" column="option_group_id" javaType="String"/>
+            <arg   name="name"          column="name"            javaType="String"/>
+            <arg   name="description"   column="description"     javaType="String"/>
+            <arg   name="createdAt"     column="created_at"      javaType="java.time.Instant"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="optionItemRow" type="com.dozycoffee.infrastructure.persistance.entity.OptionItemRow">
+        <constructor>
+            <arg name="optionGroupId" column="option_group_id" javaType="String"/>
+            <arg name="name"          column="name"            javaType="String"/>
+            <arg name="description"   column="description"     javaType="String"/>
+            <arg name="price"         column="price"           javaType="int"/>
+            <arg name="createdAt"     column="created_at"      javaType="java.time.Instant"/>
+        </constructor>
+    </resultMap>
+
+    <insert id="upsert">
+        INSERT INTO option_group (option_group_id, name, description, created_at)
+        VALUES (UUID_TO_BIN(#{optionGroupId}), #{name}, #{description}, #{createdAt})
+        ON DUPLICATE KEY UPDATE
+            name        = VALUES(name),
+            description = VALUES(description)
+    </insert>
+
+    <insert id="insertItem">
+        INSERT INTO option_item (option_group_id, name, description, price, created_at)
+        VALUES (UUID_TO_BIN(#{optionGroupId}), #{name}, #{description}, #{price}, #{createdAt})
+    </insert>
+
+    <delete id="deleteItemsByGroupId">
+        DELETE FROM option_item WHERE option_group_id = UUID_TO_BIN(#{optionGroupId})
+    </delete>
+
+    <select id="findById" resultMap="optionGroupRow">
+        SELECT BIN_TO_UUID(option_group_id) AS option_group_id, name, description, created_at
+        FROM option_group
+        WHERE option_group_id = UUID_TO_BIN(#{optionGroupId})
+    </select>
+
+    <select id="findItemsByGroupId" resultMap="optionItemRow">
+        SELECT BIN_TO_UUID(option_group_id) AS option_group_id, name, description, price, created_at
+        FROM option_item
+        WHERE option_group_id = UUID_TO_BIN(#{optionGroupId})
+    </select>
+
+    <select id="findAll" resultMap="optionGroupRow">
+        SELECT BIN_TO_UUID(option_group_id) AS option_group_id, name, description, created_at
+        FROM option_group
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM option_group WHERE option_group_id = UUID_TO_BIN(#{optionGroupId})
+    </delete>
+
+</mapper>

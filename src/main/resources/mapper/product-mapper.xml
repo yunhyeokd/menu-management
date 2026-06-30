@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dozycoffee.infrastructure.persistance.mapper.ProductMapper">
+
+    <resultMap id="productRow" type="com.dozycoffee.infrastructure.persistance.entity.ProductRow">
+        <constructor>
+            <idArg name="productId"    column="product_id"   javaType="String"/>
+            <arg   name="name"         column="name"         javaType="String"/>
+            <arg   name="description"  column="description"  javaType="String"/>
+            <arg   name="imageUrl"     column="image_url"    javaType="String"/>
+            <arg   name="categoryId"   column="category_id"  javaType="String"/>
+            <arg   name="price"        column="price"        javaType="int"/>
+            <arg   name="kcal"         column="kcal"         javaType="java.lang.Integer"/>
+            <arg   name="allergenInfo" column="allergen_info" javaType="String"/>
+            <arg   name="kind"         column="kind"         javaType="String"/>
+            <arg   name="branchId"     column="branch_id"    javaType="String"/>
+            <arg   name="status"       column="status"       javaType="String"/>
+            <arg   name="createdAt"    column="created_at"   javaType="java.time.Instant"/>
+        </constructor>
+    </resultMap>
+
+    <insert id="upsert">
+        INSERT INTO product (product_id, name, description, image_url, category_id, price, kcal, allergen_info, kind, branch_id, status, created_at)
+        VALUES (
+            UUID_TO_BIN(#{productId}), #{name}, #{description}, #{imageUrl},
+            UUID_TO_BIN(#{categoryId}), #{price}, #{kcal}, #{allergenInfo},
+            #{kind}, UUID_TO_BIN(#{branchId}), #{status}, #{createdAt}
+        )
+        ON DUPLICATE KEY UPDATE
+            name          = VALUES(name),
+            description   = VALUES(description),
+            image_url     = VALUES(image_url),
+            category_id   = VALUES(category_id),
+            price         = VALUES(price),
+            kcal          = VALUES(kcal),
+            allergen_info = VALUES(allergen_info),
+            kind          = VALUES(kind),
+            branch_id     = VALUES(branch_id),
+            status        = VALUES(status)
+    </insert>
+
+    <select id="existsById" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM product WHERE product_id = UUID_TO_BIN(#{productId})
+    </select>
+
+    <select id="findById" resultMap="productRow">
+        SELECT BIN_TO_UUID(product_id) AS product_id, name, description, image_url,
+               BIN_TO_UUID(category_id) AS category_id, price, kcal, allergen_info, kind,
+               BIN_TO_UUID(branch_id) AS branch_id, status, created_at
+        FROM product
+        WHERE product_id = UUID_TO_BIN(#{productId})
+    </select>
+
+    <select id="findAllByCategoryId" resultMap="productRow">
+        SELECT BIN_TO_UUID(product_id) AS product_id, name, description, image_url,
+               BIN_TO_UUID(category_id) AS category_id, price, kcal, allergen_info, kind,
+               BIN_TO_UUID(branch_id) AS branch_id, status, created_at
+        FROM product
+        WHERE category_id = UUID_TO_BIN(#{categoryId})
+    </select>
+
+    <select id="findAllActiveCommon" resultMap="productRow">
+        SELECT BIN_TO_UUID(product_id) AS product_id, name, description, image_url,
+               BIN_TO_UUID(category_id) AS category_id, price, kcal, allergen_info, kind,
+               BIN_TO_UUID(branch_id) AS branch_id, status, created_at
+        FROM product
+        WHERE status = 'ACTIVE' AND kind = 'COMMON'
+    </select>
+
+    <select id="findAllActiveBranchExclusive" resultMap="productRow">
+        SELECT BIN_TO_UUID(product_id) AS product_id, name, description, image_url,
+               BIN_TO_UUID(category_id) AS category_id, price, kcal, allergen_info, kind,
+               BIN_TO_UUID(branch_id) AS branch_id, status, created_at
+        FROM product
+        WHERE status = 'ACTIVE' AND kind = 'BRANCH_EXCLUSIVE' AND branch_id = UUID_TO_BIN(#{branchId})
+    </select>
+
+    <update id="updateStatusByBranchId">
+        UPDATE product SET status = #{status} WHERE branch_id = UUID_TO_BIN(#{branchId})
+    </update>
+
+    <delete id="deleteAllByBranchId">
+        DELETE FROM product WHERE branch_id = UUID_TO_BIN(#{branchId})
+    </delete>
+
+    <delete id="deleteById">
+        DELETE FROM product WHERE product_id = UUID_TO_BIN(#{productId})
+    </delete>
+
+</mapper>
