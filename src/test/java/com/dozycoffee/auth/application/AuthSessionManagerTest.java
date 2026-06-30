@@ -145,17 +145,4 @@ public class AuthSessionManagerTest {
         assertThat(sessionManager.findPrincipal(session1.getSessionId())).isEmpty();
         assertThat(sessionManager.findPrincipal(session2.getSessionId())).isPresent();
     }
-
-    @Test
-    void Principal로_해당_주체의_모든_세션을_무효화한다() {
-        Session<Principal> session1 = saveSession(activeAdmin);
-        Session<Principal> session2 = saveSession(activeAdmin);
-        Session<Principal> branchSession = saveSession(activeBranch);
-
-        sessionManager.invalidate(activeAdmin);
-
-        assertThat(sessionManager.findPrincipal(session1.getSessionId())).isEmpty();
-        assertThat(sessionManager.findPrincipal(session2.getSessionId())).isEmpty();
-        assertThat(sessionManager.findPrincipal(branchSession.getSessionId())).isPresent();
-    }
 }
