@@ -1,5 +1,7 @@
 package com.dozycoffee.product.application.service.tag;
 
+import org.springframework.stereotype.Service;
+
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.core.application.exception.ResourceNotFoundException;
 import com.dozycoffee.core.application.exception.SystemException;
@@ -14,6 +16,7 @@ import com.dozycoffee.product.domain.TagId;
 import java.util.List;
 import java.util.Set;
 
+@Service
 public class ProductTagService {
 
     private final ProductTagRepository productTagRepository;

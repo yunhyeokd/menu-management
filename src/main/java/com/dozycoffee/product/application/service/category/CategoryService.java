@@ -1,5 +1,7 @@
 package com.dozycoffee.product.application.service.category;
 
+import org.springframework.stereotype.Service;
+
 import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.product.application.ProductServiceCode;
@@ -18,6 +20,7 @@ import com.dozycoffee.product.domain.ProductException;
 
 import java.util.List;
 
+@Service
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;

@@ -1,5 +1,7 @@
 package com.dozycoffee.product.application.service.option;
 
+import org.springframework.stereotype.Service;
+
 import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.product.application.ProductServiceCode;
@@ -16,6 +18,7 @@ import com.dozycoffee.product.domain.*;
 
 import java.util.*;
 
+@Service
 public class OptionService {
 
     private final OptionGroupRepository optionGroupRepository;

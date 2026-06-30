@@ -1,5 +1,7 @@
 package com.dozycoffee.admin.application;
 
+import org.springframework.stereotype.Service;
+
 import com.dozycoffee.admin.application.dto.*;
 import com.dozycoffee.admin.domain.*;
 import com.dozycoffee.auth.application.PasswordHasher;
@@ -8,6 +10,7 @@ import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.core.application.exception.*;
 
+@Service
 public class AdminService {
 
     private final AdminRepository adminRepository;

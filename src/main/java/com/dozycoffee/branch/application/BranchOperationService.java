@@ -1,5 +1,7 @@
 package com.dozycoffee.branch.application;
 
+import org.springframework.stereotype.Service;
+
 import com.dozycoffee.branch.application.model.BranchProduct;
 import com.dozycoffee.branch.domain.*;
 import com.dozycoffee.core.application.RepositoryException;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+@Service
 public class BranchOperationService {
 
     private final BranchRepository branchRepository;

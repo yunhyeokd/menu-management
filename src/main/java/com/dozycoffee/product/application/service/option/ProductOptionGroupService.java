@@ -1,5 +1,7 @@
 package com.dozycoffee.product.application.service.option;
 
+import org.springframework.stereotype.Service;
+
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.core.application.exception.ConflictException;
 import com.dozycoffee.core.application.exception.ResourceNotFoundException;
@@ -15,6 +17,7 @@ import com.dozycoffee.product.domain.ProductOptionGroup;
 
 import java.util.List;
 
+@Service
 public class ProductOptionGroupService {
 
     private final ProductOptionGroupRepository productOptionGroupRepository;
