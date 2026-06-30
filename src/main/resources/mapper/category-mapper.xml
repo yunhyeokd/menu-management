@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dozycoffee.infrastructure.persistance.mapper.CategoryMapper">
+
+    <resultMap id="categoryRow" type="com.dozycoffee.infrastructure.persistance.entity.CategoryRow">
+        <constructor>
+            <idArg name="categoryId" column="category_id" javaType="String"/>
+            <arg   name="name"       column="name"        javaType="String"/>
+            <arg   name="createdAt"  column="created_at"  javaType="java.time.Instant"/>
+        </constructor>
+    </resultMap>
+
+    <insert id="upsert">
+        INSERT INTO category (category_id, name, created_at)
+        VALUES (UUID_TO_BIN(#{categoryId}), #{name}, #{createdAt})
+        ON DUPLICATE KEY UPDATE name = VALUES(name)
+    </insert>
+
+    <select id="searchByName" resultMap="categoryRow">
+        SELECT BIN_TO_UUID(category_id) AS category_id, name, created_at
+        FROM category
+        WHERE name LIKE CONCAT('%', #{name}, '%')
+    </select>
+
+    <select id="findAll" resultMap="categoryRow">
+        SELECT BIN_TO_UUID(category_id) AS category_id, name, created_at
+        FROM category
+    </select>
+
+    <select id="findById" resultMap="categoryRow">
+        SELECT BIN_TO_UUID(category_id) AS category_id, name, created_at
+        FROM category
+        WHERE category_id = UUID_TO_BIN(#{categoryId})
+    </select>
+
+    <select id="findByName" resultMap="categoryRow">
+        SELECT BIN_TO_UUID(category_id) AS category_id, name, created_at
+        FROM category
+        WHERE name = #{name}
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM category WHERE category_id = UUID_TO_BIN(#{categoryId})
+    </delete>
+
+</mapper>

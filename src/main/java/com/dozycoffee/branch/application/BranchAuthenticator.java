@@ -1,5 +1,7 @@
 package com.dozycoffee.branch.application;
 
+import org.springframework.stereotype.Service;
+
 import com.dozycoffee.auth.domain.Authenticator;
 import com.dozycoffee.auth.application.PasswordHasher;
 import com.dozycoffee.auth.domain.Credential;
@@ -9,6 +11,7 @@ import com.dozycoffee.branch.domain.BranchCode;
 
 import java.util.Optional;
 
+@Service
 public class BranchAuthenticator implements Authenticator<BranchCode> {
 
     private final BranchRepository branchRepository;

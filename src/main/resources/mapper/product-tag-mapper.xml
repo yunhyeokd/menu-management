@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dozycoffee.infrastructure.persistance.mapper.ProductTagMapper">
+
+    <resultMap id="productTagRow" type="com.dozycoffee.infrastructure.persistance.entity.ProductTagRow">
+        <constructor>
+            <arg name="productId"  column="product_id" javaType="String"/>
+            <arg name="tagId"      column="tag_id"     javaType="String"/>
+            <arg name="createdAt"  column="created_at" javaType="java.time.Instant"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="tagRow" type="com.dozycoffee.infrastructure.persistance.entity.TagRow">
+        <constructor>
+            <idArg name="tagId"     column="tag_id"     javaType="String"/>
+            <arg   name="name"      column="name"       javaType="String"/>
+            <arg   name="createdAt" column="created_at" javaType="java.time.Instant"/>
+        </constructor>
+    </resultMap>
+
+    <insert id="insert">
+        INSERT IGNORE INTO product_tag (product_id, tag_id, created_at)
+        VALUES (UUID_TO_BIN(#{productId}), UUID_TO_BIN(#{tagId}), #{createdAt})
+    </insert>
+
+    <delete id="deleteAllByTagId">
+        DELETE FROM product_tag WHERE tag_id = UUID_TO_BIN(#{tagId})
+    </delete>
+
+    <delete id="deleteAllByProductId">
+        DELETE FROM product_tag WHERE product_id = UUID_TO_BIN(#{productId})
+    </delete>
+
+    <select id="findAllByTagId" resultMap="productTagRow">
+        SELECT BIN_TO_UUID(product_id) AS product_id,
+               BIN_TO_UUID(tag_id) AS tag_id,
+               created_at
+        FROM product_tag
+        WHERE tag_id = UUID_TO_BIN(#{tagId})
+    </select>
+
+    <select id="findTagsByProductId" resultMap="tagRow">
+        SELECT BIN_TO_UUID(t.tag_id) AS tag_id, t.name, t.created_at
+        FROM product_tag pt
+        JOIN tag t ON pt.tag_id = t.tag_id
+        WHERE pt.product_id = UUID_TO_BIN(#{productId})
+    </select>
+
+</mapper>

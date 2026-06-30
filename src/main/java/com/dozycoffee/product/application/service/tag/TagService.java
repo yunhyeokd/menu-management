@@ -1,5 +1,7 @@
 package com.dozycoffee.product.application.service.tag;
 
+import org.springframework.stereotype.Service;
+
 import com.dozycoffee.core.application.ServiceCode;
 import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
@@ -17,6 +19,7 @@ import com.dozycoffee.product.domain.TagId;
 
 import java.util.List;
 
+@Service
 public class TagService {
 
     private final TagRepository tagRepository;

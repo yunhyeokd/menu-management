@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dozycoffee.infrastructure.persistance.mapper.TagMapper">
+
+    <resultMap id="tagRow" type="com.dozycoffee.infrastructure.persistance.entity.TagRow">
+        <constructor>
+            <idArg name="tagId"     column="tag_id"     javaType="String"/>
+            <arg   name="name"      column="name"       javaType="String"/>
+            <arg   name="createdAt" column="created_at" javaType="java.time.Instant"/>
+        </constructor>
+    </resultMap>
+
+    <insert id="upsert">
+        INSERT INTO tag (tag_id, name, created_at)
+        VALUES (UUID_TO_BIN(#{tagId}), #{name}, #{createdAt})
+        ON DUPLICATE KEY UPDATE name = VALUES(name)
+    </insert>
+
+    <select id="existsById" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM tag WHERE tag_id = UUID_TO_BIN(#{tagId})
+    </select>
+
+    <select id="findAll" resultMap="tagRow">
+        SELECT BIN_TO_UUID(tag_id) AS tag_id, name, created_at FROM tag
+    </select>
+
+    <select id="searchByName" resultMap="tagRow">
+        SELECT BIN_TO_UUID(tag_id) AS tag_id, name, created_at
+        FROM tag
+        WHERE name LIKE CONCAT('%', #{name}, '%')
+    </select>
+
+    <select id="findById" resultMap="tagRow">
+        SELECT BIN_TO_UUID(tag_id) AS tag_id, name, created_at
+        FROM tag
+        WHERE tag_id = UUID_TO_BIN(#{tagId})
+    </select>
+
+    <select id="findByName" resultMap="tagRow">
+        SELECT BIN_TO_UUID(tag_id) AS tag_id, name, created_at
+        FROM tag
+        WHERE name = #{name}
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM tag WHERE tag_id = UUID_TO_BIN(#{tagId})
+    </delete>
+
+</mapper>

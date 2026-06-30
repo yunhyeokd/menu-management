@@ -1,5 +1,7 @@
 package com.dozycoffee.admin.application;
 
+import org.springframework.stereotype.Service;
+
 import com.dozycoffee.auth.domain.Authenticator;
 import com.dozycoffee.auth.application.PasswordHasher;
 import com.dozycoffee.admin.domain.Admin;
@@ -9,6 +11,7 @@ import com.dozycoffee.core.domain.Identifier;
 
 import java.util.Optional;
 
+@Service
 public class AdminUsernameAuthenticator implements Authenticator<Identifier<String>> {
 
     private final AdminRepository adminRepository;

@@ -61,6 +61,9 @@ dependencies {
     // Security
     implementation("org.springframework.security:spring-security-crypto")
 
+    // UUID v7
+    implementation("com.fasterxml.uuid:java-uuid-generator:5.2.0")
+
     // Lombok
     implementation("org.projectlombok:lombok:1.18.46")
     annotationProcessor("org.projectlombok:lombok:1.18.46")

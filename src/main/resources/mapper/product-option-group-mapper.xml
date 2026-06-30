@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dozycoffee.infrastructure.persistance.mapper.ProductOptionGroupMapper">
+
+    <resultMap id="productOptionGroupRow" type="com.dozycoffee.infrastructure.persistance.entity.ProductOptionGroupRow">
+        <constructor>
+            <arg name="productId"     column="product_id"      javaType="String"/>
+            <arg name="optionGroupId" column="option_group_id" javaType="String"/>
+            <arg name="isRequired"    column="is_required"     javaType="boolean"/>
+            <arg name="allowMultiple" column="allow_multiple"  javaType="boolean"/>
+            <arg name="createdAt"     column="created_at"      javaType="java.time.Instant"/>
+        </constructor>
+    </resultMap>
+
+    <insert id="upsert">
+        INSERT INTO product_option_group (product_id, option_group_id, is_required, allow_multiple, created_at)
+        VALUES (UUID_TO_BIN(#{productId}), UUID_TO_BIN(#{optionGroupId}), #{isRequired}, #{allowMultiple}, #{createdAt})
+        ON DUPLICATE KEY UPDATE
+            is_required    = VALUES(is_required),
+            allow_multiple = VALUES(allow_multiple)
+    </insert>
+
+    <select id="findAllByOptionGroupId" resultMap="productOptionGroupRow">
+        SELECT BIN_TO_UUID(product_id) AS product_id,
+               BIN_TO_UUID(option_group_id) AS option_group_id,
+               is_required, allow_multiple, created_at
+        FROM product_option_group
+        WHERE option_group_id = UUID_TO_BIN(#{optionGroupId})
+    </select>
+
+    <select id="findByProductIdAndOptionGroupId" resultMap="productOptionGroupRow">
+        SELECT BIN_TO_UUID(product_id) AS product_id,
+               BIN_TO_UUID(option_group_id) AS option_group_id,
+               is_required, allow_multiple, created_at
+        FROM product_option_group
+        WHERE product_id = UUID_TO_BIN(#{productId})
+          AND option_group_id = UUID_TO_BIN(#{optionGroupId})
+    </select>
+
+    <delete id="deleteAllByProductId">
+        DELETE FROM product_option_group WHERE product_id = UUID_TO_BIN(#{productId})
+    </delete>
+
+</mapper>

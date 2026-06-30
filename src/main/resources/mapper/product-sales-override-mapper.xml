@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dozycoffee.infrastructure.persistance.mapper.ProductSalesOverrideMapper">
+
+    <resultMap id="productSalesOverrideRow" type="com.dozycoffee.infrastructure.persistance.entity.ProductSalesOverrideRow">
+        <constructor>
+            <arg name="productId"  column="product_id"  javaType="String"/>
+            <arg name="branchId"   column="branch_id"   javaType="String"/>
+            <arg name="status"     column="status"      javaType="String"/>
+            <arg name="createdAt"  column="created_at"  javaType="java.time.Instant"/>
+        </constructor>
+    </resultMap>
+
+    <insert id="upsert">
+        INSERT INTO product_sales_override (product_id, branch_id, status, created_at)
+        VALUES (UUID_TO_BIN(#{productId}), UUID_TO_BIN(#{branchId}), #{status}, #{createdAt})
+        ON DUPLICATE KEY UPDATE status = VALUES(status)
+    </insert>
+
+    <select id="findByBranchIdAndProductId" resultMap="productSalesOverrideRow">
+        SELECT BIN_TO_UUID(product_id) AS product_id,
+               BIN_TO_UUID(branch_id) AS branch_id,
+               status, created_at
+        FROM product_sales_override
+        WHERE branch_id = UUID_TO_BIN(#{branchId})
+          AND product_id = UUID_TO_BIN(#{productId})
+    </select>
+
+    <delete id="deleteByBranchIdAndProductId">
+        DELETE FROM product_sales_override
+        WHERE branch_id = UUID_TO_BIN(#{branchId})
+          AND product_id = UUID_TO_BIN(#{productId})
+    </delete>
+
+</mapper>

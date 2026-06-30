@@ -1,5 +1,7 @@
 package com.dozycoffee.auth.application;
 
+import org.springframework.stereotype.Service;
+
 import com.dozycoffee.auth.domain.Principal;
 import com.dozycoffee.core.application.SessionManager;
 import com.dozycoffee.core.application.exception.AuthenticationException;
@@ -10,7 +12,8 @@ import com.dozycoffee.core.domain.SessionId;
 import java.time.Instant;
 import java.util.Optional;
 
-public class AuthSessionManager implements SessionManager<Principal>, SessionInvalidationPort {
+@Service
+public class AuthSessionManager implements SessionManager<Principal> {
 
     private final AuthSessionRepository authSessionRepository;
     private final IdentifierGenerator<SessionId> sessionIdGenerator;
@@ -40,11 +43,6 @@ public class AuthSessionManager implements SessionManager<Principal>, SessionInv
     @Override
     public void invalidate(SessionId sessionId) {
         authSessionRepository.deleteById(sessionId);
-    }
-
-    @Override
-    public void invalidate(Principal principal) {
-        authSessionRepository.deleteAllByPrincipal(principal);
     }
 
     public Principal requirePrincipal(SessionId sessionId) {
