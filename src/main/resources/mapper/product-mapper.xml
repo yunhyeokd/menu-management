@@ -10,7 +10,7 @@
             <arg   name="description"  column="description"  javaType="String"/>
             <arg   name="imageUrl"     column="image_url"    javaType="String"/>
             <arg   name="categoryId"   column="category_id"  javaType="String"/>
-            <arg   name="price"        column="price"        javaType="int"/>
+            <arg   name="price"        column="price"        javaType="_int"/>
             <arg   name="kcal"         column="kcal"         javaType="java.lang.Integer"/>
             <arg   name="allergenInfo" column="allergen_info" javaType="String"/>
             <arg   name="kind"         column="kind"         javaType="String"/>

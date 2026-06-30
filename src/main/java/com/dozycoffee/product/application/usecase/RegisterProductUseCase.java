@@ -1,5 +1,8 @@
 package com.dozycoffee.product.application.usecase;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.dozycoffee.product.application.dto.ProductData;
 import com.dozycoffee.product.application.dto.ProductRegisterCommand;
 import com.dozycoffee.product.application.dto.TagData;
@@ -10,6 +13,8 @@ import com.dozycoffee.product.domain.Product;
 
 import java.util.List;
 
+@Service
+@Transactional
 public class RegisterProductUseCase {
 
     private final ProductService productService;

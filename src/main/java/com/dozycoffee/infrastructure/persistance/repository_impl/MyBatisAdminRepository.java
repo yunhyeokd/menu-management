@@ -10,6 +10,7 @@ import com.dozycoffee.infrastructure.persistance.entity.AdminRow;
 import com.dozycoffee.infrastructure.persistance.mapper.AdminMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -21,6 +22,7 @@ public class MyBatisAdminRepository implements AdminRepository {
     private final AdminMapper adminMapper;
 
     @Override
+    @Transactional
     public void save(Admin admin) throws RepositoryException {
         AdminRow row = RowMapper.toRow(admin);
         adminMapper.upsertAccount(row);

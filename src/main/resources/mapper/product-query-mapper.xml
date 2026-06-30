@@ -11,7 +11,7 @@
             <arg   name="imageUrl"     column="image_url"     javaType="String"/>
             <arg   name="categoryId"   column="category_id"   javaType="String"/>
             <arg   name="categoryName" column="category_name" javaType="String"/>
-            <arg   name="price"        column="price"         javaType="int"/>
+            <arg   name="price"        column="price"         javaType="_int"/>
             <arg   name="kcal"         column="kcal"          javaType="java.lang.Integer"/>
             <arg   name="allergenInfo" column="allergen_info" javaType="String"/>
             <arg   name="kind"         column="kind"          javaType="String"/>
@@ -35,11 +35,11 @@
             <arg name="optionGroupId"   column="option_group_id" javaType="String"/>
             <arg name="groupName"       column="group_name"      javaType="String"/>
             <arg name="groupDescription" column="group_description" javaType="String"/>
-            <arg name="isRequired"      column="is_required"     javaType="boolean"/>
-            <arg name="allowMultiple"   column="allow_multiple"  javaType="boolean"/>
+            <arg name="isRequired"      column="is_required"     javaType="_boolean"/>
+            <arg name="allowMultiple"   column="allow_multiple"  javaType="_boolean"/>
             <arg name="itemName"        column="item_name"       javaType="String"/>
             <arg name="itemDescription" column="item_description" javaType="String"/>
-            <arg name="itemPrice"       column="item_price"      javaType="int"/>
+            <arg name="itemPrice"       column="item_price"      javaType="_int"/>
             <arg name="itemCreatedAt"   column="item_created_at" javaType="java.time.Instant"/>
         </constructor>
     </resultMap>

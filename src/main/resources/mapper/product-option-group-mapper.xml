@@ -7,8 +7,8 @@
         <constructor>
             <arg name="productId"     column="product_id"      javaType="String"/>
             <arg name="optionGroupId" column="option_group_id" javaType="String"/>
-            <arg name="isRequired"    column="is_required"     javaType="boolean"/>
-            <arg name="allowMultiple" column="allow_multiple"  javaType="boolean"/>
+            <arg name="isRequired"    column="is_required"     javaType="_boolean"/>
+            <arg name="allowMultiple" column="allow_multiple"  javaType="_boolean"/>
             <arg name="createdAt"     column="created_at"      javaType="java.time.Instant"/>
         </constructor>
     </resultMap>

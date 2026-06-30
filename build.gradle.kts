@@ -45,6 +45,7 @@ dependencies {
 
     // Web
     compileOnly("jakarta.servlet:jakarta.servlet-api:6.0.0")
+    testImplementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
     implementation("org.springframework:spring-webmvc")
 
     // Validation
@@ -61,6 +62,9 @@ dependencies {
     // Security
     implementation("org.springframework.security:spring-security-crypto")
 
+    // YAML
+    implementation("org.yaml:snakeyaml:2.6")
+
     // UUID v7
     implementation("com.fasterxml.uuid:java-uuid-generator:5.2.0")
 
@@ -68,6 +72,10 @@ dependencies {
     implementation("org.projectlombok:lombok:1.18.46")
     annotationProcessor("org.projectlombok:lombok:1.18.46")
 
+}
+
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("-parameters")
 }
 
 tasks.test {

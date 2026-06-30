@@ -1,6 +1,7 @@
 package com.dozycoffee.product.application.service.tag;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.core.application.exception.ResourceNotFoundException;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@Transactional
 public class ProductTagService {
 
     private final ProductTagRepository productTagRepository;
@@ -59,6 +61,7 @@ public class ProductTagService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<ProductId> findLinkedProductIds(TagId tagId) {
         try {
             return productTagRepository.findAllByTagId(tagId).stream()

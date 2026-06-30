@@ -1,6 +1,7 @@
 package com.dozycoffee.product.application.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
@@ -13,6 +14,7 @@ import com.dozycoffee.product.domain.*;
 import java.util.*;
 
 @Service
+@Transactional
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -35,6 +37,7 @@ public class ProductService {
         this.idGenerator = idGenerator;
     }
 
+    @Transactional(readOnly = true)
     public void assertExists(ProductId productId) {
         try {
             if (!productRepository.existsById(productId))
@@ -77,6 +80,7 @@ public class ProductService {
         }
     }
 
+    @Transactional(readOnly = true)
     public Product findById(ProductId productId) {
         try {
             return getProduct(productId);
@@ -85,6 +89,7 @@ public class ProductService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<ProductDetailResult> searchProducts(ProductFilterQuery query) {
         try {
             return productQueryRepository.findByFilter(query);

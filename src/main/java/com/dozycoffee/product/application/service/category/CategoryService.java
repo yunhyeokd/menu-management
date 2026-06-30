@@ -1,6 +1,7 @@
 package com.dozycoffee.product.application.service.category;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
@@ -21,6 +22,7 @@ import com.dozycoffee.product.domain.ProductException;
 import java.util.List;
 
 @Service
+@Transactional
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -73,6 +75,7 @@ public class CategoryService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<CategoryData> findAll() {
         try {
             return categoryRepository.findAll().stream()
@@ -83,6 +86,7 @@ public class CategoryService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<CategoryData> searchByName(String categoryName) {
         try {
             return categoryRepository.searchByName(categoryName).stream()

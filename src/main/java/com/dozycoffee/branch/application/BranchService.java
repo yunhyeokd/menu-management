@@ -1,6 +1,7 @@
 package com.dozycoffee.branch.application;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dozycoffee.auth.application.PasswordHasher;
 import com.dozycoffee.auth.application.SessionInvalidationPort;
@@ -14,6 +15,7 @@ import com.dozycoffee.core.application.exception.*;
 import com.dozycoffee.core.domain.IdentifierGenerator;
 
 @Service
+@Transactional
 public class BranchService {
 
     private final BranchRepository branchRepository;
