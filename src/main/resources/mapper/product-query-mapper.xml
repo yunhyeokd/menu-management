@@ -103,7 +103,7 @@
         FROM product_tag pt
         JOIN tag t ON pt.tag_id = t.tag_id
         WHERE pt.product_id IN
-        <foreach item="id" collection="list" open="(" separator="," close=")">
+        <foreach item="id" collection="productIds" open="(" separator="," close=")">
             UUID_TO_BIN(#{id})
         </foreach>
     </select>
@@ -123,7 +123,7 @@
         JOIN option_group og ON pog.option_group_id = og.option_group_id
         JOIN option_item oi ON og.option_group_id = oi.option_group_id
         WHERE pog.product_id IN
-        <foreach item="id" collection="list" open="(" separator="," close=")">
+        <foreach item="id" collection="productIds" open="(" separator="," close=")">
             UUID_TO_BIN(#{id})
         </foreach>
     </select>
