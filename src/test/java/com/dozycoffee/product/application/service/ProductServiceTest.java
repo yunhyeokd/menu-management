@@ -40,7 +40,7 @@ public class ProductServiceTest {
                 productQueryRepository,
                 categoryRepository,
                 branchExistencePort,
-                () -> ProductId.of(nextProductId++)
+                () -> ProductId.of(String.format("00000000-0000-0000-0000-%012d", nextProductId++))
         );
     }
 
@@ -49,11 +49,11 @@ public class ProductServiceTest {
     }
 
     private Category defaultCategory() {
-        return categoryRepository.put(Category.of(CategoryId.of(1L), "음료", Instant.now()));
+        return categoryRepository.put(Category.of(CategoryId.of("00000000-0000-0000-0000-000000000001"), "음료", Instant.now()));
     }
 
     private void defaultBranch() {
-        branchExistencePort.register(BranchId.of(1L));
+        branchExistencePort.register(BranchId.of("00000000-0000-0000-0000-000000000001"));
     }
 
     // ─── register ────────────────────────────────────────────────────────────
@@ -64,15 +64,15 @@ public class ProductServiceTest {
         ProductRegisterCommand command = new ProductRegisterCommand(
                 ProductKind.COMMON, null,
                 "아메리카노", null, null,
-                CategoryId.of(1L), 3000, null, null,
+                CategoryId.of("00000000-0000-0000-0000-000000000001"), 3000, null, null,
                 Set.of(), List.of()
         );
 
         Product result = productService.register(command);
 
         assertThat(result.getName()).isEqualTo("아메리카노");
-        assertThat(result.getId()).isEqualTo(ProductId.of(1L));
-        assertThat(productRepository.findById(ProductId.of(1L))).isPresent();
+        assertThat(result.getId()).isEqualTo(ProductId.of("00000000-0000-0000-0000-000000000001"));
+        assertThat(productRepository.findById(ProductId.of("00000000-0000-0000-0000-000000000001"))).isPresent();
     }
 
     @Test
@@ -80,16 +80,16 @@ public class ProductServiceTest {
         defaultCategory();
         defaultBranch();
         ProductRegisterCommand command = new ProductRegisterCommand(
-                ProductKind.BRANCH_EXCLUSIVE, BranchId.of(1L),
+                ProductKind.BRANCH_EXCLUSIVE, BranchId.of("00000000-0000-0000-0000-000000000001"),
                 "지점전용라떼", null, null,
-                CategoryId.of(1L), 4500, null, null,
+                CategoryId.of("00000000-0000-0000-0000-000000000001"), 4500, null, null,
                 Set.of(), List.of()
         );
 
         Product result = productService.register(command);
 
         assertThat(result.getName()).isEqualTo("지점전용라떼");
-        assertThat(productRepository.findById(ProductId.of(1L))).isPresent();
+        assertThat(productRepository.findById(ProductId.of("00000000-0000-0000-0000-000000000001"))).isPresent();
     }
 
     @Test
@@ -97,7 +97,7 @@ public class ProductServiceTest {
         ProductRegisterCommand command = new ProductRegisterCommand(
                 ProductKind.COMMON, null,
                 "아메리카노", null, null,
-                CategoryId.of(999L), 3000, null, null,
+                CategoryId.of("00000000-0000-0000-0000-000000000999"), 3000, null, null,
                 Set.of(), List.of()
         );
 
@@ -110,9 +110,9 @@ public class ProductServiceTest {
     public void 지점_전용_상품_생성시_지점이_없으면_BRANCH_NOT_FOUND_ERROR를_던진다() {
         defaultCategory();
         ProductRegisterCommand command = new ProductRegisterCommand(
-                ProductKind.BRANCH_EXCLUSIVE, BranchId.of(999L),
+                ProductKind.BRANCH_EXCLUSIVE, BranchId.of("00000000-0000-0000-0000-000000000999"),
                 "지점전용라떼", null, null,
-                CategoryId.of(1L), 4500, null, null,
+                CategoryId.of("00000000-0000-0000-0000-000000000001"), 4500, null, null,
                 Set.of(), List.of()
         );
 
@@ -128,7 +128,7 @@ public class ProductServiceTest {
         ProductRegisterCommand command = new ProductRegisterCommand(
                 ProductKind.COMMON, null,
                 "아메리카노", null, null,
-                CategoryId.of(1L), 3000, null, null,
+                CategoryId.of("00000000-0000-0000-0000-000000000001"), 3000, null, null,
                 Set.of(), List.of()
         );
 
@@ -142,8 +142,8 @@ public class ProductServiceTest {
     @Test
     public void 상품_필터_조회를_정상_수행한다() {
         productQueryRepository.add(new ProductDetailResult(
-                ProductId.of(1L), "아메리카노", null, null,
-                new CategoryData(CategoryId.of(1L), "음료"),
+                ProductId.of("00000000-0000-0000-0000-000000000001"), "아메리카노", null, null,
+                new CategoryData(CategoryId.of("00000000-0000-0000-0000-000000000001"), "음료"),
                 3000, null, null,
                 ProductKind.COMMON, null, ProductStatus.ACTIVE,
                 List.of(), List.of(), Instant.now()
@@ -169,10 +169,10 @@ public class ProductServiceTest {
     public void 공통_상품_프로필을_정상_수정한다() {
         defaultCategory();
         productRepository.put(ProductFixture.builder()
-                .id(ProductId.of(1L)).kind(ProductKind.COMMON).branchId(null).build());
+                .id(ProductId.of("00000000-0000-0000-0000-000000000001")).kind(ProductKind.COMMON).branchId(null).build());
         ProductProfileUpdateCommand command = new ProductProfileUpdateCommand(
-                ProductId.of(1L), "라떼", null, null,
-                CategoryId.of(1L), 4000, null, null, Set.of()
+                ProductId.of("00000000-0000-0000-0000-000000000001"), "라떼", null, null,
+                CategoryId.of("00000000-0000-0000-0000-000000000001"), 4000, null, null, Set.of()
         );
 
         Product result = productService.updateProfile(command);
@@ -185,8 +185,8 @@ public class ProductServiceTest {
     public void 상품_수정시_상품이_없으면_PRODUCT_NOT_FOUND_ERROR를_던진다() {
         defaultCategory();
         ProductProfileUpdateCommand command = new ProductProfileUpdateCommand(
-                ProductId.of(999L), "라떼", null, null,
-                CategoryId.of(1L), 4000, null, null, Set.of()
+                ProductId.of("00000000-0000-0000-0000-000000000999"), "라떼", null, null,
+                CategoryId.of("00000000-0000-0000-0000-000000000001"), 4000, null, null, Set.of()
         );
 
         assertThatThrownBy(() -> productService.updateProfile(command))
@@ -197,10 +197,10 @@ public class ProductServiceTest {
     @Test
     public void 상품_수정시_카테고리가_없으면_CATEGORY_NOT_FOUND_ERROR를_던진다() {
         productRepository.put(ProductFixture.builder()
-                .id(ProductId.of(1L)).kind(ProductKind.COMMON).branchId(null).build());
+                .id(ProductId.of("00000000-0000-0000-0000-000000000001")).kind(ProductKind.COMMON).branchId(null).build());
         ProductProfileUpdateCommand command = new ProductProfileUpdateCommand(
-                ProductId.of(1L), "라떼", null, null,
-                CategoryId.of(999L), 4000, null, null, Set.of()
+                ProductId.of("00000000-0000-0000-0000-000000000001"), "라떼", null, null,
+                CategoryId.of("00000000-0000-0000-0000-000000000999"), 4000, null, null, Set.of()
         );
 
         assertThatThrownBy(() -> productService.updateProfile(command))
@@ -213,16 +213,16 @@ public class ProductServiceTest {
     @Test
     public void 상품을_정상_삭제한다() {
         productRepository.put(ProductFixture.builder()
-                .id(ProductId.of(1L)).kind(ProductKind.COMMON).branchId(null).build());
+                .id(ProductId.of("00000000-0000-0000-0000-000000000001")).kind(ProductKind.COMMON).branchId(null).build());
 
-        productService.deleteById(ProductId.of(1L));
+        productService.deleteById(ProductId.of("00000000-0000-0000-0000-000000000001"));
 
-        assertThat(productRepository.findById(ProductId.of(1L))).isEmpty();
+        assertThat(productRepository.findById(ProductId.of("00000000-0000-0000-0000-000000000001"))).isEmpty();
     }
 
     @Test
     public void 상품_삭제시_상품이_없으면_PRODUCT_NOT_FOUND_ERROR를_던진다() {
-        assertThatThrownBy(() -> productService.deleteById(ProductId.of(999L)))
+        assertThatThrownBy(() -> productService.deleteById(ProductId.of("00000000-0000-0000-0000-000000000999")))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
     }
@@ -232,37 +232,37 @@ public class ProductServiceTest {
     @Test
     public void 상품_상태를_활성으로_변경한다() {
         productRepository.put(ProductFixture.builder()
-                .id(ProductId.of(1L)).kind(ProductKind.COMMON).branchId(null)
+                .id(ProductId.of("00000000-0000-0000-0000-000000000001")).kind(ProductKind.COMMON).branchId(null)
                 .status(ProductStatus.INACTIVE).build());
 
-        productService.activate(ProductId.of(1L));
+        productService.activate(ProductId.of("00000000-0000-0000-0000-000000000001"));
 
-        assertThat(productRepository.findById(ProductId.of(1L)).get().getStatus())
+        assertThat(productRepository.findById(ProductId.of("00000000-0000-0000-0000-000000000001")).get().getStatus())
                 .isEqualTo(ProductStatus.ACTIVE);
     }
 
     @Test
     public void 상품_상태를_비활성으로_변경한다() {
         productRepository.put(ProductFixture.builder()
-                .id(ProductId.of(1L)).kind(ProductKind.COMMON).branchId(null)
+                .id(ProductId.of("00000000-0000-0000-0000-000000000001")).kind(ProductKind.COMMON).branchId(null)
                 .status(ProductStatus.ACTIVE).build());
 
-        productService.deactivate(ProductId.of(1L));
+        productService.deactivate(ProductId.of("00000000-0000-0000-0000-000000000001"));
 
-        assertThat(productRepository.findById(ProductId.of(1L)).get().getStatus())
+        assertThat(productRepository.findById(ProductId.of("00000000-0000-0000-0000-000000000001")).get().getStatus())
                 .isEqualTo(ProductStatus.INACTIVE);
     }
 
     @Test
     public void 상품_활성화시_상품이_없으면_PRODUCT_NOT_FOUND_ERROR를_던진다() {
-        assertThatThrownBy(() -> productService.activate(ProductId.of(999L)))
+        assertThatThrownBy(() -> productService.activate(ProductId.of("00000000-0000-0000-0000-000000000999")))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
     }
 
     @Test
     public void 상품_비활성화시_상품이_없으면_PRODUCT_NOT_FOUND_ERROR를_던진다() {
-        assertThatThrownBy(() -> productService.deactivate(ProductId.of(999L)))
+        assertThatThrownBy(() -> productService.deactivate(ProductId.of("00000000-0000-0000-0000-000000000999")))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
     }

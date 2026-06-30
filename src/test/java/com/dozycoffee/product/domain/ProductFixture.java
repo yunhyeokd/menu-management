@@ -8,16 +8,16 @@ import java.util.Set;
 public class ProductFixture {
 
     public static class Base {
-        public static ProductId id = ProductId.of(1L);
+        public static ProductId id = ProductId.of("00000000-0000-0000-0000-000000000001");
         public static String name = "아메리카노";
         public static String description = "아메리카노입니다.";
         public static String imageUrl = "https://www.dozycoffee.com";
-        public static CategoryId categoryId = CategoryId.of(1L);
+        public static CategoryId categoryId = CategoryId.of("00000000-0000-0000-0000-000000000001");
         public static int price = 1000;
         public static int kcal = 100;
         public static AllergenInfo allergenInfo = new AllergenInfo(Set.of(AllergenType.CASHEW));
         public static ProductKind kind = ProductKind.COMMON;
-        public static BranchId branchId = BranchId.of(1L);
+        public static BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
         public static ProductStatus status = ProductStatus.ACTIVE;
         public static Instant createdAt = Instant.now();
     }

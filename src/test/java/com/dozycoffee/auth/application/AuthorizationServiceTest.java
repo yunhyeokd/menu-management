@@ -20,7 +20,7 @@ public class AuthorizationServiceTest {
     @BeforeEach
     void setUp() {
         authorizationService = new AuthorizationService();
-        activeAdmin = Admin.create(AdminId.of(1L), AdminRole.SYSTEM, "sysadmin", "hashed-password", null);
+        activeAdmin = Admin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.SYSTEM, "sysadmin", "hashed-password", null);
     }
 
     private void assertErrorCode(Throwable e, AuthErrors error) {

@@ -44,7 +44,7 @@ public class BranchServiceTest {
         branchService = new BranchService(
                 branchRepository,
                 productLifecyclePort,
-                () -> BranchId.of(nextBranchId++),
+                () -> BranchId.of(String.format("00000000-0000-0000-0000-%012d", nextBranchId++)),
                 () -> BranchCode.of(String.format("2026%04d", nextCodeSeq++)),
                 () -> () -> "raw-auth-key",
                 passwordHasher,
@@ -60,7 +60,7 @@ public class BranchServiceTest {
 
     @Test
     public void 인증키를_정상_재발급한다() {
-        BranchId branchId = BranchId.of(1L);
+        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
         Branch branch = BranchFixture.builder().id(branchId).authKeyHash("old-hash").build();
         branchRepository.put(branch);
 
@@ -75,14 +75,14 @@ public class BranchServiceTest {
 
     @Test
     public void 인증키_재발급시_지점이_존재하지_않으면_BRANCH_NOT_FOUND_ERROR를_던진다() {
-        assertThatThrownBy(() -> branchService.reissueAuthKey(BranchId.of(999L)))
+        assertThatThrownBy(() -> branchService.reissueAuthKey(BranchId.of("00000000-0000-0000-0000-000000000999")))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     @Test
     public void 인증키_재발급시_소프트_삭제된_지점이면_ALREADY_DELETED_ERROR를_던진다() {
-        BranchId branchId = BranchId.of(1L);
+        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
         Branch branch = BranchFixture.builder().id(branchId).build();
         branch.softDelete();
         branchRepository.put(branch);
@@ -94,7 +94,7 @@ public class BranchServiceTest {
 
     @Test
     public void 인증키_재발급중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        BranchId branchId = BranchId.of(1L);
+        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
         branchRepository.put(BranchFixture.builder().id(branchId).build());
         branchRepository.throwOnNextCall();
 
@@ -123,7 +123,7 @@ public class BranchServiceTest {
 
     @Test
     public void 지점_생성시_이름이_중복되면_DUPLICATE_NAME_ERROR를_던진다() {
-        branchRepository.put(BranchFixture.builder().id(BranchId.of(99L)).name("강남점").build());
+        branchRepository.put(BranchFixture.builder().id(BranchId.of("00000000-0000-0000-0000-000000000099")).name("강남점").build());
 
         assertThatThrownBy(() -> branchService.create("강남점", "서울 강남구 테헤란로 123"))
                 .isInstanceOf(ConflictException.class)
@@ -150,7 +150,7 @@ public class BranchServiceTest {
 
     @Test
     public void 지점_프로필을_정상_수정한다() {
-        BranchId branchId = BranchId.of(1L);
+        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
         branchRepository.put(BranchFixture.builder().id(branchId).name("강남점").address("서울 강남구 테헤란로 123").build());
 
         branchService.updateProfile(branchId, new BranchProfileUpdateCommand("강남역점", "서울 강남구 강남대로 456"));
@@ -163,14 +163,14 @@ public class BranchServiceTest {
 
     @Test
     public void 지점_프로필_수정시_지점이_존재하지_않으면_BRANCH_NOT_FOUND_ERROR를_던진다() {
-        assertThatThrownBy(() -> branchService.updateProfile(BranchId.of(999L), new BranchProfileUpdateCommand("강남점", "서울 강남구 테헤란로 123")))
+        assertThatThrownBy(() -> branchService.updateProfile(BranchId.of("00000000-0000-0000-0000-000000000999"), new BranchProfileUpdateCommand("강남점", "서울 강남구 테헤란로 123")))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     @Test
     public void 지점_프로필_수정시_이름이_유효하지_않으면_INVALID_PROFILE_ERROR를_던진다() {
-        BranchId branchId = BranchId.of(1L);
+        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
         branchRepository.put(BranchFixture.builder().id(branchId).name("강남점").build());
 
         assertThatThrownBy(() -> branchService.updateProfile(branchId, new BranchProfileUpdateCommand("", "서울 강남구 테헤란로 123")))
@@ -180,7 +180,7 @@ public class BranchServiceTest {
 
     @Test
     public void 지점_프로필_수정시_이름이_중복되면_DUPLICATE_NAME_ERROR를_던진다() {
-        Branch branch = BranchFixture.builder().id(BranchId.of(99L)).name("강남점").build();
+        Branch branch = BranchFixture.builder().id(BranchId.of("00000000-0000-0000-0000-000000000099")).name("강남점").build();
         branchRepository.put(branch);
 
         assertThatThrownBy(() -> branchService.updateProfile(branch.getId(), new BranchProfileUpdateCommand("강남점", "서울 강남구 테헤란로 123")))
@@ -190,7 +190,7 @@ public class BranchServiceTest {
 
     @Test
     public void 지점_프로필_수정중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        BranchId branchId = BranchId.of(1L);
+        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
         branchRepository.put(BranchFixture.builder().id(branchId).name("강남점").build());
         branchRepository.throwOnNextCall();
 
@@ -203,7 +203,7 @@ public class BranchServiceTest {
 
     @Test
     public void 지점을_정상_소프트_삭제한다() {
-        BranchId branchId = BranchId.of(1L);
+        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
         Branch branch = BranchFixture.builder().id(branchId).build();
         branchRepository.put(branch);
 
@@ -218,14 +218,14 @@ public class BranchServiceTest {
 
     @Test
     public void 지점_소프트_삭제시_지점이_존재하지_않으면_BRANCH_NOT_FOUND_ERROR를_던진다() {
-        assertThatThrownBy(() -> branchService.softDelete(BranchId.of(999L)))
+        assertThatThrownBy(() -> branchService.softDelete(BranchId.of("00000000-0000-0000-0000-000000000999")))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
     @Test
     public void 이미_소프트_삭제된_지점을_다시_삭제하면_ALREADY_DELETED_ERROR를_던진다() {
-        BranchId branchId = BranchId.of(1L);
+        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
         Branch branch = BranchFixture.builder().id(branchId).build();
         branch.softDelete();
         branchRepository.put(branch);
@@ -237,7 +237,7 @@ public class BranchServiceTest {
 
     @Test
     public void 지점_소프트_삭제중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        BranchId branchId = BranchId.of(1L);
+        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
         branchRepository.put(BranchFixture.builder().id(branchId).build());
         branchRepository.throwOnNextCall();
 
@@ -250,7 +250,7 @@ public class BranchServiceTest {
 
     @Test
     public void 지점을_정상_하드_삭제한다() {
-        BranchId branchId = BranchId.of(1L);
+        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
         Branch branch = BranchFixture.builder().id(branchId).build();
         branchRepository.put(branch);
 
@@ -264,7 +264,7 @@ public class BranchServiceTest {
 
     @Test
     public void 소프트_삭제되지_않은_지점을_하드_삭제하면_INVALID_BRANCH_ERROR를_던진다() {
-        BranchId branchId = BranchId.of(1L);
+        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
         branchRepository.put(BranchFixture.builder().id(branchId).build());
 
         assertThatThrownBy(() -> branchService.hardDelete(branchId))
@@ -274,7 +274,7 @@ public class BranchServiceTest {
 
     @Test
     public void 지점_하드_삭제중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        BranchId branchId = BranchId.of(1L);
+        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
         Branch branch = BranchFixture.builder().id(branchId).build();
         branch.softDelete();
         branchRepository.put(branch);

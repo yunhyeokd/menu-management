@@ -1,18 +1,13 @@
 package com.dozycoffee.admin.domain;
 
-import com.dozycoffee.core.domain.LongIdentifier;
+import com.dozycoffee.core.domain.UuidIdentifier;
 
-public class AdminId extends LongIdentifier {
-    private AdminId(long value) {
+public class AdminId extends UuidIdentifier {
+    private AdminId(String value) {
         super(value);
     }
 
-    public static AdminId of(long value) {
+    public static AdminId of(String value) {
         return new AdminId(value);
     }
-
-    public static AdminId of(String value) {
-        return new AdminId(Long.parseLong(value));
-    }
-
 }

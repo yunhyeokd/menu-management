@@ -1,18 +1,14 @@
 package com.dozycoffee.branch.domain;
 
-import com.dozycoffee.core.domain.LongIdentifier;
+import com.dozycoffee.core.domain.UuidIdentifier;
 
-public class BranchId extends LongIdentifier {
+public class BranchId extends UuidIdentifier {
 
-    public BranchId(long id) {
-        super(id);
-    }
-
-    public static BranchId of(long value) {
-        return new BranchId(value);
+    private BranchId(String value) {
+        super(value);
     }
 
     public static BranchId of(String value) {
-        return new BranchId(Long.parseLong(value));
+        return new BranchId(value);
     }
 }

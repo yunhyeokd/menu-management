@@ -30,7 +30,7 @@ public class ProductTagServiceTest {
     void setUp() {
         productTagRepository = new FakeProductTagRepository();
         tagRepository = new FakeTagRepository();
-        tagService = new TagService(tagRepository, () -> TagId.of(nextTagId++));
+        tagService = new TagService(tagRepository, () -> TagId.of(String.format("00000000-0000-0000-0000-%012d", nextTagId++)));
         productTagService = new ProductTagService(productTagRepository, tagService);
     }
 
@@ -40,8 +40,8 @@ public class ProductTagServiceTest {
 
     @Test
     void 태그를_상품에_연결한다() {
-        ProductId productId = ProductId.of(1L);
-        tagRepository.put(Tag.of(TagId.of(10L), "신제품", Instant.now()));
+        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
+        tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000010"), "신제품", Instant.now()));
 
         List<TagData> tags = productTagService.saveTags(productId, Set.of("신제품"));
 
@@ -52,7 +52,7 @@ public class ProductTagServiceTest {
 
     @Test
     void 태그가_없으면_자동_생성_후_연결한다() {
-        ProductId productId = ProductId.of(1L);
+        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
 
         List<TagData> tags = productTagService.saveTags(productId, Set.of("새태그"));
 
@@ -66,15 +66,15 @@ public class ProductTagServiceTest {
     void 태그_연결시_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         productTagRepository.throwOnNextCall();
 
-        assertThatThrownBy(() -> productTagService.saveTags(ProductId.of(1L), Set.of("신제품")))
+        assertThatThrownBy(() -> productTagService.saveTags(ProductId.of("00000000-0000-0000-0000-000000000001"), Set.of("신제품")))
                 .isInstanceOf(SystemException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.UNKNOWN_ERROR));
     }
 
     @Test
     void 상품의_태그를_교체한다() {
-        ProductId productId = ProductId.of(1L);
-        Tag oldTag = tagRepository.put(Tag.of(TagId.of(10L), "구태그", Instant.now()));
+        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
+        Tag oldTag = tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000010"), "구태그", Instant.now()));
         productTagRepository.add(ProductTag.of(productId, oldTag.getId(), Instant.now()));
 
         List<TagData> tags = productTagService.replaceTags(productId, Set.of("신태그"));
@@ -86,8 +86,8 @@ public class ProductTagServiceTest {
 
     @Test
     void 상품에_연결된_모든_태그를_삭제한다() {
-        ProductId productId = ProductId.of(1L);
-        Tag tag = tagRepository.put(Tag.of(TagId.of(10L), "신제품", Instant.now()));
+        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
+        Tag tag = tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000010"), "신제품", Instant.now()));
         productTagRepository.add(ProductTag.of(productId, tag.getId(), Instant.now()));
 
         productTagService.deleteAllByProductId(productId);
@@ -97,20 +97,20 @@ public class ProductTagServiceTest {
 
     @Test
     void 태그에_연결된_상품_id_목록을_조회한다() {
-        Tag tag = tagRepository.put(Tag.of(TagId.of(10L), "신제품", Instant.now()));
-        productTagRepository.add(ProductTag.of(ProductId.of(1L), tag.getId(), Instant.now()));
-        productTagRepository.add(ProductTag.of(ProductId.of(2L), tag.getId(), Instant.now()));
+        Tag tag = tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000010"), "신제품", Instant.now()));
+        productTagRepository.add(ProductTag.of(ProductId.of("00000000-0000-0000-0000-000000000001"), tag.getId(), Instant.now()));
+        productTagRepository.add(ProductTag.of(ProductId.of("00000000-0000-0000-0000-000000000002"), tag.getId(), Instant.now()));
 
         List<ProductId> productIds = productTagService.findLinkedProductIds(tag.getId());
 
-        assertThat(productIds).containsExactlyInAnyOrder(ProductId.of(1L), ProductId.of(2L));
+        assertThat(productIds).containsExactlyInAnyOrder(ProductId.of("00000000-0000-0000-0000-000000000001"), ProductId.of("00000000-0000-0000-0000-000000000002"));
     }
 
     @Test
     void 태그_id로_연결된_모든_상품_태그를_삭제한다() {
-        Tag tag = tagRepository.put(Tag.of(TagId.of(10L), "신제품", Instant.now()));
-        productTagRepository.add(ProductTag.of(ProductId.of(1L), tag.getId(), Instant.now()));
-        productTagRepository.add(ProductTag.of(ProductId.of(2L), tag.getId(), Instant.now()));
+        Tag tag = tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000010"), "신제품", Instant.now()));
+        productTagRepository.add(ProductTag.of(ProductId.of("00000000-0000-0000-0000-000000000001"), tag.getId(), Instant.now()));
+        productTagRepository.add(ProductTag.of(ProductId.of("00000000-0000-0000-0000-000000000002"), tag.getId(), Instant.now()));
 
         productTagService.deleteAllByTagId(tag.getId());
 
