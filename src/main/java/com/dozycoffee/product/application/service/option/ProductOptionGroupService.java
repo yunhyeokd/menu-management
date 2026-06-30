@@ -1,6 +1,7 @@
 package com.dozycoffee.product.application.service.option;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.core.application.exception.ConflictException;
@@ -18,6 +19,7 @@ import com.dozycoffee.product.domain.ProductOptionGroup;
 import java.util.List;
 
 @Service
+@Transactional
 public class ProductOptionGroupService {
 
     private final ProductOptionGroupRepository productOptionGroupRepository;
@@ -67,6 +69,7 @@ public class ProductOptionGroupService {
         }
     }
 
+    @Transactional(readOnly = true)
     public void assertNoLinkedProducts(OptionGroupId optionGroupId) {
         try {
             List<ProductOptionGroup> linked = productOptionGroupRepository.findAllByOptionGroupId(optionGroupId);

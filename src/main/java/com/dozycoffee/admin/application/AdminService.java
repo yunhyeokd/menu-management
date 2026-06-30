@@ -1,6 +1,7 @@
 package com.dozycoffee.admin.application;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dozycoffee.admin.application.dto.*;
 import com.dozycoffee.admin.domain.*;
@@ -11,6 +12,7 @@ import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.core.application.exception.*;
 
 @Service
+@Transactional
 public class AdminService {
 
     private final AdminRepository adminRepository;

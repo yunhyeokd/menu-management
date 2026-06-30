@@ -1,10 +1,15 @@
 package com.dozycoffee.product.application.usecase;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.dozycoffee.product.application.service.ProductService;
 import com.dozycoffee.product.application.service.option.ProductOptionGroupService;
 import com.dozycoffee.product.application.service.tag.ProductTagService;
 import com.dozycoffee.product.domain.ProductId;
 
+@Service
+@Transactional
 public class DeleteProductUseCase {
 
     private final ProductService productService;

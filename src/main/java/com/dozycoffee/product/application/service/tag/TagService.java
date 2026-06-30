@@ -1,6 +1,7 @@
 package com.dozycoffee.product.application.service.tag;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dozycoffee.core.application.ServiceCode;
 import com.dozycoffee.core.domain.IdentifierGenerator;
@@ -20,6 +21,7 @@ import com.dozycoffee.product.domain.TagId;
 import java.util.List;
 
 @Service
+@Transactional
 public class TagService {
 
     private final TagRepository tagRepository;
@@ -30,6 +32,7 @@ public class TagService {
         this.idGenerator = idGenerator;
     }
 
+    @Transactional(readOnly = true)
     public void assertExists(TagId tagId) {
         try {
             if (!tagRepository.existsById(tagId))
@@ -74,6 +77,7 @@ public class TagService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<TagData> findAll() {
         try {
             return tagRepository.findAll().stream()
@@ -84,6 +88,7 @@ public class TagService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<TagData> searchByName(String tagName) {
         try {
             return tagRepository.searchByName(tagName).stream()

@@ -1,6 +1,7 @@
 package com.dozycoffee.branch.application;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dozycoffee.branch.application.model.BranchProduct;
 import com.dozycoffee.branch.domain.*;
@@ -14,6 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
+@Transactional
 public class BranchOperationService {
 
     private final BranchRepository branchRepository;
@@ -40,6 +42,7 @@ public class BranchOperationService {
                 .orElseThrow(() -> new ResourceNotFoundException(BranchServiceCode.BRN, BranchErrors.PRODUCT_NOT_FOUND_ERROR));
     }
 
+    @Transactional(readOnly = true)
     public List<BranchProduct> findOverridableProducts(BranchId branchId) {
         try {
             assertBranchExists(branchId);

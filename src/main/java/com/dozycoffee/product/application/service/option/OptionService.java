@@ -1,6 +1,7 @@
 package com.dozycoffee.product.application.service.option;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
@@ -19,6 +20,7 @@ import com.dozycoffee.product.domain.*;
 import java.util.*;
 
 @Service
+@Transactional
 public class OptionService {
 
     private final OptionGroupRepository optionGroupRepository;
@@ -68,6 +70,7 @@ public class OptionService {
     /*
     모든 옵션 그룹과 각 옵션 그룹별 아이템을 불러와 OptionGroupData 리스트로 전달
      */
+    @Transactional(readOnly = true)
     public List<OptionGroupData> findAll() {
         try {
             return optionGroupRepository
