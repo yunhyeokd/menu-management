@@ -28,14 +28,7 @@ public class MyBatisProductQueryRepository implements ProductQueryRepository {
 
         List<String> productIds = products.stream().map(ProductWithCategoryRow::productId).toList();
 
-        Map<String, List<TagData>> tagsByProductId = productQueryMapper.findTagsByProductIds(productIds).stream()
-                .collect(Collectors.groupingBy(
-                        ProductTagNameRow::productId,
-                        Collectors.mapping(
-                                row -> new TagData(TagId.of(row.tagId()), row.tagName()),
-                                Collectors.toList()
-                        )
-                ));
+        Map<String, List<TagData>> tagsByProductId = groupTagsByProductId(productIds);
 
         Map<String, Map<String, List<OptionItemData>>> itemsByProductAndGroup =
                 productQueryMapper.findOptionGroupsByProductIds(productIds).stream()
@@ -89,5 +82,24 @@ public class MyBatisProductQueryRepository implements ProductQueryRepository {
                 optionGroupsByProductId.getOrDefault(row.productId(), List.of()),
                 row.createdAt()
         )).toList();
+    }
+
+    @Override
+    public Map<ProductId, List<TagData>> findTagsByProductIds(List<ProductId> productIds) throws RepositoryException {
+        if (productIds.isEmpty()) return Map.of();
+        List<String> ids = productIds.stream().map(ProductId::getValue).toList();
+        return groupTagsByProductId(ids).entrySet().stream()
+                .collect(Collectors.toMap(e -> ProductId.of(e.getKey()), Map.Entry::getValue));
+    }
+
+    private Map<String, List<TagData>> groupTagsByProductId(List<String> productIds) {
+        return productQueryMapper.findTagsByProductIds(productIds).stream()
+                .collect(Collectors.groupingBy(
+                        ProductTagNameRow::productId,
+                        Collectors.mapping(
+                                row -> new TagData(TagId.of(row.tagId()), row.tagName()),
+                                Collectors.toList()
+                        )
+                ));
     }
 }

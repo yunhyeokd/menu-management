@@ -1,5 +1,6 @@
 package com.dozycoffee.branch.application;
 
+import com.dozycoffee.branch.application.dto.BranchCreateCommand;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,9 +50,9 @@ public class BranchService {
                 .orElseThrow(() -> new ResourceNotFoundException(BranchServiceCode.BRN, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
-    public BranchCreateResult create(String name, String address) {
+    public BranchCreateResult create(BranchCreateCommand command) {
         try {
-            branchRepository.findByName(name)
+            branchRepository.findByName(command.name())
                     .ifPresent(existing -> {
                         throw new ConflictException(BranchServiceCode.BRN, BranchErrors.DUPLICATE_NAME_ERROR);
                     });
@@ -59,7 +60,7 @@ public class BranchService {
             BranchCode branchCode = codeGenerator.generate();
             Credential rawAuthKey = authKeyGenerator.generate();
             String authKeyHash = passwordHasher.hash(rawAuthKey.getValue());
-            Branch branch = Branch.create(branchId, branchCode, authKeyHash, name, address);
+            Branch branch = Branch.create(branchId, branchCode, authKeyHash, command.name(), command.address());
             branchRepository.save(branch);
             return new BranchCreateResult(
                     branch.getId(),

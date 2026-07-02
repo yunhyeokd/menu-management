@@ -3,6 +3,7 @@ package com.dozycoffee.product.application.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dozycoffee.branch.domain.BranchId;
 import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.product.application.ProductServiceCode;
@@ -93,6 +94,17 @@ public class ProductService {
     public List<ProductDetailResult> searchProducts(ProductFilterQuery query) {
         try {
             return productQueryRepository.findByFilter(query);
+        } catch (RepositoryException e) {
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<Product> findSellableProducts(BranchId branchId) {
+        try {
+            List<Product> products = new ArrayList<>(productRepository.findAllActiveCommon());
+            products.addAll(productRepository.findAllActiveBranchExclusive(branchId));
+            return products;
         } catch (RepositoryException e) {
             throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }
