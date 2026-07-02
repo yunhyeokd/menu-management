@@ -141,15 +141,13 @@ public class ProductServiceTest {
 
     @Test
     public void 상품_필터_조회를_정상_수행한다() {
-        productQueryRepository.add(new ProductDetailResult(
-                ProductId.of("00000000-0000-0000-0000-000000000001"), "아메리카노", null, null,
+        productQueryRepository.add(new ProductSummaryResult(
+                ProductId.of("00000000-0000-0000-0000-000000000001"), "아메리카노", null,
                 new CategoryData(CategoryId.of("00000000-0000-0000-0000-000000000001"), "음료"),
-                3000, null, null,
-                ProductKind.COMMON, null, ProductStatus.ACTIVE,
-                List.of(), List.of(), Instant.now()
+                3000, ProductKind.COMMON, null, ProductStatus.ACTIVE, List.of()
         ));
 
-        List<ProductDetailResult> results = productService.searchProducts(ProductFilterQuery.empty());
+        List<ProductSummaryResult> results = productService.searchProducts(ProductFilterQuery.empty());
 
         assertThat(results).hasSize(1);
     }

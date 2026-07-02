@@ -91,9 +91,19 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductDetailResult> searchProducts(ProductFilterQuery query) {
+    public List<ProductSummaryResult> searchProducts(ProductFilterQuery query) {
         try {
             return productQueryRepository.findByFilter(query);
+        } catch (RepositoryException e) {
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public ProductDetailResult findDetailById(ProductId productId) {
+        try {
+            return productQueryRepository.findDetailById(productId)
+                    .orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
         } catch (RepositoryException e) {
             throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
         }

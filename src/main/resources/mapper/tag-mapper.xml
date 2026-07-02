@@ -43,6 +43,15 @@
         WHERE name = #{name}
     </select>
 
+    <select id="findAllByNames" resultMap="tagRow">
+        SELECT BIN_TO_UUID(tag_id) AS tag_id, name, created_at
+        FROM tag
+        WHERE name IN
+        <foreach item="name" collection="names" open="(" separator="," close=")">
+            #{name}
+        </foreach>
+    </select>
+
     <delete id="deleteById">
         DELETE FROM tag WHERE tag_id = UUID_TO_BIN(#{tagId})
     </delete>

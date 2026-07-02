@@ -44,7 +44,7 @@
         </constructor>
     </resultMap>
 
-    <select id="findByFilter" resultMap="productWithCategoryRow">
+    <sql id="productWithCategoryColumns">
         SELECT BIN_TO_UUID(p.product_id) AS product_id,
                p.name, p.description, p.image_url,
                BIN_TO_UUID(p.category_id) AS category_id,
@@ -54,12 +54,19 @@
                p.status, p.created_at
         FROM product p
         LEFT JOIN category c ON p.category_id = c.category_id
+    </sql>
+
+    <select id="findByFilter" resultMap="productWithCategoryRow">
+        <include refid="productWithCategoryColumns"/>
         <where>
             <if test="name.present">
                 AND p.name LIKE CONCAT('%', #{name.get}, '%')
             </if>
-            <if test="categoryId.present">
-                AND p.category_id = UUID_TO_BIN(#{categoryId.get.value})
+            <if test="!categoryIds.isEmpty()">
+                AND p.category_id IN
+                <foreach item="categoryId" collection="categoryIds" open="(" separator="," close=")">
+                    UUID_TO_BIN(#{categoryId.value})
+                </foreach>
             </if>
             <if test="!tagIds.isEmpty()">
                 AND EXISTS (
@@ -71,11 +78,14 @@
                     </foreach>
                 )
             </if>
-            <if test="optionGroupId.present">
+            <if test="!optionGroupIds.isEmpty()">
                 AND EXISTS (
                     SELECT 1 FROM product_option_group pog
                     WHERE pog.product_id = p.product_id
-                    AND pog.option_group_id = UUID_TO_BIN(#{optionGroupId.get.value})
+                    AND pog.option_group_id IN
+                    <foreach item="optionGroupId" collection="optionGroupIds" open="(" separator="," close=")">
+                        UUID_TO_BIN(#{optionGroupId.value})
+                    </foreach>
                 )
             </if>
             <if test="!statuses.isEmpty()">
@@ -94,6 +104,11 @@
                 AND p.branch_id = UUID_TO_BIN(#{branchId.get.value})
             </if>
         </where>
+    </select>
+
+    <select id="findByProductId" resultMap="productWithCategoryRow">
+        <include refid="productWithCategoryColumns"/>
+        WHERE p.product_id = UUID_TO_BIN(#{productId})
     </select>
 
     <select id="findTagsByProductIds" resultMap="productTagNameRow">

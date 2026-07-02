@@ -15,5 +15,6 @@ public interface TagRepository {
     List<Tag> searchByName(String tagName) throws RepositoryException;
     Optional<Tag> findById(TagId tagId) throws RepositoryException;
     Optional<Tag> findByName(String tagName) throws RepositoryException;
+    List<Tag> findAllByNames(List<String> tagNames) throws RepositoryException;
     void deleteById(TagId tagId) throws RepositoryException;
 }

@@ -15,5 +15,6 @@ public interface TagMapper {
     List<TagRow> searchByName(String name);
     Optional<TagRow> findById(String tagId);
     Optional<TagRow> findByName(String name);
+    List<TagRow> findAllByNames(List<String> names);
     void deleteById(String tagId);
 }
