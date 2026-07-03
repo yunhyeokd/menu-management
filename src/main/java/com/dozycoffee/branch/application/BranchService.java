@@ -15,6 +15,8 @@ import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.core.application.exception.*;
 import com.dozycoffee.core.domain.IdentifierGenerator;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class BranchService {
@@ -48,6 +50,22 @@ public class BranchService {
     private Branch getBranch(BranchId branchId) throws RepositoryException {
         return branchRepository.findById(branchId)
                 .orElseThrow(() -> new ResourceNotFoundException(BranchServiceCode.BRN, BranchErrors.BRANCH_NOT_FOUND_ERROR));
+    }
+
+    public Branch find(BranchId branchId) {
+        try {
+            return getBranch(branchId);
+        } catch (RepositoryException e) {
+            throw new SystemException(BranchServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
+        }
+    }
+
+    public List<Branch> findAll() {
+        try {
+            return branchRepository.findAll();
+        } catch (RepositoryException e) {
+            throw new SystemException(BranchServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
+        }
     }
 
     public BranchCreateResult create(BranchCreateCommand command) {

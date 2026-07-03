@@ -6,6 +6,7 @@ import com.dozycoffee.branch.domain.BranchId;
 import com.dozycoffee.core.application.RepositoryException;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -60,6 +61,12 @@ public class FakeBranchRepository implements BranchRepository {
         return store.values().stream()
                 .filter(b -> b.getName().equals(name))
                 .findFirst();
+    }
+
+    @Override
+    public List<Branch> findAll() {
+        checkThrow();
+        return List.copyOf(store.values());
     }
 
     @Override

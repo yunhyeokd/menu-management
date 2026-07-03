@@ -5,12 +5,12 @@ import com.dozycoffee.branch.application.dto.BranchCreateResult;
 import java.time.Instant;
 
 public record BranchCreateResponse(
-        String branch_id,
-        String branch_code,
-        String auth_key,
+        String branchId,
+        String branchCode,
+        String authKey,
         String name,
         String address,
-        Instant created_at
+        Instant createdAt
 ) {
 
     public static BranchCreateResponse from(BranchCreateResult result) {

@@ -5,11 +5,13 @@ import com.dozycoffee.branch.application.BranchService;
 import com.dozycoffee.branch.application.dto.BranchAuthKeyReissueResult;
 import com.dozycoffee.branch.application.dto.BranchCreateResult;
 import com.dozycoffee.branch.application.model.BranchProduct;
+import com.dozycoffee.branch.domain.Branch;
 import com.dozycoffee.branch.domain.BranchId;
 import com.dozycoffee.branch.presentation.dto.BranchAuthKeyReissueResponse;
 import com.dozycoffee.branch.presentation.dto.BranchCreateRequest;
 import com.dozycoffee.branch.presentation.dto.BranchCreateResponse;
 import com.dozycoffee.branch.presentation.dto.BranchProductSummaryResponse;
+import com.dozycoffee.branch.presentation.dto.BranchProfileResponse;
 import com.dozycoffee.branch.presentation.dto.BranchProfileUpdateRequest;
 import com.dozycoffee.product.domain.ProductId;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +28,27 @@ public class BranchController {
     private final BranchService branchService;
     private final BranchOperationService branchOperationService;
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<BranchCreateResponse> createBranch(
             @RequestBody BranchCreateRequest request
     ) {
         BranchCreateResult result = branchService.create(request.toCommand());
         BranchCreateResponse response = BranchCreateResponse.from(result);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<BranchProfileResponse>> findBranches() {
+        List<BranchProfileResponse> response = branchService.findAll().stream()
+                .map(BranchProfileResponse::from)
+                .toList();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{branchId}")
+    public ResponseEntity<BranchProfileResponse> getBranch(@PathVariable BranchId branchId) {
+        Branch branch = branchService.find(branchId);
+        return ResponseEntity.ok(BranchProfileResponse.from(branch));
     }
 
     @DeleteMapping("/{branchId}")

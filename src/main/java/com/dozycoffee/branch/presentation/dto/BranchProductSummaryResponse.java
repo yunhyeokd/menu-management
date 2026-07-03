@@ -5,14 +5,14 @@ import com.dozycoffee.branch.application.model.BranchProduct;
 import java.util.List;
 
 public record BranchProductSummaryResponse(
-        String product_id,
-        String branch_id,
+        String productId,
+        String branchId,
         boolean active,
         String name,
         int price,
-        String image_url,
+        String imageUrl,
         List<String> tags,
-        String category_id
+        String categoryId
 ) {
 
     public static BranchProductSummaryResponse from(BranchProduct branchProduct) {

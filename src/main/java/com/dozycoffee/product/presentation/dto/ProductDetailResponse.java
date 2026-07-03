@@ -9,20 +9,20 @@ import java.time.Instant;
 import java.util.List;
 
 public record ProductDetailResponse(
-        String product_id,
+        String productId,
         String name,
         String description,
-        String image_url,
+        String imageUrl,
         CategorySummary category,
         int price,
         Integer kcal,
-        String allergen_info,
+        String allergenInfo,
         String kind,
-        String branch_id,
+        String branchId,
         String status,
         List<String> tags,
-        List<OptionGroupSummary> option_groups,
-        Instant created_at
+        List<OptionGroupSummary> optionGroups,
+        Instant createdAt
 ) {
 
     public static ProductDetailResponse from(ProductDetailResult result) {
@@ -44,15 +44,15 @@ public record ProductDetailResponse(
         );
     }
 
-    public record CategorySummary(String category_id, String name) {
+    public record CategorySummary(String categoryId, String name) {
     }
 
     public record OptionGroupSummary(
-            String option_group_id,
+            String optionGroupId,
             String name,
             String description,
-            boolean is_required,
-            boolean allow_multiple,
+            boolean isRequired,
+            boolean allowMultiple,
             List<OptionItemSummary> items
     ) {
         public static OptionGroupSummary from(LinkedOptionGroupData data) {

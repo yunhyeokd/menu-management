@@ -57,6 +57,43 @@ public class BranchServiceTest {
         assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
     }
 
+    // ─── find / findAll ───────────────────────────────────────────────────────
+
+    @Test
+    public void 지점을_id로_정상_조회한다() {
+        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
+        Branch branch = BranchFixture.builder().id(branchId).name("강남점").build();
+        branchRepository.put(branch);
+
+        Branch result = branchService.find(branchId);
+
+        assertThat(result.getName()).isEqualTo("강남점");
+    }
+
+    @Test
+    public void 지점_조회시_지점이_존재하지_않으면_BRANCH_NOT_FOUND_ERROR를_던진다() {
+        assertThatThrownBy(() -> branchService.find(BranchId.of("00000000-0000-0000-0000-000000000999")))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.BRANCH_NOT_FOUND_ERROR));
+    }
+
+    @Test
+    public void 지점_목록을_정상_조회한다() {
+        branchRepository.put(BranchFixture.builder().id(BranchId.of("00000000-0000-0000-0000-000000000001")).name("강남점").build());
+        branchRepository.put(BranchFixture.builder().id(BranchId.of("00000000-0000-0000-0000-000000000002")).name("역삼점").build());
+
+        assertThat(branchService.findAll()).hasSize(2);
+    }
+
+    @Test
+    public void 지점_목록_조회중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
+        branchRepository.throwOnNextCall();
+
+        assertThatThrownBy(() -> branchService.findAll())
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.UNKNOWN_ERROR));
+    }
+
     // ─── reissueAuthKey ───────────────────────────────────────────────────────
 
     @Test

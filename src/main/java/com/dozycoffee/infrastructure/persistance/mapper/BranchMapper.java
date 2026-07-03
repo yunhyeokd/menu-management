@@ -3,6 +3,7 @@ package com.dozycoffee.infrastructure.persistance.mapper;
 import com.dozycoffee.infrastructure.persistance.entity.BranchRow;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
 import java.util.Optional;
 
 @Mapper
@@ -12,5 +13,6 @@ public interface BranchMapper {
     Optional<BranchRow> findById(String branchId);
     Optional<BranchRow> findByCode(String code);
     Optional<BranchRow> findByName(String name);
+    List<BranchRow> findAll();
     void deleteById(String branchId);
 }
