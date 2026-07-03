@@ -53,7 +53,7 @@ public class Branch implements Principal {
     }
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(getSubject(), getRole());
     }
 
     public static Branch of(BranchId id, BranchCode code, String authKeyHash, BranchStatus status, Instant createdAt, Instant deletedAt, String name, String address) {

@@ -52,7 +52,7 @@ public abstract class AdminPrincipal implements Principal {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hash(getSubject(), getRole());
     }
 
     public AdminId getId() {
