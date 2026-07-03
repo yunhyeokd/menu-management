@@ -3,7 +3,7 @@ package com.dozycoffee.product.application.usecase;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dozycoffee.product.application.dto.ProductData;
+import com.dozycoffee.product.application.dto.ProductSnapshot;
 import com.dozycoffee.product.application.dto.ProductRegisterCommand;
 import com.dozycoffee.product.application.dto.TagData;
 import com.dozycoffee.product.application.service.ProductService;
@@ -31,10 +31,10 @@ public class RegisterProductUseCase {
         this.productOptionGroupService = productOptionGroupService;
     }
 
-    public ProductData execute(ProductRegisterCommand command) {
+    public ProductSnapshot execute(ProductRegisterCommand command) {
         Product product = productService.register(command);
         List<TagData> tags = productTagService.saveTags(product.getId(), command.tagNames());
         productOptionGroupService.saveOptionGroups(product.getId(), command.optionGroups());
-        return ProductData.from(product, tags);
+        return ProductSnapshot.from(product, tags);
     }
 }

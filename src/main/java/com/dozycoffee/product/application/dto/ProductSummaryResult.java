@@ -17,4 +17,18 @@ public record ProductSummaryResult(
         BranchId branchId,
         ProductStatus status,
         List<TagData> tags
-) {}
+) {
+    public static ProductSummaryResult from(ProductSnapshot product, List<TagData> tags) {
+        return new ProductSummaryResult(
+                product.id(),
+                product.name(),
+                product.imageUrl(),
+                product.categoryId() != null ? CategoryData.from(product.categoryId()) : null,
+                product.price(),
+                product.kind(),
+                product.branchId(),
+                product.status(),
+                tags
+        );
+    }
+}

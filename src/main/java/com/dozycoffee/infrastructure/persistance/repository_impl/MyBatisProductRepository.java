@@ -52,6 +52,11 @@ public class MyBatisProductRepository implements ProductRepository {
     }
 
     @Override
+    public Optional<Product> findActiveById(ProductId productId) throws RepositoryException {
+        return productMapper.findActiveById(productId.getValue()).map(ProductRow::toProduct);
+    }
+
+    @Override
     public void updateStatusByBranchId(BranchId branchId, ProductStatus status) throws RepositoryException {
         productMapper.updateStatusByBranchId(branchId.getValue(), status.name());
     }

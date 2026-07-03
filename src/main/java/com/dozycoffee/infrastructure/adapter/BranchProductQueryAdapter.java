@@ -4,7 +4,7 @@ import com.dozycoffee.branch.application.BranchProductQueryPort;
 import com.dozycoffee.branch.application.model.BranchProduct;
 import com.dozycoffee.branch.domain.BranchId;
 import com.dozycoffee.core.application.RepositoryException;
-import com.dozycoffee.product.application.dto.ProductData;
+import com.dozycoffee.product.application.dto.ProductSnapshot;
 import com.dozycoffee.product.application.dto.TagData;
 import com.dozycoffee.product.application.repository.ProductRepository;
 import com.dozycoffee.product.application.usecase.FindSellableProductsUseCase;
@@ -44,7 +44,7 @@ public class BranchProductQueryAdapter implements BranchProductQueryPort {
         );
     }
 
-    private BranchProduct toBranchProduct(ProductData data) {
+    private BranchProduct toBranchProduct(ProductSnapshot data) {
         return BranchProduct.of(
                 data.id(),
                 data.branchId(),

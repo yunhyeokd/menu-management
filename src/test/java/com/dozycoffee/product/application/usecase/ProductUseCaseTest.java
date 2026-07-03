@@ -110,10 +110,10 @@ public class ProductUseCaseTest {
         defaultCategory();
         OptionGroup og = savedOptionGroup(1L);
 
-        ProductData result = registerProductUseCase.execute(new ProductRegisterCommand(
+        ProductSnapshot result = registerProductUseCase.execute(new ProductRegisterCommand(
                 ProductKind.COMMON, null,
                 "아메리카노", null, null, CategoryId.of("00000000-0000-0000-0000-000000000001"), 3000, null, null,
-                Set.of("신제품"), List.of(new OptionGroupLinkSpec(og.getId(), true, false))
+                Set.of("신제품"), List.of(new OptionGroupLinkCommand(og.getId(), true, false))
         ));
 
         assertThat(result.name()).isEqualTo("아메리카노");
@@ -127,7 +127,7 @@ public class ProductUseCaseTest {
         defaultCategory();
         defaultBranch();
 
-        ProductData result = registerProductUseCase.execute(new ProductRegisterCommand(
+        ProductSnapshot result = registerProductUseCase.execute(new ProductRegisterCommand(
                 ProductKind.BRANCH_EXCLUSIVE, BranchId.of("00000000-0000-0000-0000-000000000001"),
                 "지점전용라떼", null, null,
                 CategoryId.of("00000000-0000-0000-0000-000000000001"), 4500, null, null,
@@ -145,7 +145,7 @@ public class ProductUseCaseTest {
         assertThatThrownBy(() -> registerProductUseCase.execute(new ProductRegisterCommand(
                 ProductKind.COMMON, null,
                 "아메리카노", null, null, CategoryId.of("00000000-0000-0000-0000-000000000001"), 3000, null, null,
-                Set.of(), List.of(new OptionGroupLinkSpec(OptionGroupId.of("00000000-0000-0000-0000-000000000999"), true, false))
+                Set.of(), List.of(new OptionGroupLinkCommand(OptionGroupId.of("00000000-0000-0000-0000-000000000999"), true, false))
         )))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
@@ -155,13 +155,14 @@ public class ProductUseCaseTest {
     @Test
     void 상품_프로필_수정시_태그도_교체된다() {
         defaultCategory();
+        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
         Tag oldTag = tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000010"), "구태그", Instant.now()));
         Product product = productRepository.put(ProductFixture.builder()
-                .id(ProductId.of("00000000-0000-0000-0000-000000000001")).kind(ProductKind.COMMON).branchId(null).build());
+                .id(productId).kind(ProductKind.COMMON).branchId(null).build());
         productTagRepository.add(ProductTag.of(product.getId(), oldTag.getId(), Instant.now()));
 
-        ProductData result = updateProductProfileUseCase.execute(new ProductProfileUpdateCommand(
-                ProductId.of("00000000-0000-0000-0000-000000000001"), "라떼", null, null,
+        ProductSnapshot result = updateProductProfileUseCase.execute(productId, new ProductProfileUpdateCommand(
+                "라떼", null, null,
                 CategoryId.of("00000000-0000-0000-0000-000000000001"), 4000, null, null, Set.of("신태그")
         ));
 
@@ -205,7 +206,7 @@ public class ProductUseCaseTest {
         productOptionGroupRepository.put(ProductOptionGroup.of(product.getId(), oldOg.getId(), true, false, Instant.now()));
 
         replaceProductOptionGroupsUseCase.execute(product.getId(), List.of(
-                new OptionGroupLinkSpec(newOg.getId(), false, true)
+                new OptionGroupLinkCommand(newOg.getId(), false, true)
         ));
 
         assertThat(productOptionGroupRepository.findAllByOptionGroupId(oldOg.getId())).isEmpty();

@@ -16,6 +16,7 @@ public interface ProductMapper {
     List<ProductRow> findAllByCategoryId(String categoryId);
     List<ProductRow> findAllActiveCommon();
     List<ProductRow> findAllActiveBranchExclusive(String branchId);
+    Optional<ProductRow> findActiveById(String productId);
     void updateStatusByBranchId(@Param("branchId") String branchId, @Param("status") String status);
     void deleteAllByBranchId(String branchId);
     void deleteById(String productId);

@@ -19,6 +19,6 @@ public record ProductRegisterCommand(
         Integer kcal,
         AllergenInfo allergenInfo,
         Set<String> tagNames,
-        List<OptionGroupLinkSpec> optionGroups
+        List<OptionGroupLinkCommand> optionGroups
 ) {
 }

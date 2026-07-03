@@ -7,7 +7,7 @@ import com.dozycoffee.branch.domain.BranchId;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.core.application.exception.SystemException;
 import com.dozycoffee.product.application.ProductServiceCode;
-import com.dozycoffee.product.application.dto.ProductData;
+import com.dozycoffee.product.application.dto.ProductSnapshot;
 import com.dozycoffee.product.application.dto.TagData;
 import com.dozycoffee.product.application.repository.ProductQueryRepository;
 import com.dozycoffee.product.application.service.ProductErrors;
@@ -30,7 +30,7 @@ public class FindSellableProductsUseCase {
         this.productQueryRepository = productQueryRepository;
     }
 
-    public List<ProductData> execute(BranchId branchId) {
+    public List<ProductSnapshot> execute(BranchId branchId) {
         List<Product> products = productService.findSellableProducts(branchId);
         if (products.isEmpty()) return List.of();
 
@@ -43,7 +43,7 @@ public class FindSellableProductsUseCase {
         }
 
         return products.stream()
-                .map(product -> ProductData.from(product, tagsByProductId.getOrDefault(product.getId(), List.of())))
+                .map(product -> ProductSnapshot.from(product, tagsByProductId.getOrDefault(product.getId(), List.of())))
                 .toList();
     }
 }

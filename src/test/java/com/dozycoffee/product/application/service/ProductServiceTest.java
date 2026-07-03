@@ -166,14 +166,15 @@ public class ProductServiceTest {
     @Test
     public void 공통_상품_프로필을_정상_수정한다() {
         defaultCategory();
+        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
         productRepository.put(ProductFixture.builder()
-                .id(ProductId.of("00000000-0000-0000-0000-000000000001")).kind(ProductKind.COMMON).branchId(null).build());
+                .id(productId).kind(ProductKind.COMMON).branchId(null).build());
         ProductProfileUpdateCommand command = new ProductProfileUpdateCommand(
-                ProductId.of("00000000-0000-0000-0000-000000000001"), "라떼", null, null,
+                "라떼", null, null,
                 CategoryId.of("00000000-0000-0000-0000-000000000001"), 4000, null, null, Set.of()
         );
 
-        Product result = productService.updateProfile(command);
+        Product result = productService.updateProfile(productId, command);
 
         assertThat(result.getName()).isEqualTo("라떼");
         assertThat(result.getPrice()).isEqualTo(4000);
@@ -182,26 +183,28 @@ public class ProductServiceTest {
     @Test
     public void 상품_수정시_상품이_없으면_PRODUCT_NOT_FOUND_ERROR를_던진다() {
         defaultCategory();
+        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000999");
         ProductProfileUpdateCommand command = new ProductProfileUpdateCommand(
-                ProductId.of("00000000-0000-0000-0000-000000000999"), "라떼", null, null,
+                "라떼", null, null,
                 CategoryId.of("00000000-0000-0000-0000-000000000001"), 4000, null, null, Set.of()
         );
 
-        assertThatThrownBy(() -> productService.updateProfile(command))
+        assertThatThrownBy(() -> productService.updateProfile(productId, command))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
     }
 
     @Test
     public void 상품_수정시_카테고리가_없으면_CATEGORY_NOT_FOUND_ERROR를_던진다() {
+        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
         productRepository.put(ProductFixture.builder()
-                .id(ProductId.of("00000000-0000-0000-0000-000000000001")).kind(ProductKind.COMMON).branchId(null).build());
+                .id(productId).kind(ProductKind.COMMON).branchId(null).build());
         ProductProfileUpdateCommand command = new ProductProfileUpdateCommand(
-                ProductId.of("00000000-0000-0000-0000-000000000001"), "라떼", null, null,
+                "라떼", null, null,
                 CategoryId.of("00000000-0000-0000-0000-000000000999"), 4000, null, null, Set.of()
         );
 
-        assertThatThrownBy(() -> productService.updateProfile(command))
+        assertThatThrownBy(() -> productService.updateProfile(productId, command))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
     }

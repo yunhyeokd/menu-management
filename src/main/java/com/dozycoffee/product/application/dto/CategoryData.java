@@ -10,4 +10,8 @@ public record CategoryData(
     public static CategoryData from(Category category) {
         return new CategoryData(category.getId(), category.getName());
     }
+
+    public static CategoryData from(CategoryId categoryId) {
+        return new CategoryData(categoryId, null);
+    }
 }

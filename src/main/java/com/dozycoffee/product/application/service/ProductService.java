@@ -120,9 +120,19 @@ public class ProductService {
         }
     }
 
-    public Product updateProfile(ProductProfileUpdateCommand command) {
+    @Transactional(readOnly = true)
+    public Product findSellableProduct(ProductId productId) {
         try {
-            Product product = getProduct(command.id());
+            return productRepository.findActiveById(productId)
+                    .orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
+        } catch (RepositoryException e) {
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+        }
+    }
+
+    public Product updateProfile(ProductId productId, ProductProfileUpdateCommand command) {
+        try {
+            Product product = getProduct(productId);
             categoryRepository
                     .findById(command.categoryId())
                     .orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.CATEGORY_NOT_FOUND_ERROR));
