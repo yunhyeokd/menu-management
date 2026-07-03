@@ -65,14 +65,14 @@ public class BranchServiceTest {
         Branch branch = BranchFixture.builder().id(branchId).name("강남점").build();
         branchRepository.put(branch);
 
-        Branch result = branchService.find(branchId);
+        Branch result = branchService.findById(branchId);
 
         assertThat(result.getName()).isEqualTo("강남점");
     }
 
     @Test
     public void 지점_조회시_지점이_존재하지_않으면_BRANCH_NOT_FOUND_ERROR를_던진다() {
-        assertThatThrownBy(() -> branchService.find(BranchId.of("00000000-0000-0000-0000-000000000999")))
+        assertThatThrownBy(() -> branchService.findById(BranchId.of("00000000-0000-0000-0000-000000000999")))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
