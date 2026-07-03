@@ -25,6 +25,7 @@ public class ProductController {
     private final UpdateProductProfileUseCase updateProductProfileUseCase;
     private final FindSellableProductsUseCase findSellableProductsUseCase;
     private final ReplaceProductOptionGroupsUseCase replaceProductOptionGroupsUseCase;
+    private final DeleteProductUseCase deleteProductUseCase;
 
     @PostMapping("")
     public ResponseEntity<ProductSummaryResponse> registerProduct(@RequestBody ProductRegisterRequest request) {
@@ -66,31 +67,31 @@ public class ProductController {
     @PatchMapping("/{productId}")
     public ResponseEntity<Void> modifyProduct(@PathVariable ProductId productId, @RequestBody ProductModifyRequest request) {
         updateProductProfileUseCase.execute(productId, request.toCommand());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{productId}/activate")
     public ResponseEntity<Void> activateProduct(@PathVariable ProductId productId) {
         productService.activate(productId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{productId}/deactivate")
     public ResponseEntity<Void> deactivateProduct(@PathVariable ProductId productId) {
         productService.deactivate(productId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{productId}/options")
     public ResponseEntity<Void> replaceOptions(@PathVariable ProductId productId, @RequestBody ProductOptionsReplaceRequest request) {
         replaceProductOptionGroupsUseCase.execute(productId, request.toCommand());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{productId}")
     public ResponseEntity<Void> deleteProduct(@PathVariable ProductId productId) {
-        productService.deleteById(productId);
-        return ResponseEntity.ok().build();
+        deleteProductUseCase.execute(productId);
+        return ResponseEntity.noContent().build();
     }
 
 }

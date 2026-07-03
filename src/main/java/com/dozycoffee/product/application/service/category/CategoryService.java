@@ -75,6 +75,14 @@ public class CategoryService {
         }
     }
 
+    public CategoryData getCategory(CategoryId categoryId) {
+        return categoryRepository.findById(categoryId)
+                .map(CategoryData::from)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.CATEGORY_NOT_FOUND_ERROR)
+                );
+    }
+
     @Transactional(readOnly = true)
     public List<CategoryData> findAll() {
         try {

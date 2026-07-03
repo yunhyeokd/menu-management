@@ -1,0 +1,48 @@
+package com.dozycoffee.product.presentation;
+
+import com.dozycoffee.product.application.dto.TagData;
+import com.dozycoffee.product.application.service.tag.TagService;
+import com.dozycoffee.product.application.usecase.DeleteTagUseCase;
+import com.dozycoffee.product.domain.TagId;
+import com.dozycoffee.product.presentation.dto.TagCreateRequest;
+import com.dozycoffee.product.presentation.dto.TagRenameRequest;
+import com.dozycoffee.product.presentation.dto.TagResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/tags")
+@RequiredArgsConstructor
+public class TagController {
+
+    private final TagService tagService;
+    private final DeleteTagUseCase deleteTagUseCase;
+
+    @GetMapping
+    public ResponseEntity<List<TagResponse>> findTags(@RequestParam(required = false) String name) {
+        List<TagData> tags = (name == null || name.isBlank()) ? tagService.findAll() : tagService.searchByName(name);
+        List<TagResponse> response = tags.stream().map(TagResponse::from).toList();
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping
+    public ResponseEntity<TagResponse> createTag(@RequestBody TagCreateRequest request) {
+        TagData tag = tagService.create(request.name());
+        return ResponseEntity.ok(TagResponse.from(tag));
+    }
+
+    @PatchMapping("/{tagId}")
+    public ResponseEntity<Void> renameTag(@PathVariable TagId tagId, @RequestBody TagRenameRequest request) {
+        tagService.changeTagName(tagId, request.name());
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{tagId}")
+    public ResponseEntity<Void> deleteTag(@PathVariable TagId tagId) {
+        deleteTagUseCase.execute(tagId);
+        return ResponseEntity.noContent().build();
+    }
+}

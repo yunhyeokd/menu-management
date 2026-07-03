@@ -127,11 +127,9 @@ public class OptionServiceTest {
     @Test
     public void 옵션_그룹_프로필을_정상_수정한다() {
         optionGroupRepository.put(groupWithItems(OptionGroupId.of("00000000-0000-0000-0000-000000000001"), "사이즈", List.of(item("S"))));
-        OptionGroupProfileUpdateCommand command = new OptionGroupProfileUpdateCommand(
-                OptionGroupId.of("00000000-0000-0000-0000-000000000001"), "Size", Optional.of("음료 사이즈")
-        );
+        OptionGroupProfileUpdateCommand command = new OptionGroupProfileUpdateCommand("Size", Optional.of("음료 사이즈"));
 
-        optionService.updateOptionGroupProfile(command);
+        optionService.updateOptionGroupProfile(OptionGroupId.of("00000000-0000-0000-0000-000000000001"), command);
 
         OptionGroup updated = optionGroupRepository.findById(OptionGroupId.of("00000000-0000-0000-0000-000000000001")).get();
         assertThat(updated.getName()).isEqualTo("Size");
@@ -140,11 +138,9 @@ public class OptionServiceTest {
 
     @Test
     public void 옵션_그룹_프로필_수정시_대상이_존재하지_않으면_OPTION_GROUP_NOT_FOUND_ERROR를_던진다() {
-        OptionGroupProfileUpdateCommand command = new OptionGroupProfileUpdateCommand(
-                OptionGroupId.of("00000000-0000-0000-0000-000000000999"), "Size", Optional.empty()
-        );
+        OptionGroupProfileUpdateCommand command = new OptionGroupProfileUpdateCommand("Size", Optional.empty());
 
-        assertThatThrownBy(() -> optionService.updateOptionGroupProfile(command))
+        assertThatThrownBy(() -> optionService.updateOptionGroupProfile(OptionGroupId.of("00000000-0000-0000-0000-000000000999"), command))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.OPTION_GROUP_NOT_FOUND_ERROR));
     }
@@ -152,11 +148,9 @@ public class OptionServiceTest {
     @Test
     public void 옵션_그룹_프로필_수정시_이름이_유효하지_않으면_INVALID_OPTION_ERROR를_던진다() {
         optionGroupRepository.put(groupWithItems(OptionGroupId.of("00000000-0000-0000-0000-000000000001"), "사이즈", List.of(item("S"))));
-        OptionGroupProfileUpdateCommand command = new OptionGroupProfileUpdateCommand(
-                OptionGroupId.of("00000000-0000-0000-0000-000000000001"), "", Optional.empty()
-        );
+        OptionGroupProfileUpdateCommand command = new OptionGroupProfileUpdateCommand("", Optional.empty());
 
-        assertThatThrownBy(() -> optionService.updateOptionGroupProfile(command))
+        assertThatThrownBy(() -> optionService.updateOptionGroupProfile(OptionGroupId.of("00000000-0000-0000-0000-000000000001"), command))
                 .isInstanceOf(ValidationException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.INVALID_OPTION_ERROR));
     }
@@ -167,11 +161,10 @@ public class OptionServiceTest {
     public void 옵션_그룹_아이템을_정상_수정한다() {
         optionGroupRepository.put(groupWithItems(OptionGroupId.of("00000000-0000-0000-0000-000000000001"), "사이즈", List.of(item("S"))));
         OptionGroupItemUpdateCommand command = new OptionGroupItemUpdateCommand(
-                OptionGroupId.of("00000000-0000-0000-0000-000000000001"),
                 List.of(itemCommand("M", 300), itemCommand("L", 500))
         );
 
-        optionService.updateOptionGroupItems(command);
+        optionService.updateOptionGroupItems(OptionGroupId.of("00000000-0000-0000-0000-000000000001"), command);
 
         List<OptionItem> items = optionGroupRepository.findById(OptionGroupId.of("00000000-0000-0000-0000-000000000001")).get().getItems();
         assertThat(items).hasSize(2);
@@ -181,20 +174,18 @@ public class OptionServiceTest {
     @Test
     public void 옵션_그룹_아이템_수정시_아이템이_없으면_INVALID_OPTION_ERROR를_던진다() {
         optionGroupRepository.put(groupWithItems(OptionGroupId.of("00000000-0000-0000-0000-000000000001"), "사이즈", List.of(item("S"))));
-        OptionGroupItemUpdateCommand command = new OptionGroupItemUpdateCommand(OptionGroupId.of("00000000-0000-0000-0000-000000000001"), List.of());
+        OptionGroupItemUpdateCommand command = new OptionGroupItemUpdateCommand(List.of());
 
-        assertThatThrownBy(() -> optionService.updateOptionGroupItems(command))
+        assertThatThrownBy(() -> optionService.updateOptionGroupItems(OptionGroupId.of("00000000-0000-0000-0000-000000000001"), command))
                 .isInstanceOf(ValidationException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.INVALID_OPTION_ERROR));
     }
 
     @Test
     public void 옵션_그룹_아이템_수정시_대상_그룹이_존재하지_않으면_OPTION_GROUP_NOT_FOUND_ERROR를_던진다() {
-        OptionGroupItemUpdateCommand command = new OptionGroupItemUpdateCommand(
-                OptionGroupId.of("00000000-0000-0000-0000-000000000999"), List.of(itemCommand("S", 0))
-        );
+        OptionGroupItemUpdateCommand command = new OptionGroupItemUpdateCommand(List.of(itemCommand("S", 0)));
 
-        assertThatThrownBy(() -> optionService.updateOptionGroupItems(command))
+        assertThatThrownBy(() -> optionService.updateOptionGroupItems(OptionGroupId.of("00000000-0000-0000-0000-000000000999"), command))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.OPTION_GROUP_NOT_FOUND_ERROR));
     }
