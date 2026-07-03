@@ -1,6 +1,7 @@
 package com.dozycoffee.infrastructure.security;
 
 import com.dozycoffee.admin.application.AdminUsernameAuthenticator;
+import com.dozycoffee.admin.domain.AdminRole;
 import com.dozycoffee.auth.application.AuthErrors;
 import com.dozycoffee.auth.application.AuthServiceCode;
 import com.dozycoffee.auth.application.AuthenticationResolver;
@@ -43,11 +44,8 @@ public class SecurityConfig {
             AdminUsernameAuthenticator adminAuthenticator,
             BranchAuthenticator branchAuthenticator
     ) {
-        AuthenticationResolver adminResolver = (id, credential) -> {
-            Principal principal = adminAuthenticator.authenticate((Identifier<String>) () -> id, credential)
-                    .orElseThrow(() -> new AuthenticationException(AuthServiceCode.AUTH, AuthErrors.UNAUTHENTICATED));
-            return new AuthenticationResult(principal, 3600L);
-        };
+        AuthenticationResolver systemResolver = adminResolver(adminAuthenticator, AdminRole.SYSTEM);
+        AuthenticationResolver adminResolver = adminResolver(adminAuthenticator, AdminRole.ADMIN);
         AuthenticationResolver branchResolver = (id, credential) -> {
             Principal principal = branchAuthenticator.authenticate(BranchCode.of(id), credential)
                     .orElseThrow(() -> new AuthenticationException(AuthServiceCode.AUTH, AuthErrors.UNAUTHENTICATED));
@@ -55,9 +53,19 @@ public class SecurityConfig {
         };
 
         return new AuthenticationService(Map.of(
+                "SYSTEM", systemResolver,
                 "ADMIN", adminResolver,
                 "BRANCH", branchResolver
         ));
+    }
+
+    private AuthenticationResolver adminResolver(AdminUsernameAuthenticator adminAuthenticator, AdminRole expectedRole) {
+        return (id, credential) -> {
+            Principal principal = adminAuthenticator.authenticate((Identifier<String>) () -> id, credential)
+                    .filter(p -> p.getRole().equals(expectedRole.name()))
+                    .orElseThrow(() -> new AuthenticationException(AuthServiceCode.AUTH, AuthErrors.UNAUTHENTICATED));
+            return new AuthenticationResult(principal, 3600L);
+        };
     }
 
 }

@@ -2,7 +2,7 @@ package com.dozycoffee.admin.domain;
 
 public enum AdminRole {
     SYSTEM,
-    STAFF,
+    ADMIN,
     ;
 
     public static AdminRole of(String code) {

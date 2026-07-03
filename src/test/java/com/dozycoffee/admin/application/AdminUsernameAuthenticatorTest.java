@@ -17,7 +17,7 @@ public class AdminUsernameAuthenticatorTest {
     private FakeAdminRepository adminRepository;
     private AdminUsernameAuthenticator adminUsernameAuthenticator;
 
-    private Admin activeAdmin;
+    private SystemAdmin activeAdmin;
     private Admin pendingAdmin;
 
     private static final String RAW_PASSWORD = "password";
@@ -37,9 +37,9 @@ public class AdminUsernameAuthenticatorTest {
 
         adminUsernameAuthenticator = new AdminUsernameAuthenticator(adminRepository, passwordHasher);
 
-        activeAdmin = Admin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.SYSTEM, "sysadmin", HASHED_PASSWORD, null);
-        AdminProfile staffProfile = AdminProfile.create("EMP001", "홍길동", "+821012345678", "staff@dozy.com");
-        pendingAdmin = Admin.create(AdminId.of("00000000-0000-0000-0000-000000000002"), AdminRole.STAFF, "staffadmin", HASHED_PASSWORD, staffProfile);
+        activeAdmin = SystemAdmin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), "sysadmin", HASHED_PASSWORD);
+        AdminProfile adminProfile = AdminProfile.create("EMP001", "홍길동", "+821012345678", "admin@dozy.com");
+        pendingAdmin = Admin.create(AdminId.of("00000000-0000-0000-0000-000000000002"), "pendingadmin", HASHED_PASSWORD, adminProfile);
 
         adminRepository.put(activeAdmin);
         adminRepository.put(pendingAdmin);
@@ -61,7 +61,7 @@ public class AdminUsernameAuthenticatorTest {
 
     @Test
     void PENDING_계정은_자격증명이_일치해도_인증에_실패한다() {
-        Optional<Principal> result = adminUsernameAuthenticator.authenticate(username("staffadmin"), credential(RAW_PASSWORD));
+        Optional<Principal> result = adminUsernameAuthenticator.authenticate(username("pendingadmin"), credential(RAW_PASSWORD));
         assertThat(result).isEmpty();
     }
 

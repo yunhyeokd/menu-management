@@ -3,6 +3,7 @@ package com.dozycoffee.admin.presentation;
 import com.dozycoffee.admin.application.AdminService;
 import com.dozycoffee.admin.domain.Admin;
 import com.dozycoffee.admin.domain.AdminId;
+import com.dozycoffee.admin.domain.AdminPrincipal;
 import com.dozycoffee.admin.presentation.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class AdminController {
 
     @GetMapping
     public ResponseEntity<List<AdminResponse>> findAdmins() {
-        List<Admin> admins = adminService.findAll();
+        List<AdminPrincipal> admins = adminService.findAll();
         List<AdminResponse> response = admins.stream().map(AdminResponse::from).toList();
         return ResponseEntity.ok(response);
     }
@@ -31,14 +32,8 @@ public class AdminController {
     }
 
     @PostMapping
-    public ResponseEntity<AdminResponse> registerStaff(@RequestBody AdminRegisterRequest request) {
-        Admin admin = adminService.registerStaff(request.toCommand());
-        return ResponseEntity.ok(AdminResponse.from(admin));
-    }
-
-    @PostMapping("/system")
-    public ResponseEntity<AdminResponse> registerSystem(@RequestBody SystemAdminRegisterRequest request) {
-        Admin admin = adminService.registerSystem(request.toCommand());
+    public ResponseEntity<AdminResponse> registerAdmin(@RequestBody AdminRegisterRequest request) {
+        Admin admin = adminService.registerAdmin(request.toCommand());
         return ResponseEntity.ok(AdminResponse.from(admin));
     }
 

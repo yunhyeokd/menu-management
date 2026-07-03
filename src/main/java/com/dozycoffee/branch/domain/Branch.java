@@ -45,13 +45,15 @@ public class Branch implements Principal {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Branch branch)) return false;
-        return id.equals(branch.id);
+        else if (o instanceof Principal principal) {
+            return Objects.equals(getSubject(), principal.getSubject())
+                    && Objects.equals(getRole(), principal.getRole());
+        }
+        return false;
     }
-
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(getSubject(), getRole());
     }
 
     public static Branch of(BranchId id, BranchCode code, String authKeyHash, BranchStatus status, Instant createdAt, Instant deletedAt, String name, String address) {

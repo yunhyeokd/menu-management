@@ -1,10 +1,7 @@
 package com.dozycoffee.infrastructure.persistance.repository_impl;
 
 import com.dozycoffee.admin.application.AdminRepository;
-import com.dozycoffee.admin.domain.Admin;
-import com.dozycoffee.admin.domain.AdminId;
-import com.dozycoffee.admin.domain.AdminProfile;
-import com.dozycoffee.admin.domain.AdminRole;
+import com.dozycoffee.admin.domain.*;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.infrastructure.persistance.entity.AdminRow;
 import com.dozycoffee.infrastructure.persistance.mapper.AdminMapper;
@@ -13,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 @Repository
@@ -24,32 +20,40 @@ public class MyBatisAdminRepository implements AdminRepository {
 
     @Override
     @Transactional
-    public void save(Admin admin) throws RepositoryException {
-        AdminRow row = RowMapper.toRow(admin);
+    public void save(AdminPrincipal adminPrincipal) throws RepositoryException {
+        AdminRow row = RowMapper.toRow(adminPrincipal);
         adminMapper.upsertAccount(row);
-        if (admin.getProfile() != null) {
+        if (adminPrincipal instanceof Admin) {
             adminMapper.upsertProfile(row);
         }
     }
 
     @Override
-    public List<Admin> findAll() throws RepositoryException {
-        return adminMapper.findAll().stream().map(AdminRow::toAdmin).toList();
+    public List<AdminPrincipal> findAll() throws RepositoryException {
+        return adminMapper.findAll().stream().map(AdminRow::toPrincipal).toList();
     }
 
     @Override
-    public Optional<Admin> findById(AdminId id) throws RepositoryException {
-        return adminMapper.findById(id.getValue()).map(AdminRow::toAdmin);
+    public Optional<AdminPrincipal> findById(AdminId id) throws RepositoryException {
+        return adminMapper.findById(id.getValue()).map(AdminRow::toPrincipal);
     }
 
     @Override
-    public Optional<Admin> findByUsername(String username) throws RepositoryException {
-        return adminMapper.findByUsername(username).map(AdminRow::toAdmin);
+    public Optional<Admin> findAdminById(AdminId id) throws RepositoryException {
+        return adminMapper.findByIdAndRole(id.getValue(), AdminRole.ADMIN.toString().toLowerCase())
+                .map(AdminRow::toAdmin);
     }
 
     @Override
-    public Optional<Admin> findByRole(AdminRole role) throws RepositoryException {
-        return adminMapper.findByRole(role.name().toLowerCase(Locale.ROOT)).map(AdminRow::toAdmin);
+    public Optional<SystemAdmin> findSystemAdmin() throws RepositoryException {
+        return adminMapper
+                .findByRole(AdminRole.SYSTEM.toString().toLowerCase())
+                .map(AdminRow::toSystemAdmin);
+    }
+
+    @Override
+    public Optional<AdminPrincipal> findByUsername(String username) throws RepositoryException {
+        return adminMapper.findByUsername(username).map(AdminRow::toPrincipal);
     }
 
     @Override
@@ -64,6 +68,7 @@ public class MyBatisAdminRepository implements AdminRepository {
     }
 
     public static class RowMapper {
+
         public static AdminRow toRow(Admin admin) {
 
             AdminProfile profile = admin.getProfile();
@@ -93,6 +98,27 @@ public class MyBatisAdminRepository implements AdminRepository {
                     phone,
                     email
             );
+        }
+
+        public static AdminRow toRow(AdminPrincipal adminPrincipal) {
+            if (adminPrincipal instanceof Admin admin) {
+                return toRow(admin);
+            }
+            else {
+                return new AdminRow(
+                        adminPrincipal.getId().getValue(),
+                        adminPrincipal.getAdminRole().toString().toLowerCase(),
+                        adminPrincipal.getStatus().toString().toLowerCase(),
+                        adminPrincipal.getUsername(),
+                        adminPrincipal.getPasswordHash(),
+                        adminPrincipal.getDeletedAt(),
+                        adminPrincipal.getCreatedAt(),
+                        null,
+                        null,
+                        null,
+                        null
+                );
+            }
         }
     }
 

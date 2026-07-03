@@ -34,13 +34,18 @@ public class AdminService {
         this.sessionInvalidationPort = sessionInvalidationPort;
     }
 
-    private Admin getAdmin(AdminId adminId) {
+    private AdminPrincipal getAdminPrincipal(AdminId adminId) throws RepositoryException {
         return adminRepository.findById(adminId)
                 .orElseThrow(() -> new ResourceNotFoundException(AdminServiceCode.ADM, AdminErrors.ADMIN_NOT_FOUND));
     }
 
+    private Admin getAdmin(AdminId adminId) {
+        return adminRepository.findAdminById(adminId)
+                .orElseThrow(() -> new ResourceNotFoundException(AdminServiceCode.ADM, AdminErrors.ADMIN_NOT_FOUND));
+    }
+
     @Transactional(readOnly = true)
-    public List<Admin> findAll() {
+    public List<AdminPrincipal> findAll() {
         try {
             return adminRepository.findAll();
         } catch (RepositoryException e) {
@@ -57,17 +62,16 @@ public class AdminService {
         }
     }
 
-    public Admin registerSystem(SystemAdminRegisterCommand command) {
+    public SystemAdmin registerSystem(SystemAdminRegisterCommand command) {
         try {
-            adminRepository.findByRole(AdminRole.SYSTEM)
-                    .ifPresent(a -> {
+            adminRepository.findSystemAdmin().ifPresent(a -> {
                         throw new ConflictException(AdminServiceCode.ADM, AdminErrors.DUPLICATE_ACCOUNT_ERROR);
                     });
             AdminId adminId = idGenerator.generate();
             String passwordHash = passwordHasher.hash(command.password());
-            Admin adminAccount = Admin.create(adminId, AdminRole.SYSTEM, command.username(), passwordHash, null);
-            adminRepository.save(adminAccount);
-            return adminAccount;
+            SystemAdmin admin = SystemAdmin.create(adminId, command.username(), passwordHash);
+            adminRepository.save(admin);
+            return admin;
         } catch (AdminException e) {
             throw new ValidationException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
         } catch (RepositoryException e) {
@@ -75,7 +79,7 @@ public class AdminService {
         }
     }
 
-    public Admin registerStaff(AdminRegisterCommand command) {
+    public Admin registerAdmin(AdminRegisterCommand command) {
         try {
             adminRepository.findByUsername(command.username())
                     .ifPresent(a -> {
@@ -93,9 +97,9 @@ public class AdminService {
                     command.phone(),
                     command.email()
             );
-            Admin account = Admin.create(adminId, AdminRole.STAFF, command.username(), passwordHash, profile);
-            adminRepository.save(account);
-            return account;
+            Admin admin = Admin.create(adminId, command.username(), passwordHash, profile);
+            adminRepository.save(admin);
+            return admin;
         } catch (AdminException e) {
             throw new ValidationException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
         } catch (RepositoryException e) {
@@ -105,9 +109,9 @@ public class AdminService {
 
     public void approve(AdminId adminId) {
         try {
-            Admin adminAccount = getAdmin(adminId);
-            adminAccount.approve();
-            adminRepository.save(adminAccount);
+            Admin admin = getAdmin(adminId);
+            admin.approve();
+            adminRepository.save(admin);
         } catch (AdminException e) {
             throw new ConflictException(AdminServiceCode.ADM, AdminErrors.UNABLE_APPROVAL_ERROR);
         } catch (RepositoryException e) {
@@ -117,9 +121,9 @@ public class AdminService {
 
     public void reject(AdminId adminId) {
         try {
-            Admin adminAccount = getAdmin(adminId);
-            adminAccount.reject();
-            adminRepository.save(adminAccount);
+            Admin admin = getAdmin(adminId);
+            admin.reject();
+            adminRepository.save(admin);
         } catch (AdminException e) {
             throw new ConflictException(AdminServiceCode.ADM, AdminErrors.UNABLE_APPROVAL_ERROR);
         } catch (RepositoryException e) {
@@ -129,10 +133,10 @@ public class AdminService {
 
     public Admin updateProfile(AdminId adminId, AdminProfileUpdateCommand command) {
         try {
-            Admin account = getAdmin(adminId);
-            account.updateProfile(command.name(), command.phone(), command.email());
-            adminRepository.save(account);
-            return account;
+            Admin admin = getAdmin(adminId);
+            admin.updateProfile(command.name(), command.phone(), command.email());
+            adminRepository.save(admin);
+            return admin;
         } catch (AdminException e) {
             throw new ValidationException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
         } catch (RepositoryException e) {
@@ -142,10 +146,10 @@ public class AdminService {
 
     public void softDelete(AdminId adminId) {
         try {
-            Admin adminAccount = getAdmin(adminId);
-            adminAccount.softDelete();
-            adminRepository.save(adminAccount);
-            sessionInvalidationPort.invalidate(adminAccount);
+            Admin admin = getAdmin(adminId);
+            admin.softDelete();
+            adminRepository.save(admin);
+            sessionInvalidationPort.invalidate(admin);
         } catch (AdminException e) {
             throw new ValidationException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
         } catch (RepositoryException e) {
@@ -155,12 +159,12 @@ public class AdminService {
 
     public void hardDelete(AdminId adminId) {
         try {
-            Admin adminAccount = getAdmin(adminId);
-            if (!adminAccount.isSoftDeleted()) {
+            Admin admin = getAdmin(adminId);
+            if (!admin.isSoftDeleted()) {
                 throw new ConflictException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
             }
             adminRepository.deleteById(adminId);
-            sessionInvalidationPort.invalidate(adminAccount);
+            sessionInvalidationPort.invalidate(admin);
         } catch (RepositoryException e) {
             throw new SystemException(AdminServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
         }
@@ -168,14 +172,14 @@ public class AdminService {
 
     public void changePassword(AdminId adminId, String currentPassword, String newPassword) {
         try {
-            Admin adminAccount = getAdmin(adminId);
-            if (!passwordHasher.matches(currentPassword, adminAccount.getPasswordHash())) {
+            Admin admin = getAdmin(adminId);
+            if (!passwordHasher.matches(currentPassword, admin.getPasswordHash())) {
                 throw new AuthenticationException(AdminServiceCode.ADM, AdminErrors.AUTHENTICATION_FAILED_ERROR);
             }
             String passwordHash = passwordHasher.hash(newPassword);
-            adminAccount.updatePasswordHash(passwordHash);
-            adminRepository.save(adminAccount);
-            sessionInvalidationPort.invalidate(adminAccount);
+            admin.updatePasswordHash(passwordHash);
+            adminRepository.save(admin);
+            sessionInvalidationPort.invalidate(admin);
         } catch (AdminException e) {
             throw new ValidationException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
         } catch (RepositoryException e) {

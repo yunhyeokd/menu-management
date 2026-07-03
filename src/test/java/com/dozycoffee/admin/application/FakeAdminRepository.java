@@ -3,7 +3,8 @@ package com.dozycoffee.admin.application;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.admin.domain.Admin;
 import com.dozycoffee.admin.domain.AdminId;
-import com.dozycoffee.admin.domain.AdminRole;
+import com.dozycoffee.admin.domain.AdminPrincipal;
+import com.dozycoffee.admin.domain.SystemAdmin;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -13,14 +14,14 @@ import java.util.Optional;
 
 public class FakeAdminRepository implements AdminRepository {
 
-    private final Map<AdminId, Admin> store = new LinkedHashMap<>();
+    private final Map<AdminId, AdminPrincipal> store = new LinkedHashMap<>();
     private boolean shouldThrow = false;
 
     public void throwOnNextCall() {
         this.shouldThrow = true;
     }
 
-    public Admin put(Admin account) {
+    public <T extends AdminPrincipal> T put(T account) {
         store.put(account.getId(), account);
         return account;
     }
@@ -37,25 +38,33 @@ public class FakeAdminRepository implements AdminRepository {
     }
 
     @Override
-    public void save(Admin account) {
+    public void save(AdminPrincipal account) {
         checkThrow();
         store.put(account.getId(), account);
     }
 
     @Override
-    public List<Admin> findAll() {
+    public List<AdminPrincipal> findAll() {
         checkThrow();
         return new ArrayList<>(store.values());
     }
 
     @Override
-    public Optional<Admin> findById(AdminId id) {
+    public Optional<AdminPrincipal> findById(AdminId id) {
         checkThrow();
         return Optional.ofNullable(store.get(id));
     }
 
     @Override
-    public Optional<Admin> findByUsername(String username) {
+    public Optional<Admin> findAdminById(AdminId id) {
+        checkThrow();
+        return Optional.ofNullable(store.get(id))
+                .filter(Admin.class::isInstance)
+                .map(Admin.class::cast);
+    }
+
+    @Override
+    public Optional<AdminPrincipal> findByUsername(String username) {
         checkThrow();
         return store.values().stream()
                 .filter(a -> a.getUsername().equals(username))
@@ -63,10 +72,11 @@ public class FakeAdminRepository implements AdminRepository {
     }
 
     @Override
-    public Optional<Admin> findByRole(AdminRole role) {
+    public Optional<SystemAdmin> findSystemAdmin() {
         checkThrow();
         return store.values().stream()
-                .filter(a -> a.getAdminRole() == role)
+                .filter(SystemAdmin.class::isInstance)
+                .map(SystemAdmin.class::cast)
                 .findFirst();
     }
 
@@ -74,7 +84,9 @@ public class FakeAdminRepository implements AdminRepository {
     public boolean existsByEmployeeNo(String employeeNo) {
         checkThrow();
         return store.values().stream()
-                .anyMatch(a -> a.getProfile() != null && employeeNo.equals(a.getProfile().getEmployeeNo()));
+                .filter(Admin.class::isInstance)
+                .map(Admin.class::cast)
+                .anyMatch(a -> employeeNo.equals(a.getProfile().getEmployeeNo()));
     }
 
     @Override
