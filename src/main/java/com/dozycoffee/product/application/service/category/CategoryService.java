@@ -75,12 +75,21 @@ public class CategoryService {
         }
     }
 
-    public CategoryData getCategory(CategoryId categoryId) {
+    private CategoryData getCategory(CategoryId categoryId) {
         return categoryRepository.findById(categoryId)
                 .map(CategoryData::from)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.CATEGORY_NOT_FOUND_ERROR)
                 );
+    }
+
+    @Transactional(readOnly = true)
+    public CategoryData findById(CategoryId categoryId) {
+        try {
+            return getCategory(categoryId);
+        } catch (RepositoryException e) {
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+        }
     }
 
     @Transactional(readOnly = true)

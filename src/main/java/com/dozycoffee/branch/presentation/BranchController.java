@@ -47,7 +47,7 @@ public class BranchController {
 
     @GetMapping("/{branchId}")
     public ResponseEntity<BranchProfileResponse> getBranch(@PathVariable BranchId branchId) {
-        Branch branch = branchService.find(branchId);
+        Branch branch = branchService.findById(branchId);
         return ResponseEntity.ok(BranchProfileResponse.from(branch));
     }
 

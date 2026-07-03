@@ -18,7 +18,6 @@ import com.dozycoffee.core.domain.IdentifierGenerator;
 import java.util.List;
 
 @Service
-@Transactional
 public class BranchService {
 
     private final BranchRepository branchRepository;
@@ -52,7 +51,8 @@ public class BranchService {
                 .orElseThrow(() -> new ResourceNotFoundException(BranchServiceCode.BRN, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
-    public Branch find(BranchId branchId) {
+    @Transactional(readOnly = true)
+    public Branch findById(BranchId branchId) {
         try {
             return getBranch(branchId);
         } catch (RepositoryException e) {
@@ -60,6 +60,7 @@ public class BranchService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<Branch> findAll() {
         try {
             return branchRepository.findAll();
@@ -68,6 +69,7 @@ public class BranchService {
         }
     }
 
+    @Transactional
     public BranchCreateResult create(BranchCreateCommand command) {
         try {
             branchRepository.findByName(command.name())
@@ -95,6 +97,7 @@ public class BranchService {
         }
     }
 
+    @Transactional
     public BranchAuthKeyReissueResult reissueAuthKey(BranchId branchId) {
         try {
             Branch branch = getBranch(branchId);
@@ -111,6 +114,7 @@ public class BranchService {
         }
     }
 
+    @Transactional
     public void updateProfile(BranchId branchId, BranchProfileUpdateCommand command) {
         try {
             Branch branch = getBranch(branchId);
@@ -128,6 +132,7 @@ public class BranchService {
         }
     }
 
+    @Transactional
     public void softDelete(BranchId branchId) {
         try {
             Branch branch = getBranch(branchId);
@@ -142,6 +147,7 @@ public class BranchService {
         }
     }
 
+    @Transactional
     public void hardDelete(BranchId branchId) {
         try {
             Branch branch = getBranch(branchId);

@@ -59,7 +59,7 @@ public class ProductController {
 
     @GetMapping("/sellable/{productId}")
     public ResponseEntity<ProductDetailResponse> getSellableProduct(@PathVariable ProductId productId) {
-        productService.findSellableProduct(productId);
+        productService.findSellableProductById(productId);
         ProductDetailResult result = productService.findDetailById(productId);
         return ResponseEntity.ok(ProductDetailResponse.from(result));
     }

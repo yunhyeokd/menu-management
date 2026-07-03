@@ -32,7 +32,7 @@ public class CategoryController {
     public ResponseEntity<CategoryResponse> getCategory(
             @PathVariable CategoryId categoryId
     ) {
-        CategoryData category = categoryService.getCategory(categoryId);
+        CategoryData category = categoryService.findById(categoryId);
         CategoryResponse response = CategoryResponse.from(category);
         return ResponseEntity.ok(response);
     }

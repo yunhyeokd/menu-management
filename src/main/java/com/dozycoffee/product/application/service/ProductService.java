@@ -121,7 +121,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Product findSellableProduct(ProductId productId) {
+    public Product findSellableProductById(ProductId productId) {
         try {
             return productRepository.findActiveById(productId)
                     .orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
