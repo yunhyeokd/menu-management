@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.dozycoffee.auth.domain.Authenticator;
 import com.dozycoffee.auth.application.PasswordHasher;
-import com.dozycoffee.admin.domain.Admin;
+import com.dozycoffee.admin.domain.AdminPrincipal;
 import com.dozycoffee.auth.domain.Credential;
 import com.dozycoffee.auth.domain.Principal;
 import com.dozycoffee.core.domain.Identifier;
@@ -24,13 +24,13 @@ public class AdminUsernameAuthenticator implements Authenticator<Identifier<Stri
 
     @Override
     public Optional<Principal> authenticate(Identifier<String> username, Credential credential) {
-        Admin adminAccount = adminRepository.findByUsername(username.getValue())
+        AdminPrincipal adminPrincipal = adminRepository.findByUsername(username.getValue())
                 .orElse(null);
-        if (adminAccount == null) return Optional.empty();
-        if (!adminAccount.isActive()) return Optional.empty();
-        if (!passwordHasher.matches(credential.getValue(), adminAccount.getPasswordHash())) {
+        if (adminPrincipal == null) return Optional.empty();
+        if (!adminPrincipal.isActive()) return Optional.empty();
+        if (!passwordHasher.matches(credential.getValue(), adminPrincipal.getPasswordHash())) {
             return Optional.empty();
         }
-        return Optional.of(adminAccount);
+        return Optional.of(adminPrincipal);
     }
 }

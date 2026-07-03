@@ -1,5 +1,7 @@
 package com.dozycoffee.auth.domain;
 
+import java.util.Objects;
+
 public class SessionPrincipal implements Principal {
 
     private final String id;
@@ -24,5 +26,20 @@ public class SessionPrincipal implements Principal {
     @Override
     public String getRole() {
         return role;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        else if (o instanceof Principal principal) {
+            return Objects.equals(getSubject(), principal.getSubject())
+                    && Objects.equals(getRole(), principal.getRole());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

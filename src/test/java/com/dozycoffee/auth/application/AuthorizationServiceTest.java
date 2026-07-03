@@ -1,8 +1,7 @@
 package com.dozycoffee.auth.application;
 
-import com.dozycoffee.admin.domain.Admin;
 import com.dozycoffee.admin.domain.AdminId;
-import com.dozycoffee.admin.domain.AdminRole;
+import com.dozycoffee.admin.domain.SystemAdmin;
 import com.dozycoffee.core.application.AppException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,12 +14,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class AuthorizationServiceTest {
 
     private AuthorizationService authorizationService;
-    private Admin activeAdmin;
+    private SystemAdmin activeAdmin;
 
     @BeforeEach
     void setUp() {
         authorizationService = new AuthorizationService();
-        activeAdmin = Admin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.SYSTEM, "sysadmin", "hashed-password", null);
+        activeAdmin = SystemAdmin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), "sysadmin", "hashed-password");
     }
 
     private void assertErrorCode(Throwable e, AuthErrors error) {

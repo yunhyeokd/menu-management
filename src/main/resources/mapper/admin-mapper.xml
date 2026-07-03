@@ -54,6 +54,12 @@
         WHERE aa.admin_id = UUID_TO_BIN(#{adminId})
     </select>
 
+    <select id="findByIdAndRole" resultMap="adminRow">
+        <include refid="adminColumns"/>
+        WHERE aa.admin_id = UUID_TO_BIN(#{adminId})
+          AND aa.admin_role = #{role}
+    </select>
+
     <select id="findByUsername" resultMap="adminRow">
         <include refid="adminColumns"/>
         WHERE aa.username = #{username}

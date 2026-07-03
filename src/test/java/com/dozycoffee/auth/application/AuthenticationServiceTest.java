@@ -1,8 +1,7 @@
 package com.dozycoffee.auth.application;
 
-import com.dozycoffee.admin.domain.Admin;
 import com.dozycoffee.admin.domain.AdminId;
-import com.dozycoffee.admin.domain.AdminRole;
+import com.dozycoffee.admin.domain.SystemAdmin;
 import com.dozycoffee.auth.domain.Principal;
 import com.dozycoffee.branch.domain.Branch;
 
@@ -32,12 +31,12 @@ public class AuthenticationServiceTest {
     private static final String HASHED_AUTH_KEY = "hashed-auth-key";
 
     private AuthenticationService authService;
-    private Admin activeAdmin;
+    private SystemAdmin activeAdmin;
     private Branch activeBranch;
 
     @BeforeEach
     void setUp() {
-        activeAdmin = Admin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.SYSTEM, "sysadmin", HASHED_PASSWORD, null);
+        activeAdmin = SystemAdmin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), "sysadmin", HASHED_PASSWORD);
         activeBranch = Branch.create(BranchId.of("00000000-0000-0000-0000-000000000001"), BranchCode.of(BRANCH_CODE), HASHED_AUTH_KEY, "테스트점", "서울 강남구 테헤란로 1");
 
         AuthenticationResolver adminResolver = (id, credential) -> {

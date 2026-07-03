@@ -17,15 +17,10 @@ public record AdminRow(
         String phone,
         String email
 ) {
-
     public Admin toAdmin() {
-        AdminRole adminRole = AdminRole.of(role);
-        AdminProfile profile = adminRole != AdminRole.SYSTEM
-                ? AdminProfile.of(employeeNo, name, phone, email)
-                : null;
+        AdminProfile profile = AdminProfile.of(employeeNo, name, phone, email);
         return Admin.of(
                 AdminId.of(adminId),
-                adminRole,
                 username,
                 passwordHash,
                 AdminStatus.of(status),
@@ -33,6 +28,23 @@ public record AdminRow(
                 deletedAt,
                 profile
         );
+    }
+
+    public SystemAdmin toSystemAdmin() {
+        return SystemAdmin.of(
+                AdminId.of(adminId),
+                username,
+                passwordHash,
+                AdminStatus.of(status),
+                createdAt,
+                deletedAt
+        );
+    }
+
+    public AdminPrincipal toPrincipal() {
+        AdminRole adminRole = AdminRole.of(role);
+        if (adminRole == AdminRole.SYSTEM) return toSystemAdmin();
+        else return toAdmin();
     }
 
 }
