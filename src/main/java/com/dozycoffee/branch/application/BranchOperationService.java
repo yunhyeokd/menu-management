@@ -9,10 +9,8 @@ import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.core.application.exception.*;
 import com.dozycoffee.product.domain.ProductId;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @Transactional
@@ -46,10 +44,7 @@ public class BranchOperationService {
     public List<BranchProduct> findOverridableProducts(BranchId branchId) {
         try {
             assertBranchExists(branchId);
-            Set<BranchProduct> overridableProducts = new HashSet<>();
-            overridableProducts.addAll(productQueryPort.findAllActiveCommon());
-            overridableProducts.addAll(productQueryPort.findAllActiveBranchExclusive(branchId));
-            return overridableProducts.stream().toList();
+            return productQueryPort.findOverridableProducts(branchId);
         } catch (RepositoryException e) {
             throw new SystemException(BranchServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
         }
@@ -73,6 +68,7 @@ public class BranchOperationService {
         }
     }
 
+    @Transactional
     public void hideSale(BranchId branchId, ProductId productId) {
         try {
             assertBranchExists(branchId);
@@ -86,6 +82,7 @@ public class BranchOperationService {
         }
     }
 
+    @Transactional
     public void soldOut(BranchId branchId, ProductId productId) {
         try {
             assertBranchExists(branchId);
@@ -99,6 +96,7 @@ public class BranchOperationService {
         }
     }
 
+    @Transactional
     public void restoreSale(BranchId branchId, ProductId productId) {
         try {
             productSalesOverrideRepository.findByBranchIdAndProductId(branchId, productId)

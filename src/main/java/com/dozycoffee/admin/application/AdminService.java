@@ -11,6 +11,8 @@ import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.core.application.exception.*;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class AdminService {
@@ -37,7 +39,25 @@ public class AdminService {
                 .orElseThrow(() -> new ResourceNotFoundException(AdminServiceCode.ADM, AdminErrors.ADMIN_NOT_FOUND));
     }
 
-    public SystemAdminRegisterResult registerSystem(SystemAdminRegisterCommand command) {
+    @Transactional(readOnly = true)
+    public List<Admin> findAll() {
+        try {
+            return adminRepository.findAll();
+        } catch (RepositoryException e) {
+            throw new SystemException(AdminServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public Admin findById(AdminId adminId) {
+        try {
+            return getAdmin(adminId);
+        } catch (RepositoryException e) {
+            throw new SystemException(AdminServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
+        }
+    }
+
+    public Admin registerSystem(SystemAdminRegisterCommand command) {
         try {
             adminRepository.findByRole(AdminRole.SYSTEM)
                     .ifPresent(a -> {
@@ -47,12 +67,7 @@ public class AdminService {
             String passwordHash = passwordHasher.hash(command.password());
             Admin adminAccount = Admin.create(adminId, AdminRole.SYSTEM, command.username(), passwordHash, null);
             adminRepository.save(adminAccount);
-            return new SystemAdminRegisterResult(
-                    adminAccount.getId(),
-                    adminAccount.getAdminRole(),
-                    adminAccount.getUsername(),
-                    adminAccount.getCreatedAt()
-            );
+            return adminAccount;
         } catch (AdminException e) {
             throw new ValidationException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
         } catch (RepositoryException e) {
@@ -60,7 +75,7 @@ public class AdminService {
         }
     }
 
-    public AdminRegisterResult registerStaff(AdminRegisterCommand command) {
+    public Admin registerStaff(AdminRegisterCommand command) {
         try {
             adminRepository.findByUsername(command.username())
                     .ifPresent(a -> {
@@ -80,14 +95,7 @@ public class AdminService {
             );
             Admin account = Admin.create(adminId, AdminRole.STAFF, command.username(), passwordHash, profile);
             adminRepository.save(account);
-            return new AdminRegisterResult(
-                    account.getId(),
-                    account.getAdminRole(),
-                    account.getUsername(),
-                    profile.getName(),
-                    profile.getEmail(),
-                    account.getCreatedAt()
-            );
+            return account;
         } catch (AdminException e) {
             throw new ValidationException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
         } catch (RepositoryException e) {
@@ -119,18 +127,12 @@ public class AdminService {
         }
     }
 
-    public AdminProfileUpdateResult updateProfile(AdminId adminId, AdminProfileUpdateCommand command) {
+    public Admin updateProfile(AdminId adminId, AdminProfileUpdateCommand command) {
         try {
             Admin account = getAdmin(adminId);
             account.updateProfile(command.name(), command.phone(), command.email());
             adminRepository.save(account);
-            AdminProfile profile = account.getProfile();
-            return new AdminProfileUpdateResult(
-                    account.getId(),
-                    profile.getName(),
-                    profile.getPhone(),
-                    profile.getEmail()
-            );
+            return account;
         } catch (AdminException e) {
             throw new ValidationException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
         } catch (RepositoryException e) {

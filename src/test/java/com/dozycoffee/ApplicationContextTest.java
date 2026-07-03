@@ -1,6 +1,6 @@
 package com.dozycoffee;
 
-import com.dozycoffee.infrastructure.AppConfig;
+import com.dozycoffee.infrastructure.RootConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -11,7 +11,7 @@ import java.sql.Connection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringJUnitConfig(AppConfig.class)
+@SpringJUnitConfig(RootConfig.class)
 @WebAppConfiguration
 class ApplicationContextTest {
 

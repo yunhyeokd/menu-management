@@ -6,7 +6,7 @@ import com.dozycoffee.product.domain.*;
 import java.time.Instant;
 import java.util.List;
 
-public record ProductData(
+public record ProductSnapshot(
         ProductId id,
         String name,
         String description,
@@ -21,8 +21,8 @@ public record ProductData(
         List<TagData> tags,
         Instant createdAt
 ) {
-    public static ProductData from(Product product, List<TagData> tags) {
-        return new ProductData(
+    public static ProductSnapshot from(Product product, List<TagData> tags) {
+        return new ProductSnapshot(
                 product.getId(),
                 product.getName(),
                 product.getDescription(),

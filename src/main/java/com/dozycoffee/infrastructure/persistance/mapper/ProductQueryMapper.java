@@ -7,11 +7,13 @@ import com.dozycoffee.product.application.dto.ProductFilterQuery;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 public interface ProductQueryMapper {
 
     List<ProductWithCategoryRow> findByFilter(ProductFilterQuery filter);
+    Optional<ProductWithCategoryRow> findByProductId(String productId);
     List<ProductTagNameRow> findTagsByProductIds(List<String> productIds);
     List<ProductOptionGroupItemRow> findOptionGroupsByProductIds(List<String> productIds);
 }

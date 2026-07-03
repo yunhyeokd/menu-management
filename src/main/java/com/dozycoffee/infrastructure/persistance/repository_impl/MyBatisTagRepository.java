@@ -49,6 +49,12 @@ public class MyBatisTagRepository implements TagRepository {
     }
 
     @Override
+    public List<Tag> findAllByNames(List<String> tagNames) throws RepositoryException {
+        if (tagNames.isEmpty()) return List.of();
+        return tagMapper.findAllByNames(tagNames).stream().map(TagRow::toTag).toList();
+    }
+
+    @Override
     public void deleteById(TagId tagId) throws RepositoryException {
         tagMapper.deleteById(tagId.getValue());
     }

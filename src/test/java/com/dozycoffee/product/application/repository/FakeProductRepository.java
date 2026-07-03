@@ -79,6 +79,13 @@ public class FakeProductRepository implements ProductRepository {
     }
 
     @Override
+    public Optional<Product> findActiveById(ProductId productId) throws RepositoryException {
+        checkThrow();
+        return Optional.ofNullable(store.get(productId))
+                .filter(p -> p.getStatus() == ProductStatus.ACTIVE);
+    }
+
+    @Override
     public void updateStatusByBranchId(BranchId branchId, ProductStatus status) throws RepositoryException {
         checkThrow();
         store.values().stream()

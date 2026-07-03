@@ -5,7 +5,7 @@ import com.dozycoffee.core.application.ServiceError;
 import com.dozycoffee.core.application.exception.ConflictException;
 import com.dozycoffee.core.application.exception.ResourceNotFoundException;
 import com.dozycoffee.core.application.exception.SystemException;
-import com.dozycoffee.product.application.dto.OptionGroupLinkSpec;
+import com.dozycoffee.product.application.dto.OptionGroupLinkCommand;
 import com.dozycoffee.product.application.repository.FakeOptionGroupRepository;
 import com.dozycoffee.product.application.repository.FakeProductOptionGroupRepository;
 import com.dozycoffee.product.application.service.ProductErrors;
@@ -51,7 +51,7 @@ public class ProductOptionGroupServiceTest {
         OptionGroup og = savedOptionGroup(10L);
 
         productOptionGroupService.saveOptionGroups(productId, List.of(
-                new OptionGroupLinkSpec(og.getId(), true, false)
+                new OptionGroupLinkCommand(og.getId(), true, false)
         ));
 
         assertThat(productOptionGroupRepository.findAllByOptionGroupId(og.getId())).hasSize(1);
@@ -61,7 +61,7 @@ public class ProductOptionGroupServiceTest {
     void 옵션그룹_연결시_존재하지_않는_옵션그룹이면_OPTION_GROUP_NOT_FOUND_ERROR를_던진다() {
         assertThatThrownBy(() -> productOptionGroupService.saveOptionGroups(
                 ProductId.of("00000000-0000-0000-0000-000000000001"),
-                List.of(new OptionGroupLinkSpec(OptionGroupId.of("00000000-0000-0000-0000-000000000999"), true, false))
+                List.of(new OptionGroupLinkCommand(OptionGroupId.of("00000000-0000-0000-0000-000000000999"), true, false))
         ))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.OPTION_GROUP_NOT_FOUND_ERROR));
@@ -75,7 +75,7 @@ public class ProductOptionGroupServiceTest {
         productOptionGroupRepository.put(ProductOptionGroup.of(productId, old.getId(), true, false, Instant.now()));
 
         productOptionGroupService.replaceOptionGroups(productId, List.of(
-                new OptionGroupLinkSpec(newOg.getId(), false, true)
+                new OptionGroupLinkCommand(newOg.getId(), false, true)
         ));
 
         assertThat(productOptionGroupRepository.findAllByOptionGroupId(old.getId())).isEmpty();

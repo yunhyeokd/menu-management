@@ -3,6 +3,7 @@ package com.dozycoffee.product.application.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dozycoffee.branch.domain.BranchId;
 import com.dozycoffee.core.domain.IdentifierGenerator;
 import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.product.application.ProductServiceCode;
@@ -90,7 +91,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductDetailResult> searchProducts(ProductFilterQuery query) {
+    public List<ProductSummaryResult> searchProducts(ProductFilterQuery query) {
         try {
             return productQueryRepository.findByFilter(query);
         } catch (RepositoryException e) {
@@ -98,9 +99,40 @@ public class ProductService {
         }
     }
 
-    public Product updateProfile(ProductProfileUpdateCommand command) {
+    @Transactional(readOnly = true)
+    public ProductDetailResult findDetailById(ProductId productId) {
         try {
-            Product product = getProduct(command.id());
+            return productQueryRepository.findDetailById(productId)
+                    .orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
+        } catch (RepositoryException e) {
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<Product> findSellableProducts(BranchId branchId) {
+        try {
+            List<Product> products = new ArrayList<>(productRepository.findAllActiveCommon());
+            products.addAll(productRepository.findAllActiveBranchExclusive(branchId));
+            return products;
+        } catch (RepositoryException e) {
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public Product findSellableProductById(ProductId productId) {
+        try {
+            return productRepository.findActiveById(productId)
+                    .orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.PRODUCT_NOT_FOUND_ERROR));
+        } catch (RepositoryException e) {
+            throw new SystemException(ProductServiceCode.PRD, ProductErrors.UNKNOWN_ERROR);
+        }
+    }
+
+    public Product updateProfile(ProductId productId, ProductProfileUpdateCommand command) {
+        try {
+            Product product = getProduct(productId);
             categoryRepository
                     .findById(command.categoryId())
                     .orElseThrow(() -> new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.CATEGORY_NOT_FOUND_ERROR));

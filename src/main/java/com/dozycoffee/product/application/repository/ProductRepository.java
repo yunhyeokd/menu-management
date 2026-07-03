@@ -23,6 +23,8 @@ public interface ProductRepository {
 
     List<Product> findAllActiveBranchExclusive(BranchId branchId) throws RepositoryException;
 
+    Optional<Product> findActiveById(ProductId productId) throws RepositoryException;
+
     void updateStatusByBranchId(BranchId branchId, ProductStatus status) throws RepositoryException;
 
     void deleteAllByBranchId(BranchId branchId) throws RepositoryException;

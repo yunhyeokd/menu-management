@@ -76,6 +76,14 @@
         WHERE status = 'ACTIVE' AND kind = 'BRANCH_EXCLUSIVE' AND branch_id = UUID_TO_BIN(#{branchId})
     </select>
 
+    <select id="findActiveById" resultMap="productRow">
+        SELECT BIN_TO_UUID(product_id) AS product_id, name, description, image_url,
+               BIN_TO_UUID(category_id) AS category_id, price, kcal, allergen_info, kind,
+               BIN_TO_UUID(branch_id) AS branch_id, status, created_at
+        FROM product
+        WHERE product_id = UUID_TO_BIN(#{productId}) AND status = 'ACTIVE'
+    </select>
+
     <update id="updateStatusByBranchId">
         UPDATE product SET status = #{status} WHERE branch_id = UUID_TO_BIN(#{branchId})
     </update>

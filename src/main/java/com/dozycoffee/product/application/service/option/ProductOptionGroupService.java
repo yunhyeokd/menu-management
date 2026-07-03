@@ -8,7 +8,7 @@ import com.dozycoffee.core.application.exception.ConflictException;
 import com.dozycoffee.core.application.exception.ResourceNotFoundException;
 import com.dozycoffee.core.application.exception.SystemException;
 import com.dozycoffee.product.application.ProductServiceCode;
-import com.dozycoffee.product.application.dto.OptionGroupLinkSpec;
+import com.dozycoffee.product.application.dto.OptionGroupLinkCommand;
 import com.dozycoffee.product.application.repository.OptionGroupRepository;
 import com.dozycoffee.product.application.repository.ProductOptionGroupRepository;
 import com.dozycoffee.product.application.service.ProductErrors;
@@ -33,9 +33,9 @@ public class ProductOptionGroupService {
         this.optionGroupRepository = optionGroupRepository;
     }
 
-    public void saveOptionGroups(ProductId productId, List<OptionGroupLinkSpec> specs) {
+    public void saveOptionGroups(ProductId productId, List<OptionGroupLinkCommand> specs) {
         try {
-            for (OptionGroupLinkSpec spec : specs) {
+            for (OptionGroupLinkCommand spec : specs) {
                 optionGroupRepository.findById(spec.optionGroupId())
                         .orElseThrow(() ->
                                 new ResourceNotFoundException(ProductServiceCode.PRD, ProductErrors.OPTION_GROUP_NOT_FOUND_ERROR)
@@ -52,7 +52,7 @@ public class ProductOptionGroupService {
         }
     }
 
-    public void replaceOptionGroups(ProductId productId, List<OptionGroupLinkSpec> specs) {
+    public void replaceOptionGroups(ProductId productId, List<OptionGroupLinkCommand> specs) {
         try {
             productOptionGroupRepository.deleteAllByProductId(productId);
             saveOptionGroups(productId, specs);

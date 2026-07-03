@@ -37,18 +37,10 @@ public class FakeBranchProductQueryPort implements BranchProductQueryPort {
     }
 
     @Override
-    public List<BranchProduct> findAllActiveCommon() {
+    public List<BranchProduct> findOverridableProducts(BranchId branchId) {
         checkThrow();
         return store.values().stream()
-                .filter(p -> p.isActive() && p.isCommon())
-                .toList();
-    }
-
-    @Override
-    public List<BranchProduct> findAllActiveBranchExclusive(BranchId branchId) {
-        checkThrow();
-        return store.values().stream()
-                .filter(p -> p.isActive() && !p.isCommon() && branchId.equals(p.getBranchId()))
+                .filter(p -> p.isActive() && (p.isCommon() || branchId.equals(p.getBranchId())))
                 .toList();
     }
 }

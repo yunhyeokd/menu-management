@@ -66,6 +66,18 @@
         where name = #{name}
     </select>
 
+    <select id="findAll" resultMap="branchRow">
+        select branch_id,
+               branch_code,
+               auth_key_hash,
+               status,
+               created_at,
+               deleted_at,
+               name,
+               address
+        from branch_account
+    </select>
+
     <delete id="deleteById">
         delete
         from branch_account

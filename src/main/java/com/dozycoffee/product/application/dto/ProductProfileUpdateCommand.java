@@ -7,7 +7,6 @@ import com.dozycoffee.product.domain.ProductId;
 import java.util.Set;
 
 public record ProductProfileUpdateCommand(
-        ProductId id,
         String name,
         String description,
         String imageUrl,

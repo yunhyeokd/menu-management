@@ -10,6 +10,7 @@ import com.dozycoffee.infrastructure.persistance.mapper.BranchMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -36,6 +37,11 @@ public class MyBatisBranchRepository implements BranchRepository {
     @Override
     public Optional<Branch> findByName(String name) throws RepositoryException {
         return branchMapper.findByName(name).map(BranchRow::toBranch);
+    }
+
+    @Override
+    public List<Branch> findAll() throws RepositoryException {
+        return branchMapper.findAll().stream().map(BranchRow::toBranch).toList();
     }
 
     @Override

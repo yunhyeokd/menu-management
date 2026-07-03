@@ -78,6 +78,14 @@ public class FakeTagRepository implements TagRepository {
     }
 
     @Override
+    public List<Tag> findAllByNames(List<String> tagNames) throws RepositoryException {
+        checkThrow();
+        return store.values().stream()
+                .filter(tag -> tagNames.contains(tag.getName()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void deleteById(TagId tagId) throws RepositoryException {
         checkThrow();
         store.remove(tagId);

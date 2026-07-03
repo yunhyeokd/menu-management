@@ -89,9 +89,9 @@ public class OptionService {
     옵션그룹명, 옵션그룹 설명을 업데이트
     !! 잘못된 옵션그룹명, 옵션그룹 설명 입력시 예외 발생
      */
-    public void updateOptionGroupProfile(OptionGroupProfileUpdateCommand command) {
+    public void updateOptionGroupProfile(OptionGroupId id, OptionGroupProfileUpdateCommand command) {
         try {
-            OptionGroup optionGroup = getOptionGroup(command.optionGroupId());
+            OptionGroup optionGroup = getOptionGroup(id);
             optionGroup.updateName(command.name());
             optionGroup.updateDescription(command.description().orElse(null));
             optionGroupRepository.save(optionGroup);
@@ -108,9 +108,9 @@ public class OptionService {
     !! 옵션 아이템이 하나도 없을 시 예외 발생
     !! 잘못된 옵션 아이템 속성 입력 시 예외 발생
      */
-    public void updateOptionGroupItems(OptionGroupItemUpdateCommand command) {
+    public void updateOptionGroupItems(OptionGroupId id, OptionGroupItemUpdateCommand command) {
         try {
-            OptionGroup optionGroup = getOptionGroup(command.optionGroupId());
+            OptionGroup optionGroup = getOptionGroup(id);
 
             List<OptionItem> optionItems = command.items()
                     .stream()

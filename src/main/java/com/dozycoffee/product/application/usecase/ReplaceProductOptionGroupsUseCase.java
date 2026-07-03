@@ -3,7 +3,7 @@ package com.dozycoffee.product.application.usecase;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dozycoffee.product.application.dto.OptionGroupLinkSpec;
+import com.dozycoffee.product.application.dto.OptionGroupLinkCommand;
 import com.dozycoffee.product.application.service.ProductService;
 import com.dozycoffee.product.application.service.option.ProductOptionGroupService;
 import com.dozycoffee.product.domain.ProductId;
@@ -25,7 +25,7 @@ public class ReplaceProductOptionGroupsUseCase {
         this.productOptionGroupService = productOptionGroupService;
     }
 
-    public void execute(ProductId productId, List<OptionGroupLinkSpec> specs) {
+    public void execute(ProductId productId, List<OptionGroupLinkCommand> specs) {
         productService.assertExists(productId);
         productOptionGroupService.replaceOptionGroups(productId, specs);
     }

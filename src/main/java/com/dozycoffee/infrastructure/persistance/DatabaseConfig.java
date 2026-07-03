@@ -10,12 +10,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 
 @Configuration
 @MapperScan("com.dozycoffee.infrastructure.persistance.mapper")
+@EnableTransactionManagement
 public class DatabaseConfig {
 
     @Value("${datasource.driver}") private String driver;
@@ -26,6 +28,8 @@ public class DatabaseConfig {
     @Value("${datasource.hikari.maximum-pool-size}") private int maximumPoolSize;
     @Value("${datasource.hikari.minimum-idle}") private int minimumIdle;
     @Value("${datasource.hikari.connection-timeout}") private long connectionTimeout;
+
+    @Value("${mybatis.mapper-locations}") private String mapperLocations;
 
     @Bean
     public DataSource dataSource() {
@@ -45,7 +49,7 @@ public class DatabaseConfig {
         SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
         sqlSessionFactoryBean.setDataSource(dataSource);
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        sqlSessionFactoryBean.setMapperLocations(resolver.getResources("classpath:mapper/**/*.xml"));
+        sqlSessionFactoryBean.setMapperLocations(resolver.getResources(mapperLocations));
         return sqlSessionFactoryBean;
     }
 

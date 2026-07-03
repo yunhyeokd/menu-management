@@ -3,6 +3,7 @@ package com.dozycoffee.branch.application;
 import com.dozycoffee.auth.application.FakeSessionInvalidationPort;
 import com.dozycoffee.auth.application.PasswordHasher;
 import com.dozycoffee.branch.application.dto.BranchAuthKeyReissueResult;
+import com.dozycoffee.branch.application.dto.BranchCreateCommand;
 import com.dozycoffee.branch.application.dto.BranchCreateResult;
 import com.dozycoffee.branch.application.dto.BranchProfileUpdateCommand;
 import com.dozycoffee.branch.domain.*;
@@ -56,6 +57,43 @@ public class BranchServiceTest {
         assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
     }
 
+    // ─── find / findAll ───────────────────────────────────────────────────────
+
+    @Test
+    public void 지점을_id로_정상_조회한다() {
+        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
+        Branch branch = BranchFixture.builder().id(branchId).name("강남점").build();
+        branchRepository.put(branch);
+
+        Branch result = branchService.findById(branchId);
+
+        assertThat(result.getName()).isEqualTo("강남점");
+    }
+
+    @Test
+    public void 지점_조회시_지점이_존재하지_않으면_BRANCH_NOT_FOUND_ERROR를_던진다() {
+        assertThatThrownBy(() -> branchService.findById(BranchId.of("00000000-0000-0000-0000-000000000999")))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.BRANCH_NOT_FOUND_ERROR));
+    }
+
+    @Test
+    public void 지점_목록을_정상_조회한다() {
+        branchRepository.put(BranchFixture.builder().id(BranchId.of("00000000-0000-0000-0000-000000000001")).name("강남점").build());
+        branchRepository.put(BranchFixture.builder().id(BranchId.of("00000000-0000-0000-0000-000000000002")).name("역삼점").build());
+
+        assertThat(branchService.findAll()).hasSize(2);
+    }
+
+    @Test
+    public void 지점_목록_조회중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
+        branchRepository.throwOnNextCall();
+
+        assertThatThrownBy(() -> branchService.findAll())
+                .isInstanceOf(SystemException.class)
+                .satisfies(e -> assertErrorCode(e, BranchErrors.UNKNOWN_ERROR));
+    }
+
     // ─── reissueAuthKey ───────────────────────────────────────────────────────
 
     @Test
@@ -107,7 +145,7 @@ public class BranchServiceTest {
 
     @Test
     public void 지점을_정상_생성한다() {
-        BranchCreateResult result = branchService.create("강남점", "서울 강남구 테헤란로 123");
+        BranchCreateResult result = branchService.create(new BranchCreateCommand("강남점", "서울 강남구 테헤란로 123"));
 
         assertThat(result.branchId()).isNotNull();
         assertThat(result.branchCode()).isNotNull();
@@ -125,14 +163,14 @@ public class BranchServiceTest {
     public void 지점_생성시_이름이_중복되면_DUPLICATE_NAME_ERROR를_던진다() {
         branchRepository.put(BranchFixture.builder().id(BranchId.of("00000000-0000-0000-0000-000000000099")).name("강남점").build());
 
-        assertThatThrownBy(() -> branchService.create("강남점", "서울 강남구 테헤란로 123"))
+        assertThatThrownBy(() -> branchService.create(new BranchCreateCommand("강남점", "서울 강남구 테헤란로 123")))
                 .isInstanceOf(ConflictException.class)
                 .satisfies(e -> assertErrorCode(e, BranchErrors.DUPLICATE_NAME_ERROR));
     }
 
     @Test
     public void 지점_생성시_이름이_유효하지_않으면_INVALID_BRANCH_ERROR를_던진다() {
-        assertThatThrownBy(() -> branchService.create("", "서울 강남구 테헤란로 123"))
+        assertThatThrownBy(() -> branchService.create(new BranchCreateCommand("", "서울 강남구 테헤란로 123")))
                 .isInstanceOf(ValidationException.class)
                 .satisfies(e -> assertErrorCode(e, BranchErrors.INVALID_BRANCH_ERROR));
     }
@@ -141,7 +179,7 @@ public class BranchServiceTest {
     public void 지점_생성중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         branchRepository.throwOnNextCall();
 
-        assertThatThrownBy(() -> branchService.create("강남점", "서울 강남구 테헤란로 123"))
+        assertThatThrownBy(() -> branchService.create(new BranchCreateCommand("강남점", "서울 강남구 테헤란로 123")))
                 .isInstanceOf(SystemException.class)
                 .satisfies(e -> assertErrorCode(e, BranchErrors.UNKNOWN_ERROR));
     }

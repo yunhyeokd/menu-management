@@ -10,6 +10,5 @@ import java.util.Optional;
 
 public interface BranchProductQueryPort {
     Optional<BranchProduct> findById(ProductId productId) throws RepositoryException;
-    List<BranchProduct> findAllActiveCommon() throws RepositoryException;
-    List<BranchProduct> findAllActiveBranchExclusive(BranchId branchId) throws RepositoryException;
+    List<BranchProduct> findOverridableProducts(BranchId branchId) throws RepositoryException;
 }

@@ -6,6 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -189,5 +191,133 @@ public class ProductTest {
                 .isInstanceOf(ProductException.class);
     }
 
+    @Test
+    public void 활성_상품을_비활성화하면_상태가_INACTIVE로_바뀐다() {
+        Product product = ProductFixture.builder().status(ProductStatus.ACTIVE).build();
+
+        product.deactivate();
+
+        assertThat(product.getStatus()).isEqualTo(ProductStatus.INACTIVE);
+    }
+
+    @Test
+    public void 상품의_카테고리를_변경한다() {
+        Product product = ProductFixture.builder().createCommonProduct();
+        CategoryId newCategoryId = CategoryId.of("00000000-0000-0000-0000-000000000002");
+
+        product.changeCategory(newCategoryId);
+
+        assertThat(product.getCategoryId()).isEqualTo(newCategoryId);
+    }
+
+    @Test
+    public void 상품명을_변경한다() {
+        Product product = ProductFixture.builder().createCommonProduct();
+
+        product.updateName("라떼");
+
+        assertThat(product.getName()).isEqualTo("라떼");
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", " ", "#product"})
+    public void 상품명_변경시_유효하지_않으면_예외가_발생한다(String invalidName) {
+        Product product = ProductFixture.builder().createCommonProduct();
+
+        assertThatThrownBy(() -> product.updateName(invalidName))
+                .isInstanceOf(ProductException.class);
+    }
+
+    @Test
+    public void 상품_설명을_변경한다() {
+        Product product = ProductFixture.builder().createCommonProduct();
+
+        product.updateDescription("변경된 설명");
+
+        assertThat(product.getDescription()).isEqualTo("변경된 설명");
+    }
+
+    @Test
+    public void 상품_설명_변경시_최대_길이보다_크면_예외가_발생한다() {
+        Product product = ProductFixture.builder().createCommonProduct();
+
+        assertThatThrownBy(() -> product.updateDescription("a".repeat(1001)))
+                .isInstanceOf(ProductException.class);
+    }
+
+    @Test
+    public void 상품_이미지_URL을_변경한다() {
+        Product product = ProductFixture.builder().createCommonProduct();
+
+        product.updateImageUrl("https://example.com/new.png");
+
+        assertThat(product.getImageUrl()).isEqualTo("https://example.com/new.png");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", " ", "http://example.com"})
+    public void 상품_이미지_URL_변경시_유효하지_않으면_예외가_발생한다(String invalidUrl) {
+        Product product = ProductFixture.builder().createCommonProduct();
+
+        assertThatThrownBy(() -> product.updateImageUrl(invalidUrl))
+                .isInstanceOf(ProductException.class);
+    }
+
+    @Test
+    public void 상품_칼로리를_변경한다() {
+        Product product = ProductFixture.builder().createCommonProduct();
+
+        product.updateKcal(200);
+
+        assertThat(product.getKcal()).isEqualTo(200);
+    }
+
+    @Test
+    public void 상품_칼로리를_0보다_작게_변경할_수_없다() {
+        Product product = ProductFixture.builder().createCommonProduct();
+
+        assertThatThrownBy(() -> product.updateKcal(-1))
+                .isInstanceOf(ProductException.class);
+    }
+
+    @Test
+    public void 상품의_알러젠_정보를_변경한다() {
+        Product product = ProductFixture.builder().createCommonProduct();
+        AllergenInfo newAllergenInfo = new AllergenInfo(Set.of(AllergenType.MILK));
+
+        product.updateAllergenInfo(newAllergenInfo);
+
+        assertThat(product.getAllergenInfo()).isEqualTo(newAllergenInfo);
+    }
+
+    @Test
+    public void 지점_전용_상품을_공통_상품으로_전환한다() {
+        Product product = ProductFixture.builder().createBranchProduct();
+
+        product.makeCommon();
+
+        assertThat(product.getKind()).isEqualTo(ProductKind.COMMON);
+        assertThat(product.getBranchId()).isNull();
+    }
+
+    @Test
+    public void 공통_상품을_지점_전용_상품으로_전환한다() {
+        Product product = ProductFixture.builder().createCommonProduct();
+        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000002");
+
+        product.makeExclusive(branchId);
+
+        assertThat(product.getKind()).isEqualTo(ProductKind.BRANCH_EXCLUSIVE);
+        assertThat(product.getBranchId()).isEqualTo(branchId);
+    }
+
+    @Test
+    public void 지점_전용_상품으로_전환시_branchId가_없으면_예외가_발생한다() {
+        Product product = ProductFixture.builder().createCommonProduct();
+
+        assertThatThrownBy(() -> product.makeExclusive(null))
+                .isInstanceOf(ProductException.class);
+    }
 
 }

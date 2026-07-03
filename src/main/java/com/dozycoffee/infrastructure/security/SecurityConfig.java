@@ -1,9 +1,22 @@
 package com.dozycoffee.infrastructure.security;
 
+import com.dozycoffee.admin.application.AdminUsernameAuthenticator;
+import com.dozycoffee.auth.application.AuthErrors;
+import com.dozycoffee.auth.application.AuthServiceCode;
+import com.dozycoffee.auth.application.AuthenticationResolver;
+import com.dozycoffee.auth.application.AuthenticationResult;
+import com.dozycoffee.auth.application.AuthenticationService;
 import com.dozycoffee.auth.application.PasswordHasher;
+import com.dozycoffee.auth.domain.Principal;
+import com.dozycoffee.branch.application.BranchAuthenticator;
+import com.dozycoffee.branch.domain.BranchCode;
+import com.dozycoffee.core.application.exception.AuthenticationException;
+import com.dozycoffee.core.domain.Identifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
+
+import java.util.Map;
 
 @Configuration
 public class SecurityConfig {
@@ -23,6 +36,28 @@ public class SecurityConfig {
                 return passwordEncoder.matches(raw, hash);
             }
         };
+    }
+
+    @Bean
+    public AuthenticationService authenticationService(
+            AdminUsernameAuthenticator adminAuthenticator,
+            BranchAuthenticator branchAuthenticator
+    ) {
+        AuthenticationResolver adminResolver = (id, credential) -> {
+            Principal principal = adminAuthenticator.authenticate((Identifier<String>) () -> id, credential)
+                    .orElseThrow(() -> new AuthenticationException(AuthServiceCode.AUTH, AuthErrors.UNAUTHENTICATED));
+            return new AuthenticationResult(principal, 3600L);
+        };
+        AuthenticationResolver branchResolver = (id, credential) -> {
+            Principal principal = branchAuthenticator.authenticate(BranchCode.of(id), credential)
+                    .orElseThrow(() -> new AuthenticationException(AuthServiceCode.AUTH, AuthErrors.UNAUTHENTICATED));
+            return new AuthenticationResult(principal, 86400L);
+        };
+
+        return new AuthenticationService(Map.of(
+                "ADMIN", adminResolver,
+                "BRANCH", branchResolver
+        ));
     }
 
 }

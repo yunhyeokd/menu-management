@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,6 +41,8 @@ public class ProductUseCaseTest {
     private ReplaceProductOptionGroupsUseCase replaceProductOptionGroupsUseCase;
     private DeleteTagUseCase deleteTagUseCase;
     private DeleteOptionGroupUseCase deleteOptionGroupUseCase;
+    private FindSellableProductsUseCase findSellableProductsUseCase;
+    private SearchProductsUseCase searchProductsUseCase;
 
     private long nextProductId = 1L;
     private long nextTagId = 1L;
@@ -80,6 +83,8 @@ public class ProductUseCaseTest {
         replaceProductOptionGroupsUseCase = new ReplaceProductOptionGroupsUseCase(productService, productOptionGroupService);
         deleteTagUseCase = new DeleteTagUseCase(productTagService, tagService);
         deleteOptionGroupUseCase = new DeleteOptionGroupUseCase(productOptionGroupService, optionService);
+        findSellableProductsUseCase = new FindSellableProductsUseCase(productService, productQueryRepository);
+        searchProductsUseCase = new SearchProductsUseCase(productService, tagRepository);
     }
 
     private void assertErrorCode(Throwable e, ServiceError error) {
@@ -110,10 +115,10 @@ public class ProductUseCaseTest {
         defaultCategory();
         OptionGroup og = savedOptionGroup(1L);
 
-        ProductData result = registerProductUseCase.execute(new ProductRegisterCommand(
+        ProductSnapshot result = registerProductUseCase.execute(new ProductRegisterCommand(
                 ProductKind.COMMON, null,
                 "아메리카노", null, null, CategoryId.of("00000000-0000-0000-0000-000000000001"), 3000, null, null,
-                Set.of("신제품"), List.of(new OptionGroupLinkSpec(og.getId(), true, false))
+                Set.of("신제품"), List.of(new OptionGroupLinkCommand(og.getId(), true, false))
         ));
 
         assertThat(result.name()).isEqualTo("아메리카노");
@@ -127,7 +132,7 @@ public class ProductUseCaseTest {
         defaultCategory();
         defaultBranch();
 
-        ProductData result = registerProductUseCase.execute(new ProductRegisterCommand(
+        ProductSnapshot result = registerProductUseCase.execute(new ProductRegisterCommand(
                 ProductKind.BRANCH_EXCLUSIVE, BranchId.of("00000000-0000-0000-0000-000000000001"),
                 "지점전용라떼", null, null,
                 CategoryId.of("00000000-0000-0000-0000-000000000001"), 4500, null, null,
@@ -145,7 +150,7 @@ public class ProductUseCaseTest {
         assertThatThrownBy(() -> registerProductUseCase.execute(new ProductRegisterCommand(
                 ProductKind.COMMON, null,
                 "아메리카노", null, null, CategoryId.of("00000000-0000-0000-0000-000000000001"), 3000, null, null,
-                Set.of(), List.of(new OptionGroupLinkSpec(OptionGroupId.of("00000000-0000-0000-0000-000000000999"), true, false))
+                Set.of(), List.of(new OptionGroupLinkCommand(OptionGroupId.of("00000000-0000-0000-0000-000000000999"), true, false))
         )))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
@@ -155,13 +160,14 @@ public class ProductUseCaseTest {
     @Test
     void 상품_프로필_수정시_태그도_교체된다() {
         defaultCategory();
+        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
         Tag oldTag = tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000010"), "구태그", Instant.now()));
         Product product = productRepository.put(ProductFixture.builder()
-                .id(ProductId.of("00000000-0000-0000-0000-000000000001")).kind(ProductKind.COMMON).branchId(null).build());
+                .id(productId).kind(ProductKind.COMMON).branchId(null).build());
         productTagRepository.add(ProductTag.of(product.getId(), oldTag.getId(), Instant.now()));
 
-        ProductData result = updateProductProfileUseCase.execute(new ProductProfileUpdateCommand(
-                ProductId.of("00000000-0000-0000-0000-000000000001"), "라떼", null, null,
+        ProductSnapshot result = updateProductProfileUseCase.execute(productId, new ProductProfileUpdateCommand(
+                "라떼", null, null,
                 CategoryId.of("00000000-0000-0000-0000-000000000001"), 4000, null, null, Set.of("신태그")
         ));
 
@@ -205,7 +211,7 @@ public class ProductUseCaseTest {
         productOptionGroupRepository.put(ProductOptionGroup.of(product.getId(), oldOg.getId(), true, false, Instant.now()));
 
         replaceProductOptionGroupsUseCase.execute(product.getId(), List.of(
-                new OptionGroupLinkSpec(newOg.getId(), false, true)
+                new OptionGroupLinkCommand(newOg.getId(), false, true)
         ));
 
         assertThat(productOptionGroupRepository.findAllByOptionGroupId(oldOg.getId())).isEmpty();
@@ -257,5 +263,89 @@ public class ProductUseCaseTest {
 
         assertThatThrownBy(() -> deleteOptionGroupUseCase.execute(og.getId()))
                 .isInstanceOf(ConflictException.class);
+    }
+
+    // ─── FindSellableProducts ─────────────────────────────────────────────────
+
+    @Test
+    void 판매가능한_공통상품과_해당_지점의_전용상품을_함께_조회한다() {
+        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
+        BranchId otherBranchId = BranchId.of("00000000-0000-0000-0000-000000000002");
+
+        Product commonProduct = productRepository.put(ProductFixture.builder()
+                .id(ProductId.of("00000000-0000-0000-0000-000000000001"))
+                .status(ProductStatus.ACTIVE).kind(ProductKind.COMMON).branchId(null).build());
+        Product exclusiveProduct = productRepository.put(ProductFixture.builder()
+                .id(ProductId.of("00000000-0000-0000-0000-000000000002"))
+                .status(ProductStatus.ACTIVE).kind(ProductKind.BRANCH_EXCLUSIVE).branchId(branchId).build());
+        productRepository.put(ProductFixture.builder()
+                .id(ProductId.of("00000000-0000-0000-0000-000000000003"))
+                .status(ProductStatus.ACTIVE).kind(ProductKind.BRANCH_EXCLUSIVE).branchId(otherBranchId).build());
+        productRepository.put(ProductFixture.builder()
+                .id(ProductId.of("00000000-0000-0000-0000-000000000004"))
+                .status(ProductStatus.INACTIVE).kind(ProductKind.COMMON).branchId(null).build());
+        productQueryRepository.putTags(commonProduct.getId(),
+                List.of(new TagData(TagId.of("00000000-0000-0000-0000-000000000010"), "신제품")));
+
+        List<ProductSnapshot> result = findSellableProductsUseCase.execute(branchId);
+
+        assertThat(result).extracting(ProductSnapshot::id)
+                .containsExactlyInAnyOrder(commonProduct.getId(), exclusiveProduct.getId());
+        assertThat(result.stream().filter(p -> p.id().equals(commonProduct.getId())).findFirst().orElseThrow().tags())
+                .hasSize(1);
+    }
+
+    @Test
+    void 판매가능한_상품이_없으면_빈_목록을_반환한다() {
+        List<ProductSnapshot> result = findSellableProductsUseCase.execute(BranchId.of("00000000-0000-0000-0000-000000000001"));
+
+        assertThat(result).isEmpty();
+    }
+
+    // ─── SearchProducts ───────────────────────────────────────────────────────
+
+    @Test
+    void 존재하지_않는_태그_이름으로_검색하면_빈_목록을_반환한다() {
+        ProductSearchCommand command = new ProductSearchCommand(
+                Optional.empty(), List.of(), List.of("존재하지않는태그"), List.of(), List.of(), List.of(), Optional.empty()
+        );
+
+        List<ProductSummaryResult> result = searchProductsUseCase.execute(command);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void 태그_조건_없이_검색하면_저장된_상품_목록을_반환한다() {
+        productQueryRepository.add(new ProductSummaryResult(
+                ProductId.of("00000000-0000-0000-0000-000000000001"), "아메리카노", null, null, 3000,
+                ProductKind.COMMON, null, ProductStatus.ACTIVE, List.of()
+        ));
+
+        ProductSearchCommand command = new ProductSearchCommand(
+                Optional.empty(), List.of(), List.of(), List.of(), List.of(), List.of(), Optional.empty()
+        );
+
+        List<ProductSummaryResult> result = searchProductsUseCase.execute(command);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).name()).isEqualTo("아메리카노");
+    }
+
+    @Test
+    void 존재하는_태그_이름으로_검색하면_태그ID로_변환되어_조회에_위임된다() {
+        tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000010"), "신제품", Instant.now()));
+        productQueryRepository.add(new ProductSummaryResult(
+                ProductId.of("00000000-0000-0000-0000-000000000001"), "아메리카노", null, null, 3000,
+                ProductKind.COMMON, null, ProductStatus.ACTIVE, List.of()
+        ));
+
+        ProductSearchCommand command = new ProductSearchCommand(
+                Optional.empty(), List.of(), List.of("신제품"), List.of(), List.of(), List.of(), Optional.empty()
+        );
+
+        List<ProductSummaryResult> result = searchProductsUseCase.execute(command);
+
+        assertThat(result).hasSize(1);
     }
 }

@@ -1,5 +1,6 @@
 package com.dozycoffee.branch.application;
 
+import com.dozycoffee.branch.application.dto.BranchCreateCommand;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,8 +15,9 @@ import com.dozycoffee.core.application.RepositoryException;
 import com.dozycoffee.core.application.exception.*;
 import com.dozycoffee.core.domain.IdentifierGenerator;
 
+import java.util.List;
+
 @Service
-@Transactional
 public class BranchService {
 
     private final BranchRepository branchRepository;
@@ -49,9 +51,28 @@ public class BranchService {
                 .orElseThrow(() -> new ResourceNotFoundException(BranchServiceCode.BRN, BranchErrors.BRANCH_NOT_FOUND_ERROR));
     }
 
-    public BranchCreateResult create(String name, String address) {
+    @Transactional(readOnly = true)
+    public Branch findById(BranchId branchId) {
         try {
-            branchRepository.findByName(name)
+            return getBranch(branchId);
+        } catch (RepositoryException e) {
+            throw new SystemException(BranchServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<Branch> findAll() {
+        try {
+            return branchRepository.findAll();
+        } catch (RepositoryException e) {
+            throw new SystemException(BranchServiceCode.BRN, BranchErrors.UNKNOWN_ERROR);
+        }
+    }
+
+    @Transactional
+    public BranchCreateResult create(BranchCreateCommand command) {
+        try {
+            branchRepository.findByName(command.name())
                     .ifPresent(existing -> {
                         throw new ConflictException(BranchServiceCode.BRN, BranchErrors.DUPLICATE_NAME_ERROR);
                     });
@@ -59,7 +80,7 @@ public class BranchService {
             BranchCode branchCode = codeGenerator.generate();
             Credential rawAuthKey = authKeyGenerator.generate();
             String authKeyHash = passwordHasher.hash(rawAuthKey.getValue());
-            Branch branch = Branch.create(branchId, branchCode, authKeyHash, name, address);
+            Branch branch = Branch.create(branchId, branchCode, authKeyHash, command.name(), command.address());
             branchRepository.save(branch);
             return new BranchCreateResult(
                     branch.getId(),
@@ -76,6 +97,7 @@ public class BranchService {
         }
     }
 
+    @Transactional
     public BranchAuthKeyReissueResult reissueAuthKey(BranchId branchId) {
         try {
             Branch branch = getBranch(branchId);
@@ -92,6 +114,7 @@ public class BranchService {
         }
     }
 
+    @Transactional
     public void updateProfile(BranchId branchId, BranchProfileUpdateCommand command) {
         try {
             Branch branch = getBranch(branchId);
@@ -109,6 +132,7 @@ public class BranchService {
         }
     }
 
+    @Transactional
     public void softDelete(BranchId branchId) {
         try {
             Branch branch = getBranch(branchId);
@@ -123,6 +147,7 @@ public class BranchService {
         }
     }
 
+    @Transactional
     public void hardDelete(BranchId branchId) {
         try {
             Branch branch = getBranch(branchId);
