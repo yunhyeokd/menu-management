@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -29,6 +30,11 @@ public class MyBatisAdminRepository implements AdminRepository {
         if (admin.getProfile() != null) {
             adminMapper.upsertProfile(row);
         }
+    }
+
+    @Override
+    public List<Admin> findAll() throws RepositoryException {
+        return adminMapper.findAll().stream().map(AdminRow::toAdmin).toList();
     }
 
     @Override

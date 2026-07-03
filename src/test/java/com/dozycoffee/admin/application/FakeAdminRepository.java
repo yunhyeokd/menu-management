@@ -5,7 +5,9 @@ import com.dozycoffee.admin.domain.Admin;
 import com.dozycoffee.admin.domain.AdminId;
 import com.dozycoffee.admin.domain.AdminRole;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -38,6 +40,12 @@ public class FakeAdminRepository implements AdminRepository {
     public void save(Admin account) {
         checkThrow();
         store.put(account.getId(), account);
+    }
+
+    @Override
+    public List<Admin> findAll() {
+        checkThrow();
+        return new ArrayList<>(store.values());
     }
 
     @Override

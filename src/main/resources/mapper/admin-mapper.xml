@@ -37,30 +37,30 @@
             email = values(email)
     </insert>
 
-    <select id="findById" resultMap="adminRow">
+    <sql id="adminColumns">
         SELECT BIN_TO_UUID(aa.admin_id) AS admin_id,
                aa.admin_role, aa.status, aa.username, aa.password_hash, aa.deleted_at, aa.created_at,
                ap.employee_no, ap.name, ap.phone, ap.email
         FROM admin_account aa
         LEFT JOIN admin_profile ap ON aa.admin_id = ap.admin_id
+    </sql>
+
+    <select id="findAll" resultMap="adminRow">
+        <include refid="adminColumns"/>
+    </select>
+
+    <select id="findById" resultMap="adminRow">
+        <include refid="adminColumns"/>
         WHERE aa.admin_id = UUID_TO_BIN(#{adminId})
     </select>
 
     <select id="findByUsername" resultMap="adminRow">
-        SELECT BIN_TO_UUID(aa.admin_id) AS admin_id,
-               aa.admin_role, aa.status, aa.username, aa.password_hash, aa.deleted_at, aa.created_at,
-               ap.employee_no, ap.name, ap.phone, ap.email
-        FROM admin_account aa
-        LEFT JOIN admin_profile ap ON aa.admin_id = ap.admin_id
+        <include refid="adminColumns"/>
         WHERE aa.username = #{username}
     </select>
 
     <select id="findByRole" resultMap="adminRow">
-        SELECT BIN_TO_UUID(aa.admin_id) AS admin_id,
-               aa.admin_role, aa.status, aa.username, aa.password_hash, aa.deleted_at, aa.created_at,
-               ap.employee_no, ap.name, ap.phone, ap.email
-        FROM admin_account aa
-        LEFT JOIN admin_profile ap ON aa.admin_id = ap.admin_id
+        <include refid="adminColumns"/>
         WHERE aa.admin_role = #{role}
         LIMIT 1
     </select>

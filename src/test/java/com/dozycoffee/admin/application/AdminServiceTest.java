@@ -60,15 +60,15 @@ public class AdminServiceTest {
 
     @Test
     public void 시스템_관리자_계정을_정상_생성한다() {
-        SystemAdminRegisterResult result = adminService.registerSystem(
+        Admin result = adminService.registerSystem(
                 new SystemAdminRegisterCommand("sysadmin", "password"));
 
-        assertThat(result.adminId()).isNotNull();
-        assertThat(result.adminRole()).isEqualTo(AdminRole.SYSTEM);
-        assertThat(result.username()).isEqualTo("sysadmin");
-        assertThat(result.createdAt()).isNotNull();
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getAdminRole()).isEqualTo(AdminRole.SYSTEM);
+        assertThat(result.getUsername()).isEqualTo("sysadmin");
+        assertThat(result.getCreatedAt()).isNotNull();
 
-        Admin saved = adminRepository.findById(result.adminId()).orElseThrow();
+        Admin saved = adminRepository.findById(result.getId()).orElseThrow();
         assertThat(saved.getStatus()).isEqualTo(AdminStatus.ACTIVE);
         assertThat(saved.getPasswordHash()).isEqualTo("hashed-password");
     }
@@ -105,16 +105,16 @@ public class AdminServiceTest {
 
     @Test
     public void 사원_관리자_계정을_정상_생성한다() {
-        AdminRegisterResult result = adminService.registerStaff(new AdminRegisterCommand(
+        Admin result = adminService.registerStaff(new AdminRegisterCommand(
                 "staff01", "password", "EMP001", "홍길동", "+821012345678", "staff@dozy.com"));
 
-        assertThat(result.adminId()).isNotNull();
-        assertThat(result.adminRole()).isEqualTo(AdminRole.STAFF);
-        assertThat(result.username()).isEqualTo("staff01");
-        assertThat(result.name()).isEqualTo("홍길동");
-        assertThat(result.email()).isEqualTo("staff@dozy.com");
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getAdminRole()).isEqualTo(AdminRole.STAFF);
+        assertThat(result.getUsername()).isEqualTo("staff01");
+        assertThat(result.getProfile().getName()).isEqualTo("홍길동");
+        assertThat(result.getProfile().getEmail()).isEqualTo("staff@dozy.com");
 
-        Admin account = adminRepository.findById(result.adminId()).orElseThrow();
+        Admin account = adminRepository.findById(result.getId()).orElseThrow();
         assertThat(account.getStatus()).isEqualTo(AdminStatus.PENDING);
         assertThat(account.getProfile()).isNotNull();
     }
@@ -240,12 +240,12 @@ public class AdminServiceTest {
         AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
         adminRepository.put(staffWithProfile(adminId));
 
-        AdminProfileUpdateResult result = adminService.updateProfile(adminId,
+        Admin result = adminService.updateProfile(adminId,
                 new AdminProfileUpdateCommand("김철수", "+821099998888", "new@dozy.com"));
 
-        assertThat(result.name()).isEqualTo("김철수");
-        assertThat(result.phone()).isEqualTo("+821099998888");
-        assertThat(result.email()).isEqualTo("new@dozy.com");
+        assertThat(result.getProfile().getName()).isEqualTo("김철수");
+        assertThat(result.getProfile().getPhone()).isEqualTo("+821099998888");
+        assertThat(result.getProfile().getEmail()).isEqualTo("new@dozy.com");
     }
 
     @Test
