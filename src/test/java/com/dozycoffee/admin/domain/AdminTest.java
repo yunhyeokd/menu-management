@@ -19,10 +19,10 @@ public class AdminTest {
 
     @Test
     public void 관리자_계정을_정상_생성한다() {
-        Admin adminAccount = Admin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.STAFF, "test", "password", defaultProfile());
+        Admin adminAccount = Admin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.ADMIN, "test", "password", defaultProfile());
 
         assertThat(adminAccount.getUsername()).isEqualTo("test");
-        assertThat(adminAccount.getRole()).isEqualTo("STAFF");
+        assertThat(adminAccount.getRole()).isEqualTo("ADMIN");
         assertThat(adminAccount.getStatus()).isEqualTo(AdminStatus.PENDING);
     }
 
@@ -55,8 +55,8 @@ public class AdminTest {
     }
 
     @Test
-    public void STAFF_계정_생성시_profile이_null이면_예외가_발생한다() {
-        assertThatThrownBy(() -> Admin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.STAFF, "test", "password", null))
+    public void ADMIN_계정_생성시_profile이_null이면_예외가_발생한다() {
+        assertThatThrownBy(() -> Admin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.ADMIN, "test", "password", null))
                 .isInstanceOf(AdminException.class);
     }
 
@@ -69,8 +69,8 @@ public class AdminTest {
     @Test
     public void 같은_id를_가진_계정은_동등하다() {
         AdminProfile profile = defaultProfile();
-        Admin a = Admin.of(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
-        Admin b = Admin.of(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
+        Admin a = Admin.of(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.ADMIN, "admin_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
+        Admin b = Admin.of(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.ADMIN, "admin_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
 
         assertThat(a).isEqualTo(b);
         assertThat(a.hashCode()).isEqualTo(b.hashCode());
@@ -79,8 +79,8 @@ public class AdminTest {
     @Test
     public void 다른_id를_가진_계정은_동등하지_않다() {
         AdminProfile profile = defaultProfile();
-        Admin a = Admin.of(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
-        Admin b = Admin.of(AdminId.of("00000000-0000-0000-0000-000000000002"), AdminRole.STAFF, "staff_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
+        Admin a = Admin.of(AdminId.of("00000000-0000-0000-0000-000000000001"), AdminRole.ADMIN, "admin_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
+        Admin b = Admin.of(AdminId.of("00000000-0000-0000-0000-000000000002"), AdminRole.ADMIN, "admin_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
 
         assertThat(a).isNotEqualTo(b);
     }
@@ -92,9 +92,9 @@ public class AdminTest {
     }
 
     @Test
-    public void 스태프_관리자_계정은_PENDING_상태로_생성된다() {
-        Admin staff = AdminFixture.builder().role(AdminRole.STAFF).build();
-        assertThat(staff.getStatus()).isEqualTo(AdminStatus.PENDING);
+    public void 일반_관리자_계정은_PENDING_상태로_생성된다() {
+        Admin admin = AdminFixture.builder().role(AdminRole.ADMIN).build();
+        assertThat(admin.getStatus()).isEqualTo(AdminStatus.PENDING);
     }
 
     @ParameterizedTest
@@ -107,24 +107,24 @@ public class AdminTest {
 
     @ParameterizedTest
     @EnumSource(value = AdminStatus.class)
-    public void 스태프_관리자_계정의_상태는_변경할_수_있다(AdminStatus status) {
-        Admin staff = AdminFixture.builder().role(AdminRole.STAFF).build();
-        staff.updateStatus(status);
-        assertThat(staff.getStatus()).isEqualTo(status);
+    public void 일반_관리자_계정의_상태는_변경할_수_있다(AdminStatus status) {
+        Admin admin = AdminFixture.builder().role(AdminRole.ADMIN).build();
+        admin.updateStatus(status);
+        assertThat(admin.getStatus()).isEqualTo(status);
     }
 
     @Test
     public void 관리자_계정_상태_변경시_null이면_예외가_발생한다() {
-        Admin staff = AdminFixture.builder().role(AdminRole.STAFF).build();
-        assertThatThrownBy(() -> staff.updateStatus(null)).isInstanceOf(AdminException.class);
+        Admin admin = AdminFixture.builder().role(AdminRole.ADMIN).build();
+        assertThatThrownBy(() -> admin.updateStatus(null)).isInstanceOf(AdminException.class);
     }
 
     @Test
     public void 관리자_계정을_소프트_삭제하면_deletedAt이_설정된다() {
-        Admin staff = AdminFixture.builder().role(AdminRole.STAFF).build();
-        assertThat(staff.getDeletedAt()).isNull();
-        staff.softDelete();
-        assertThat(staff.getDeletedAt()).isNotNull();
+        Admin admin = AdminFixture.builder().role(AdminRole.ADMIN).build();
+        assertThat(admin.getDeletedAt()).isNull();
+        admin.softDelete();
+        assertThat(admin.getDeletedAt()).isNotNull();
     }
 
     @Test
@@ -135,23 +135,23 @@ public class AdminTest {
 
     @Test
     public void 이미_삭제된_계정을_다시_삭제하면_예외가_발생한다() {
-        Admin staff = AdminFixture.builder().role(AdminRole.STAFF).build();
-        staff.softDelete();
-        assertThatThrownBy(staff::softDelete).isInstanceOf(AdminException.class);
+        Admin admin = AdminFixture.builder().role(AdminRole.ADMIN).build();
+        admin.softDelete();
+        assertThatThrownBy(admin::softDelete).isInstanceOf(AdminException.class);
     }
 
     @Test
     public void 비밀번호를_정상_변경한다() {
-        Admin staff = AdminFixture.builder().role(AdminRole.STAFF).build();
-        staff.updatePasswordHash("newPassword");
-        assertThat(staff.getPasswordHash()).isEqualTo("newPassword");
+        Admin admin = AdminFixture.builder().role(AdminRole.ADMIN).build();
+        admin.updatePasswordHash("newPassword");
+        assertThat(admin.getPasswordHash()).isEqualTo("newPassword");
     }
 
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {""})
     public void 비밀번호_변경시_유효하지_않으면_예외가_발생한다(String invalidPassword) {
-        Admin staff = AdminFixture.builder().role(AdminRole.STAFF).build();
-        assertThatThrownBy(() -> staff.updatePasswordHash(invalidPassword)).isInstanceOf(AdminException.class);
+        Admin admin = AdminFixture.builder().role(AdminRole.ADMIN).build();
+        assertThatThrownBy(() -> admin.updatePasswordHash(invalidPassword)).isInstanceOf(AdminException.class);
     }
 }

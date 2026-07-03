@@ -19,7 +19,7 @@ public class AdminFixture {
     public static class AdminBuilder {
 
         private AdminId id = AdminFixture.id;
-        private AdminRole role = AdminRole.STAFF;
+        private AdminRole role = AdminRole.ADMIN;
         private String username = "test";
         private String password = "password";
         private AdminProfile profile = defaultProfile();

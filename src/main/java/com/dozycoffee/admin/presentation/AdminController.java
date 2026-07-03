@@ -31,8 +31,8 @@ public class AdminController {
     }
 
     @PostMapping
-    public ResponseEntity<AdminResponse> registerStaff(@RequestBody AdminRegisterRequest request) {
-        Admin admin = adminService.registerStaff(request.toCommand());
+    public ResponseEntity<AdminResponse> registerAdmin(@RequestBody AdminRegisterRequest request) {
+        Admin admin = adminService.registerAdmin(request.toCommand());
         return ResponseEntity.ok(AdminResponse.from(admin));
     }
 

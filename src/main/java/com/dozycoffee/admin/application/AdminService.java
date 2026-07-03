@@ -75,7 +75,7 @@ public class AdminService {
         }
     }
 
-    public Admin registerStaff(AdminRegisterCommand command) {
+    public Admin registerAdmin(AdminRegisterCommand command) {
         try {
             adminRepository.findByUsername(command.username())
                     .ifPresent(a -> {
@@ -93,7 +93,7 @@ public class AdminService {
                     command.phone(),
                     command.email()
             );
-            Admin account = Admin.create(adminId, AdminRole.STAFF, command.username(), passwordHash, profile);
+            Admin account = Admin.create(adminId, AdminRole.ADMIN, command.username(), passwordHash, profile);
             adminRepository.save(account);
             return account;
         } catch (AdminException e) {

@@ -34,7 +34,7 @@ public class AuthorizationServiceTest {
 
     @Test
     void 여러_role_중_하나라도_일치하면_인가에_성공한다() {
-        authorizationService.authorize(activeAdmin, List.of("STAFF", "SYSTEM"));
+        authorizationService.authorize(activeAdmin, List.of("ADMIN", "SYSTEM"));
     }
 
     @Test
