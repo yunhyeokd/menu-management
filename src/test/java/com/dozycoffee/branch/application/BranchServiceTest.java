@@ -7,9 +7,8 @@ import com.dozycoffee.branch.application.dto.BranchCreateCommand;
 import com.dozycoffee.branch.application.dto.BranchCreateResult;
 import com.dozycoffee.branch.application.dto.BranchProfileUpdateCommand;
 import com.dozycoffee.branch.domain.*;
-import com.dozycoffee.core.exception.AppException;
-import com.dozycoffee.core.exception.ServiceError;
-import com.dozycoffee.core.exception.*;
+import com.dozycoffee.core.exception.base.*;
+import com.dozycoffee.core.exception.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -54,7 +53,7 @@ public class BranchServiceTest {
     }
 
     private void assertErrorCode(Throwable e, ServiceError error) {
-        assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
+        assertThat(((ServiceException) e).getErrorCode()).isEqualTo(error.getErrorCode());
     }
 
     // ─── find / findAll ───────────────────────────────────────────────────────

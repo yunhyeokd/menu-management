@@ -4,7 +4,7 @@ import com.dozycoffee.branch.application.BranchRepository;
 import com.dozycoffee.branch.domain.Branch;
 import com.dozycoffee.branch.domain.BranchCode;
 import com.dozycoffee.branch.domain.BranchId;
-import com.dozycoffee.core.exception.RepositoryException;
+import com.dozycoffee.core.exception.base.RepositoryException;
 import com.dozycoffee.infrastructure.persistance.entity.BranchRow;
 import com.dozycoffee.infrastructure.persistance.mapper.BranchMapper;
 import lombok.RequiredArgsConstructor;

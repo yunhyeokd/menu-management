@@ -1,6 +1,6 @@
 package com.dozycoffee.infrastructure.persistance.repository_impl;
 
-import com.dozycoffee.core.exception.RepositoryException;
+import com.dozycoffee.core.exception.base.RepositoryException;
 import com.dozycoffee.infrastructure.persistance.entity.CategoryRow;
 import com.dozycoffee.infrastructure.persistance.mapper.CategoryMapper;
 import com.dozycoffee.product.application.repository.CategoryRepository;

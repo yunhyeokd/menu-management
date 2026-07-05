@@ -1,6 +1,6 @@
 package com.dozycoffee.admin.domain;
 
-import com.dozycoffee.core.exception.DomainException;
+import com.dozycoffee.core.exception.base.DomainException;
 
 public class AdminException extends DomainException {
     public AdminException() {

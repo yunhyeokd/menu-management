@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.dozycoffee.core.security.Principal;
 import com.dozycoffee.core.session.SessionManager;
-import com.dozycoffee.core.exception.AuthenticationException;
+import com.dozycoffee.core.exception.service.AuthenticationException;
 import com.dozycoffee.core.id.IdentifierGenerator;
 import com.dozycoffee.core.session.Session;
 import com.dozycoffee.core.session.SessionId;

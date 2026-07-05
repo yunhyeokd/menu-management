@@ -3,7 +3,7 @@ package com.dozycoffee.infrastructure.persistance.repository_impl;
 import com.dozycoffee.branch.application.ProductSalesOverrideRepository;
 import com.dozycoffee.branch.domain.BranchId;
 import com.dozycoffee.branch.domain.ProductSalesOverride;
-import com.dozycoffee.core.exception.RepositoryException;
+import com.dozycoffee.core.exception.base.RepositoryException;
 import com.dozycoffee.infrastructure.persistance.entity.ProductSalesOverrideRow;
 import com.dozycoffee.infrastructure.persistance.mapper.ProductSalesOverrideMapper;
 import com.dozycoffee.product.domain.ProductId;

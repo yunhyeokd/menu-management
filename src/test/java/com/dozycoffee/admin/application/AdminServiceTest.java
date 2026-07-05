@@ -4,8 +4,8 @@ import com.dozycoffee.admin.application.dto.*;
 import com.dozycoffee.admin.domain.*;
 import com.dozycoffee.auth.application.FakeSessionInvalidationPort;
 import com.dozycoffee.core.security.PasswordHasher;
-import com.dozycoffee.core.exception.AppException;
-import com.dozycoffee.core.exception.*;
+import com.dozycoffee.core.exception.base.*;
+import com.dozycoffee.core.exception.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -53,7 +53,7 @@ public class AdminServiceTest {
     }
 
     private void assertErrorCode(Throwable e, AdminErrors error) {
-        assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
+        assertThat(((ServiceException) e).getErrorCode()).isEqualTo(error.getErrorCode());
     }
 
     // ─── registerSystem ───────────────────────────────────────────────────────

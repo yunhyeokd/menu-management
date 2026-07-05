@@ -11,7 +11,7 @@ import com.dozycoffee.core.security.PasswordHasher;
 import com.dozycoffee.core.security.Principal;
 import com.dozycoffee.branch.application.BranchAuthenticator;
 import com.dozycoffee.branch.domain.BranchCode;
-import com.dozycoffee.core.exception.AuthenticationException;
+import com.dozycoffee.core.exception.service.AuthenticationException;
 import com.dozycoffee.core.id.Identifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

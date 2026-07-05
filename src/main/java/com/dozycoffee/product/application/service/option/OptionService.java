@@ -4,11 +4,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dozycoffee.core.id.IdentifierGenerator;
-import com.dozycoffee.core.exception.RepositoryException;
+import com.dozycoffee.core.exception.base.RepositoryException;
 import com.dozycoffee.product.application.ProductServiceCode;
-import com.dozycoffee.core.exception.ResourceNotFoundException;
-import com.dozycoffee.core.exception.SystemException;
-import com.dozycoffee.core.exception.ValidationException;
+import com.dozycoffee.core.exception.service.ResourceNotFoundException;
+import com.dozycoffee.core.exception.service.SystemException;
+import com.dozycoffee.core.exception.service.ValidationException;
 import com.dozycoffee.product.application.dto.OptionGroupCreateCommand;
 import com.dozycoffee.product.application.dto.OptionGroupData;
 import com.dozycoffee.product.application.dto.OptionGroupItemUpdateCommand;

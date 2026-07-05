@@ -2,7 +2,7 @@ package com.dozycoffee.infrastructure.adapter;
 
 import com.dozycoffee.branch.application.BranchProductLifecyclePort;
 import com.dozycoffee.branch.domain.BranchId;
-import com.dozycoffee.core.exception.RepositoryException;
+import com.dozycoffee.core.exception.base.RepositoryException;
 import com.dozycoffee.product.application.repository.ProductRepository;
 import com.dozycoffee.product.domain.ProductStatus;
 import lombok.RequiredArgsConstructor;

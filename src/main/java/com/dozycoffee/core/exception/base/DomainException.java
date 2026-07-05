@@ -1,4 +1,4 @@
-package com.dozycoffee.core.exception;
+package com.dozycoffee.core.exception.base;
 
 public class DomainException extends RuntimeException {
     public DomainException() {

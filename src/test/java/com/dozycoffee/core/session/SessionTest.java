@@ -1,6 +1,5 @@
 package com.dozycoffee.core.session;
 
-import com.dozycoffee.core.exception.DomainException;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -28,19 +27,19 @@ class SessionTest {
     @Test
     void sessionId가_null이면_예외가_발생한다() {
         assertThatThrownBy(() -> Session.create(null, CONTEXT, Instant.now().plusSeconds(3600)))
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(SessionException.class);
     }
 
     @Test
     void context가_null이면_예외가_발생한다() {
         assertThatThrownBy(() -> Session.create(SESSION_ID, null, Instant.now().plusSeconds(3600)))
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(SessionException.class);
     }
 
     @Test
     void expiresAt이_null이면_예외가_발생한다() {
         assertThatThrownBy(() -> Session.create(SESSION_ID, CONTEXT, null))
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(SessionException.class);
     }
 
     // ─── isExpired ────────────────────────────────────────────────────────────
@@ -76,6 +75,6 @@ class SessionTest {
         Session<String> session = Session.create(SESSION_ID, CONTEXT, Instant.now().plusSeconds(3600));
 
         assertThatThrownBy(() -> session.extendExpiry(null))
-                .isInstanceOf(DomainException.class);
+                .isInstanceOf(SessionException.class);
     }
 }

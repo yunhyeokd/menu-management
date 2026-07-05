@@ -1,8 +1,7 @@
 package com.dozycoffee.product.application.service.tag;
 
-import com.dozycoffee.core.exception.AppException;
-import com.dozycoffee.core.exception.ServiceError;
-import com.dozycoffee.core.exception.*;
+import com.dozycoffee.core.exception.base.*;
+import com.dozycoffee.core.exception.service.*;
 import com.dozycoffee.product.application.dto.TagData;
 import com.dozycoffee.product.application.repository.FakeTagRepository;
 import com.dozycoffee.product.application.service.ProductErrors;
@@ -31,7 +30,7 @@ public class TagServiceTest {
     }
 
     private void assertErrorCode(Throwable e, ServiceError error) {
-        assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
+        assertThat(((ServiceException) e).getErrorCode()).isEqualTo(error.getErrorCode());
     }
 
     @Test

@@ -1,7 +1,5 @@
 package com.dozycoffee.core.session;
 
-import com.dozycoffee.core.exception.DomainException;
-
 import java.time.Instant;
 
 public class Session<T> {
@@ -11,9 +9,9 @@ public class Session<T> {
     private Instant expiresAt;
 
     private Session(SessionId sessionId, T context, Instant expiresAt) {
-        if (sessionId == null) throw new DomainException("sessionId must not be null");
-        if (context == null) throw new DomainException("context must not be null");
-        if (expiresAt == null) throw new DomainException("expiresAt must not be null");
+        if (sessionId == null) throw new SessionException("sessionId must not be null");
+        if (context == null) throw new SessionException("context must not be null");
+        if (expiresAt == null) throw new SessionException("expiresAt must not be null");
         this.sessionId = sessionId;
         this.context = context;
         this.expiresAt = expiresAt;
@@ -44,7 +42,7 @@ public class Session<T> {
     }
 
     public void extendExpiry(Instant expiresAt) {
-        if (expiresAt == null) throw new DomainException("expiresAt must not be null");
+        if (expiresAt == null) throw new SessionException("expiresAt must not be null");
         this.expiresAt = expiresAt;
     }
 }

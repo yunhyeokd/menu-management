@@ -1,10 +1,10 @@
 package com.dozycoffee.product.application.service.option;
 
-import com.dozycoffee.core.exception.AppException;
-import com.dozycoffee.core.exception.ServiceError;
-import com.dozycoffee.core.exception.ConflictException;
-import com.dozycoffee.core.exception.ResourceNotFoundException;
-import com.dozycoffee.core.exception.SystemException;
+import com.dozycoffee.core.exception.service.ServiceException;
+import com.dozycoffee.core.exception.service.ServiceError;
+import com.dozycoffee.core.exception.service.ConflictException;
+import com.dozycoffee.core.exception.service.ResourceNotFoundException;
+import com.dozycoffee.core.exception.service.SystemException;
 import com.dozycoffee.product.application.dto.OptionGroupLinkCommand;
 import com.dozycoffee.product.application.repository.FakeOptionGroupRepository;
 import com.dozycoffee.product.application.repository.FakeProductOptionGroupRepository;
@@ -33,7 +33,7 @@ public class ProductOptionGroupServiceTest {
     }
 
     private void assertErrorCode(Throwable e, ServiceError error) {
-        assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
+        assertThat(((ServiceException) e).getErrorCode()).isEqualTo(error.getErrorCode());
     }
 
     private OptionGroup savedOptionGroup(long id) {

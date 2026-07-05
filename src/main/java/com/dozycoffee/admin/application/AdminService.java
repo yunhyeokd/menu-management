@@ -8,8 +8,8 @@ import com.dozycoffee.admin.domain.*;
 import com.dozycoffee.core.security.PasswordHasher;
 import com.dozycoffee.core.security.SessionInvalidationPort;
 import com.dozycoffee.core.id.IdentifierGenerator;
-import com.dozycoffee.core.exception.RepositoryException;
-import com.dozycoffee.core.exception.*;
+import com.dozycoffee.core.exception.base.*;
+import com.dozycoffee.core.exception.service.*;
 
 import java.util.List;
 

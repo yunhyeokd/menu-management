@@ -2,7 +2,7 @@ package com.dozycoffee.admin.application;
 
 import com.dozycoffee.admin.domain.AdminPrincipal;
 import com.dozycoffee.admin.domain.SystemAdmin;
-import com.dozycoffee.core.exception.RepositoryException;
+import com.dozycoffee.core.exception.base.RepositoryException;
 import com.dozycoffee.admin.domain.Admin;
 import com.dozycoffee.admin.domain.AdminId;
 

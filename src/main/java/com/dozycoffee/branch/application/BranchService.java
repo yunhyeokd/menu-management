@@ -11,8 +11,8 @@ import com.dozycoffee.branch.application.dto.BranchAuthKeyReissueResult;
 import com.dozycoffee.branch.application.dto.BranchCreateResult;
 import com.dozycoffee.branch.application.dto.BranchProfileUpdateCommand;
 import com.dozycoffee.branch.domain.*;
-import com.dozycoffee.core.exception.RepositoryException;
-import com.dozycoffee.core.exception.*;
+import com.dozycoffee.core.exception.base.*;
+import com.dozycoffee.core.exception.service.*;
 import com.dozycoffee.core.id.IdentifierGenerator;
 
 import java.util.List;

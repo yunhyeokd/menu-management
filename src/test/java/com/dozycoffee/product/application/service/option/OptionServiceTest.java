@@ -1,8 +1,7 @@
 package com.dozycoffee.product.application.service.option;
 
-import com.dozycoffee.core.exception.AppException;
-import com.dozycoffee.core.exception.ServiceError;
-import com.dozycoffee.core.exception.*;
+import com.dozycoffee.core.exception.base.*;
+import com.dozycoffee.core.exception.service.*;
 import com.dozycoffee.product.application.repository.FakeOptionGroupRepository;
 import com.dozycoffee.product.application.dto.*;
 import com.dozycoffee.product.application.service.ProductErrors;
@@ -34,7 +33,7 @@ public class OptionServiceTest {
     }
 
     private void assertErrorCode(Throwable e, ServiceError error) {
-        assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
+        assertThat(((ServiceException) e).getErrorCode()).isEqualTo(error.getErrorCode());
     }
 
     private OptionGroupCreateCommand createCommand(String name, List<OptionItemCreateCommand> items) {

@@ -1,6 +1,6 @@
 package com.dozycoffee.admin.application;
 
-import com.dozycoffee.core.exception.ServiceCode;
+import com.dozycoffee.core.exception.service.ServiceCode;
 
 public enum AdminServiceCode implements ServiceCode {
     ADM

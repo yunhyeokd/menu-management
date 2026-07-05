@@ -1,11 +1,11 @@
-package com.dozycoffee.core.exception;
+package com.dozycoffee.core.exception.service;
 
-public class AppException extends RuntimeException {
+public class ServiceException extends RuntimeException {
 
     private final ServiceCode serviceCode;
     private final int errorCode;
 
-    public AppException(ServiceCode serviceCode, ServiceError error) {
+    public ServiceException(ServiceCode serviceCode, ServiceError error) {
         super(error.getMessage());
         this.serviceCode = serviceCode;
         this.errorCode = error.getErrorCode();

@@ -8,8 +8,8 @@ import com.dozycoffee.branch.domain.Branch;
 import com.dozycoffee.branch.domain.BranchCode;
 import com.dozycoffee.branch.domain.BranchId;
 import com.dozycoffee.core.security.Credential;
-import com.dozycoffee.core.exception.AppException;
-import com.dozycoffee.core.exception.AuthenticationException;
+import com.dozycoffee.core.exception.service.ServiceException;
+import com.dozycoffee.core.exception.service.AuthenticationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -59,7 +59,7 @@ public class AuthenticationServiceTest {
     }
 
     private void assertErrorCode(Throwable e, AuthErrors error) {
-        assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
+        assertThat(((ServiceException) e).getErrorCode()).isEqualTo(error.getErrorCode());
     }
 
     @Test

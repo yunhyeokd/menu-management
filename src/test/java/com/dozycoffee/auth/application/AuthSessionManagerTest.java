@@ -7,7 +7,7 @@ import com.dozycoffee.branch.domain.Branch;
 
 import com.dozycoffee.branch.domain.BranchCode;
 import com.dozycoffee.branch.domain.BranchId;
-import com.dozycoffee.core.exception.AppException;
+import com.dozycoffee.core.exception.service.ServiceException;
 import com.dozycoffee.core.session.Session;
 import com.dozycoffee.core.session.SessionId;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +43,7 @@ public class AuthSessionManagerTest {
     }
 
     private void assertErrorCode(Throwable e, AuthErrors error) {
-        assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
+        assertThat(((ServiceException) e).getErrorCode()).isEqualTo(error.getErrorCode());
     }
 
     private Session<Principal> saveSession(Principal principal) {
