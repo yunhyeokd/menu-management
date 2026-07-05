@@ -1,6 +1,6 @@
 package com.dozycoffee.product.domain;
 
-import com.dozycoffee.core.domain.DomainException;
+import com.dozycoffee.core.exception.DomainException;
 
 public class ProductException extends DomainException {
 

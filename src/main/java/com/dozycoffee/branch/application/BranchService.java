@@ -4,16 +4,16 @@ import com.dozycoffee.branch.application.dto.BranchCreateCommand;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dozycoffee.auth.application.PasswordHasher;
-import com.dozycoffee.auth.application.SessionInvalidationPort;
-import com.dozycoffee.auth.domain.Credential;
+import com.dozycoffee.core.security.PasswordHasher;
+import com.dozycoffee.core.security.SessionInvalidationPort;
+import com.dozycoffee.core.security.Credential;
 import com.dozycoffee.branch.application.dto.BranchAuthKeyReissueResult;
 import com.dozycoffee.branch.application.dto.BranchCreateResult;
 import com.dozycoffee.branch.application.dto.BranchProfileUpdateCommand;
 import com.dozycoffee.branch.domain.*;
-import com.dozycoffee.core.application.RepositoryException;
-import com.dozycoffee.core.application.exception.*;
-import com.dozycoffee.core.domain.IdentifierGenerator;
+import com.dozycoffee.core.exception.RepositoryException;
+import com.dozycoffee.core.exception.*;
+import com.dozycoffee.core.id.IdentifierGenerator;
 
 import java.util.List;
 

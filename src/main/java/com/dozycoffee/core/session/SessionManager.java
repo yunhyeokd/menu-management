@@ -1,7 +1,4 @@
-package com.dozycoffee.core.application;
-
-import com.dozycoffee.core.domain.Session;
-import com.dozycoffee.core.domain.SessionId;
+package com.dozycoffee.core.session;
 
 import java.util.Optional;
 

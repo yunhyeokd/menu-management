@@ -1,6 +1,6 @@
 package com.dozycoffee.infrastructure.persistance.repository_impl;
 
-import com.dozycoffee.core.application.RepositoryException;
+import com.dozycoffee.core.exception.RepositoryException;
 import com.dozycoffee.infrastructure.persistance.entity.ProductOptionGroupRow;
 import com.dozycoffee.infrastructure.persistance.mapper.ProductOptionGroupMapper;
 import com.dozycoffee.product.application.repository.ProductOptionGroupRepository;

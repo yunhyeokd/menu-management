@@ -1,6 +1,6 @@
 package com.dozycoffee.branch.domain;
 
-import com.dozycoffee.core.domain.DomainException;
+import com.dozycoffee.core.exception.DomainException;
 
 public class BranchException extends DomainException {
     public BranchException() {

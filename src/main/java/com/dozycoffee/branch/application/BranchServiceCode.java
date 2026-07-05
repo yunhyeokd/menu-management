@@ -1,6 +1,6 @@
 package com.dozycoffee.branch.application;
 
-import com.dozycoffee.core.application.ServiceCode;
+import com.dozycoffee.core.exception.ServiceCode;
 
 public enum BranchServiceCode implements ServiceCode {
     BRN

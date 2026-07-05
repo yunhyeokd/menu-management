@@ -1,5 +1,6 @@
-package com.dozycoffee.core.domain;
+package com.dozycoffee.core.session;
 
+import com.dozycoffee.core.exception.DomainException;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;

@@ -1,7 +1,8 @@
 package com.dozycoffee.auth.application;
 
-import com.dozycoffee.core.application.RepositoryException;
-import com.dozycoffee.auth.domain.Principal;
+import com.dozycoffee.core.exception.RepositoryException;
+import com.dozycoffee.core.security.Principal;
+import com.dozycoffee.core.security.SessionInvalidationPort;
 
 import java.util.HashSet;
 import java.util.Set;

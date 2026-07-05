@@ -1,10 +1,10 @@
 package com.dozycoffee.product.application.usecase;
 
 import com.dozycoffee.branch.domain.BranchId;
-import com.dozycoffee.core.application.AppException;
-import com.dozycoffee.core.application.ServiceError;
-import com.dozycoffee.core.application.exception.ConflictException;
-import com.dozycoffee.core.application.exception.ResourceNotFoundException;
+import com.dozycoffee.core.exception.AppException;
+import com.dozycoffee.core.exception.ServiceError;
+import com.dozycoffee.core.exception.ConflictException;
+import com.dozycoffee.core.exception.ResourceNotFoundException;
 import com.dozycoffee.product.application.dto.*;
 import com.dozycoffee.product.application.repository.*;
 import com.dozycoffee.product.application.service.ProductService;

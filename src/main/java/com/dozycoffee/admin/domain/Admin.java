@@ -1,6 +1,6 @@
 package com.dozycoffee.admin.domain;
 
-import com.dozycoffee.auth.domain.Principal;
+import com.dozycoffee.core.security.Principal;
 
 import java.time.Instant;
 import java.util.Objects;

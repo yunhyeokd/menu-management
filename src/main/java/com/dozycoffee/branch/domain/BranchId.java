@@ -1,6 +1,6 @@
 package com.dozycoffee.branch.domain;
 
-import com.dozycoffee.core.domain.UuidIdentifier;
+import com.dozycoffee.core.id.UuidIdentifier;
 
 public class BranchId extends UuidIdentifier {
 

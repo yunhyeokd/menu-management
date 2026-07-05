@@ -1,8 +1,8 @@
 package com.dozycoffee.product.application.service.category;
 
-import com.dozycoffee.core.application.AppException;
-import com.dozycoffee.core.application.ServiceError;
-import com.dozycoffee.core.application.exception.*;
+import com.dozycoffee.core.exception.AppException;
+import com.dozycoffee.core.exception.ServiceError;
+import com.dozycoffee.core.exception.*;
 import com.dozycoffee.product.application.dto.CategoryData;
 import com.dozycoffee.product.application.repository.FakeCategoryRepository;
 import com.dozycoffee.product.application.repository.FakeProductRepository;

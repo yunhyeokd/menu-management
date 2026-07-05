@@ -2,14 +2,14 @@ package com.dozycoffee.auth.application;
 
 import com.dozycoffee.admin.domain.AdminId;
 import com.dozycoffee.admin.domain.SystemAdmin;
-import com.dozycoffee.auth.domain.Principal;
+import com.dozycoffee.core.security.Principal;
 import com.dozycoffee.branch.domain.Branch;
 
 import com.dozycoffee.branch.domain.BranchCode;
 import com.dozycoffee.branch.domain.BranchId;
-import com.dozycoffee.auth.domain.Credential;
-import com.dozycoffee.core.application.AppException;
-import com.dozycoffee.core.application.exception.AuthenticationException;
+import com.dozycoffee.core.security.Credential;
+import com.dozycoffee.core.exception.AppException;
+import com.dozycoffee.core.exception.AuthenticationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

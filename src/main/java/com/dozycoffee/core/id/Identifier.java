@@ -1,4 +1,4 @@
-package com.dozycoffee.core.domain;
+package com.dozycoffee.core.id;
 
 import java.io.Serializable;
 

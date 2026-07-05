@@ -1,17 +1,17 @@
-package com.dozycoffee.core.domain;
+package com.dozycoffee.core.id;
 
 import java.util.Objects;
 
-public abstract class LongIdentifier implements Identifier<Long> {
+public abstract class UuidIdentifier implements Identifier<String> {
 
-    private final long value;
+    private final String value;
 
-    protected LongIdentifier(long value) {
+    protected UuidIdentifier(String value) {
         this.value = value;
     }
 
     @Override
-    public Long getValue() {
+    public String getValue() {
         return value;
     }
 
@@ -19,7 +19,7 @@ public abstract class LongIdentifier implements Identifier<Long> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        return getValue().equals(((LongIdentifier) o).getValue());
+        return getValue().equals(((UuidIdentifier) o).getValue());
     }
 
     @Override
@@ -29,7 +29,6 @@ public abstract class LongIdentifier implements Identifier<Long> {
 
     @Override
     public String toString() {
-        return String.valueOf(value);
+        return value;
     }
-
 }

@@ -1,6 +1,6 @@
 package com.dozycoffee.product.application.repository;
 
-import com.dozycoffee.core.application.RepositoryException;
+import com.dozycoffee.core.exception.RepositoryException;
 import com.dozycoffee.product.application.dto.ProductDetailResult;
 import com.dozycoffee.product.application.dto.ProductFilterQuery;
 import com.dozycoffee.product.application.dto.ProductSummaryResult;

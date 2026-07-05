@@ -1,4 +1,6 @@
-package com.dozycoffee.core.domain;
+package com.dozycoffee.core.session;
+
+import com.dozycoffee.core.exception.DomainException;
 
 import java.time.Instant;
 

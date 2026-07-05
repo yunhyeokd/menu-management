@@ -1,4 +1,6 @@
-package com.dozycoffee.core.domain;
+package com.dozycoffee.core.id;
+
+import com.dozycoffee.core.exception.DomainException;
 
 public abstract class StringIdentifier implements Identifier<String> {
 

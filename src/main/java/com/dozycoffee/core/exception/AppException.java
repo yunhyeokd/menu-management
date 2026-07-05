@@ -1,4 +1,4 @@
-package com.dozycoffee.core.application;
+package com.dozycoffee.core.exception;
 
 public class AppException extends RuntimeException {
 

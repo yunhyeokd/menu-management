@@ -2,7 +2,7 @@ package com.dozycoffee.infrastructure.persistance.repository_impl;
 
 import com.dozycoffee.admin.application.AdminRepository;
 import com.dozycoffee.admin.domain.*;
-import com.dozycoffee.core.application.RepositoryException;
+import com.dozycoffee.core.exception.RepositoryException;
 import com.dozycoffee.infrastructure.persistance.entity.AdminRow;
 import com.dozycoffee.infrastructure.persistance.mapper.AdminMapper;
 import lombok.RequiredArgsConstructor;

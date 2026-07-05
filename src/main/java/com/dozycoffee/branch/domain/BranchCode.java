@@ -1,6 +1,6 @@
 package com.dozycoffee.branch.domain;
 
-import com.dozycoffee.core.domain.StringIdentifier;
+import com.dozycoffee.core.id.StringIdentifier;
 
 import java.util.regex.Pattern;
 

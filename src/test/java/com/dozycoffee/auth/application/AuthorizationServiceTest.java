@@ -2,7 +2,7 @@ package com.dozycoffee.auth.application;
 
 import com.dozycoffee.admin.domain.AdminId;
 import com.dozycoffee.admin.domain.SystemAdmin;
-import com.dozycoffee.core.application.AppException;
+import com.dozycoffee.core.exception.AppException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

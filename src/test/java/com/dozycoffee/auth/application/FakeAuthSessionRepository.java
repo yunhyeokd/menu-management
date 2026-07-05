@@ -1,9 +1,9 @@
 package com.dozycoffee.auth.application;
 
-import com.dozycoffee.auth.domain.Principal;
-import com.dozycoffee.core.application.RepositoryException;
-import com.dozycoffee.core.domain.Session;
-import com.dozycoffee.core.domain.SessionId;
+import com.dozycoffee.core.security.Principal;
+import com.dozycoffee.core.exception.RepositoryException;
+import com.dozycoffee.core.session.Session;
+import com.dozycoffee.core.session.SessionId;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

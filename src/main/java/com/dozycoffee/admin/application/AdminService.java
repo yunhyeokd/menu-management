@@ -5,11 +5,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dozycoffee.admin.application.dto.*;
 import com.dozycoffee.admin.domain.*;
-import com.dozycoffee.auth.application.PasswordHasher;
-import com.dozycoffee.auth.application.SessionInvalidationPort;
-import com.dozycoffee.core.domain.IdentifierGenerator;
-import com.dozycoffee.core.application.RepositoryException;
-import com.dozycoffee.core.application.exception.*;
+import com.dozycoffee.core.security.PasswordHasher;
+import com.dozycoffee.core.security.SessionInvalidationPort;
+import com.dozycoffee.core.id.IdentifierGenerator;
+import com.dozycoffee.core.exception.RepositoryException;
+import com.dozycoffee.core.exception.*;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package com.dozycoffee.branch.application;
 
 import com.dozycoffee.branch.domain.BranchId;
-import com.dozycoffee.core.application.RepositoryException;
+import com.dozycoffee.core.exception.RepositoryException;
 
 import java.util.HashSet;
 import java.util.Set;

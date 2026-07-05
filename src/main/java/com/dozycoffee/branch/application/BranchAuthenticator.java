@@ -2,10 +2,10 @@ package com.dozycoffee.branch.application;
 
 import org.springframework.stereotype.Service;
 
-import com.dozycoffee.auth.domain.Authenticator;
-import com.dozycoffee.auth.application.PasswordHasher;
-import com.dozycoffee.auth.domain.Credential;
-import com.dozycoffee.auth.domain.Principal;
+import com.dozycoffee.core.security.Authenticator;
+import com.dozycoffee.core.security.PasswordHasher;
+import com.dozycoffee.core.security.Credential;
+import com.dozycoffee.core.security.Principal;
 import com.dozycoffee.branch.domain.Branch;
 import com.dozycoffee.branch.domain.BranchCode;
 

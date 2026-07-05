@@ -1,6 +1,6 @@
 package com.dozycoffee.product.application.repository;
 
-import com.dozycoffee.core.application.RepositoryException;
+import com.dozycoffee.core.exception.RepositoryException;
 import com.dozycoffee.product.domain.OptionGroupId;
 import com.dozycoffee.product.domain.ProductId;
 import com.dozycoffee.product.domain.ProductOptionGroup;

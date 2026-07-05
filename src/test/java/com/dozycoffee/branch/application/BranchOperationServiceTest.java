@@ -2,9 +2,9 @@ package com.dozycoffee.branch.application;
 
 import com.dozycoffee.branch.application.model.BranchProduct;
 import com.dozycoffee.branch.domain.*;
-import com.dozycoffee.core.application.AppException;
-import com.dozycoffee.core.application.ServiceError;
-import com.dozycoffee.core.application.exception.*;
+import com.dozycoffee.core.exception.AppException;
+import com.dozycoffee.core.exception.ServiceError;
+import com.dozycoffee.core.exception.*;
 import com.dozycoffee.product.domain.ProductId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

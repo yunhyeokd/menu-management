@@ -3,9 +3,9 @@ package com.dozycoffee.admin.application;
 import com.dozycoffee.admin.application.dto.*;
 import com.dozycoffee.admin.domain.*;
 import com.dozycoffee.auth.application.FakeSessionInvalidationPort;
-import com.dozycoffee.auth.application.PasswordHasher;
-import com.dozycoffee.core.application.AppException;
-import com.dozycoffee.core.application.exception.*;
+import com.dozycoffee.core.security.PasswordHasher;
+import com.dozycoffee.core.exception.AppException;
+import com.dozycoffee.core.exception.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

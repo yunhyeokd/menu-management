@@ -3,12 +3,12 @@ package com.dozycoffee.product.application.service.option;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dozycoffee.core.domain.IdentifierGenerator;
-import com.dozycoffee.core.application.RepositoryException;
+import com.dozycoffee.core.id.IdentifierGenerator;
+import com.dozycoffee.core.exception.RepositoryException;
 import com.dozycoffee.product.application.ProductServiceCode;
-import com.dozycoffee.core.application.exception.ResourceNotFoundException;
-import com.dozycoffee.core.application.exception.SystemException;
-import com.dozycoffee.core.application.exception.ValidationException;
+import com.dozycoffee.core.exception.ResourceNotFoundException;
+import com.dozycoffee.core.exception.SystemException;
+import com.dozycoffee.core.exception.ValidationException;
 import com.dozycoffee.product.application.dto.OptionGroupCreateCommand;
 import com.dozycoffee.product.application.dto.OptionGroupData;
 import com.dozycoffee.product.application.dto.OptionGroupItemUpdateCommand;

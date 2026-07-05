@@ -3,7 +3,7 @@ package com.dozycoffee.branch.application;
 import com.dozycoffee.branch.domain.Branch;
 import com.dozycoffee.branch.domain.BranchCode;
 import com.dozycoffee.branch.domain.BranchId;
-import com.dozycoffee.core.application.RepositoryException;
+import com.dozycoffee.core.exception.RepositoryException;
 
 import java.util.List;
 import java.util.Optional;

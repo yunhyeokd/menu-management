@@ -1,10 +1,10 @@
 package com.dozycoffee.product.application.service.option;
 
-import com.dozycoffee.core.application.AppException;
-import com.dozycoffee.core.application.ServiceError;
-import com.dozycoffee.core.application.exception.ConflictException;
-import com.dozycoffee.core.application.exception.ResourceNotFoundException;
-import com.dozycoffee.core.application.exception.SystemException;
+import com.dozycoffee.core.exception.AppException;
+import com.dozycoffee.core.exception.ServiceError;
+import com.dozycoffee.core.exception.ConflictException;
+import com.dozycoffee.core.exception.ResourceNotFoundException;
+import com.dozycoffee.core.exception.SystemException;
 import com.dozycoffee.product.application.dto.OptionGroupLinkCommand;
 import com.dozycoffee.product.application.repository.FakeOptionGroupRepository;
 import com.dozycoffee.product.application.repository.FakeProductOptionGroupRepository;

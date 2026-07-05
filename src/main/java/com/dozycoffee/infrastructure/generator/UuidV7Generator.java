@@ -1,7 +1,7 @@
 package com.dozycoffee.infrastructure.generator;
 
-import com.dozycoffee.core.domain.Identifier;
-import com.dozycoffee.core.domain.IdentifierGenerator;
+import com.dozycoffee.core.id.Identifier;
+import com.dozycoffee.core.id.IdentifierGenerator;
 import com.fasterxml.uuid.Generators;
 
 import java.util.function.Function;

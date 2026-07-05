@@ -1,6 +1,6 @@
 package com.dozycoffee.admin.application;
 
-import com.dozycoffee.core.application.ServiceError;
+import com.dozycoffee.core.exception.ServiceError;
 
 public enum AdminErrors implements ServiceError {
 

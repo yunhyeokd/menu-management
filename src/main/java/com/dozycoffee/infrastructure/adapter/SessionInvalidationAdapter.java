@@ -1,8 +1,8 @@
 package com.dozycoffee.infrastructure.adapter;
 
 import com.dozycoffee.auth.application.AuthSessionRepository;
-import com.dozycoffee.auth.application.SessionInvalidationPort;
-import com.dozycoffee.auth.domain.Principal;
+import com.dozycoffee.core.security.SessionInvalidationPort;
+import com.dozycoffee.core.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

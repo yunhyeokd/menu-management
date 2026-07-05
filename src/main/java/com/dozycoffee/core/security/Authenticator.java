@@ -1,6 +1,6 @@
-package com.dozycoffee.auth.domain;
+package com.dozycoffee.core.security;
 
-import com.dozycoffee.core.domain.Identifier;
+import com.dozycoffee.core.id.Identifier;
 
 import java.util.Optional;
 

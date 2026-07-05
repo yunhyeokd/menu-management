@@ -1,6 +1,6 @@
 package com.dozycoffee.product.application;
 
-import com.dozycoffee.core.application.ServiceCode;
+import com.dozycoffee.core.exception.ServiceCode;
 
 public enum ProductServiceCode implements ServiceCode {
     PRD

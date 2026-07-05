@@ -1,15 +1,15 @@
 package com.dozycoffee.branch.application;
 
 import com.dozycoffee.auth.application.FakeSessionInvalidationPort;
-import com.dozycoffee.auth.application.PasswordHasher;
+import com.dozycoffee.core.security.PasswordHasher;
 import com.dozycoffee.branch.application.dto.BranchAuthKeyReissueResult;
 import com.dozycoffee.branch.application.dto.BranchCreateCommand;
 import com.dozycoffee.branch.application.dto.BranchCreateResult;
 import com.dozycoffee.branch.application.dto.BranchProfileUpdateCommand;
 import com.dozycoffee.branch.domain.*;
-import com.dozycoffee.core.application.AppException;
-import com.dozycoffee.core.application.ServiceError;
-import com.dozycoffee.core.application.exception.*;
+import com.dozycoffee.core.exception.AppException;
+import com.dozycoffee.core.exception.ServiceError;
+import com.dozycoffee.core.exception.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,6 @@
 package com.dozycoffee.infrastructure.generator;
 
-import com.dozycoffee.auth.domain.Credential;
+import com.dozycoffee.core.security.Credential;
 import com.dozycoffee.branch.application.BranchAuthKeyGenerator;
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,6 @@
 package com.dozycoffee.product.application.service;
 
-import com.dozycoffee.core.application.ServiceError;
+import com.dozycoffee.core.exception.ServiceError;
 
 public enum ProductErrors implements ServiceError {
 

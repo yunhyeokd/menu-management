@@ -1,4 +1,4 @@
-package com.dozycoffee.auth.domain;
+package com.dozycoffee.core.security;
 
 public interface Principal {
     String getSubject();
