@@ -1,8 +1,11 @@
 package com.dozycoffee.infrastructure.web;
 
 import com.dozycoffee.admin.domain.AdminId;
+import com.dozycoffee.auth.application.AuthorizationService;
 import com.dozycoffee.branch.domain.BranchId;
 import com.dozycoffee.core.session.SessionId;
+import com.dozycoffee.infrastructure.web.interceptor.RoleAuthorizationInterceptor;
+import com.dozycoffee.infrastructure.web.resolver.PrincipalArgumentResolver;
 import com.dozycoffee.product.domain.CategoryId;
 import com.dozycoffee.product.domain.OptionGroupId;
 import com.dozycoffee.product.domain.ProductId;
@@ -14,8 +17,12 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 @Configuration
 @EnableWebMvc
@@ -30,7 +37,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class ServletConfig {
 
     @Bean
-    public WebMvcConfigurer idConverterConfigurer() {
+    public PrincipalArgumentResolver principalArgumentResolver() {
+        return new PrincipalArgumentResolver();
+    }
+
+    @Bean
+    public RoleAuthorizationInterceptor roleAuthorizationInterceptor(AuthorizationService authorizationService) {
+        return new RoleAuthorizationInterceptor(authorizationService);
+    }
+
+    @Bean
+    public WebMvcConfigurer webMvcConfigurer(
+            PrincipalArgumentResolver principalArgumentResolver,
+            RoleAuthorizationInterceptor roleAuthorizationInterceptor
+    ) {
         return new WebMvcConfigurer() {
             @Override
             public void addFormatters(FormatterRegistry registry) {
@@ -41,6 +61,16 @@ public class ServletConfig {
                 registry.addConverter(new IdConverterFactory<ProductId>(ProductId::of) {});
                 registry.addConverter(new IdConverterFactory<TagId>(TagId::of) {});
                 registry.addConverter(new IdConverterFactory<SessionId>(SessionId::of) {});
+            }
+
+            @Override
+            public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+                resolvers.add(principalArgumentResolver);
+            }
+
+            @Override
+            public void addInterceptors(InterceptorRegistry registry) {
+                registry.addInterceptor(roleAuthorizationInterceptor);
             }
         };
     }
