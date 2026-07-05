@@ -1,5 +1,6 @@
 package com.dozycoffee.product.presentation;
 
+import com.dozycoffee.infrastructure.web.interceptor.RequireRole;
 import com.dozycoffee.product.application.dto.CategoryData;
 import com.dozycoffee.product.application.service.category.CategoryService;
 import com.dozycoffee.product.domain.CategoryId;
@@ -21,6 +22,7 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
+    @RequireRole({"SYSTEM", "ADMIN", "BRANCH"})
     public ResponseEntity<List<CategoryResponse>> searchCategory(
             @RequestParam(required = false) String name
     ) {
@@ -30,6 +32,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{categoryId}")
+    @RequireRole({"SYSTEM", "ADMIN", "BRANCH"})
     public ResponseEntity<CategoryResponse> getCategory(
             @PathVariable CategoryId categoryId
     ) {
@@ -39,6 +42,7 @@ public class CategoryController {
     }
 
     @PostMapping
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryCreateRequest request) {
         CategoryData result = categoryService.create(request.name());
         CategoryResponse response = CategoryResponse.from(result);
@@ -46,6 +50,7 @@ public class CategoryController {
     }
 
     @PatchMapping("/{categoryId}")
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<CategoryResponse> updateCategory(
             @PathVariable CategoryId categoryId,
             @Valid @RequestBody CategoryUpdateRequest request
@@ -56,6 +61,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{categoryId}")
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<Void> deleteCategory(
             @PathVariable CategoryId categoryId
     ) {

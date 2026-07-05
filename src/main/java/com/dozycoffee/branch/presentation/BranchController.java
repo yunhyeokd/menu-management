@@ -13,6 +13,7 @@ import com.dozycoffee.branch.presentation.dto.BranchCreateResponse;
 import com.dozycoffee.branch.presentation.dto.BranchProductSummaryResponse;
 import com.dozycoffee.branch.presentation.dto.BranchProfileResponse;
 import com.dozycoffee.branch.presentation.dto.BranchProfileUpdateRequest;
+import com.dozycoffee.infrastructure.web.interceptor.RequireRole;
 import com.dozycoffee.product.domain.ProductId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class BranchController {
     private final BranchOperationService branchOperationService;
 
     @PostMapping
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<BranchCreateResponse> createBranch(
             @Valid @RequestBody BranchCreateRequest request
     ) {
@@ -53,18 +55,21 @@ public class BranchController {
     }
 
     @DeleteMapping("/{branchId}")
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<Void> deleteBranch(@PathVariable BranchId branchId) {
         branchService.softDelete(branchId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{branchId}/hard")
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<Void> hardDeleteBranch(@PathVariable BranchId branchId) {
         branchService.hardDelete(branchId);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{branchId}/profile")
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<Void> updateProfile(
             @PathVariable BranchId branchId,
             @Valid @RequestBody BranchProfileUpdateRequest request
@@ -74,6 +79,7 @@ public class BranchController {
     }
 
     @PatchMapping("/{branchId}/reset-authkey")
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<BranchAuthKeyReissueResponse> resetAuthKey(@PathVariable BranchId branchId) {
         BranchAuthKeyReissueResult result = branchService.reissueAuthKey(branchId);
         BranchAuthKeyReissueResponse response = BranchAuthKeyReissueResponse.from(result);
@@ -81,6 +87,7 @@ public class BranchController {
     }
 
     @GetMapping("/{branchId}/products")
+    @RequireRole({"SYSTEM", "BRANCH"})
     public ResponseEntity<List<BranchProductSummaryResponse>> findOverridableProducts(
             @PathVariable BranchId branchId
     ) {
@@ -92,6 +99,7 @@ public class BranchController {
     }
 
     @PatchMapping("/{branchId}/products/{productId}/hide")
+    @RequireRole({"SYSTEM", "BRANCH"})
     public ResponseEntity<Void> hideProduct(
             @PathVariable BranchId branchId,
             @PathVariable ProductId productId
@@ -101,6 +109,7 @@ public class BranchController {
     }
 
     @PatchMapping("/{branchId}/products/{productId}/sold-out")
+    @RequireRole({"SYSTEM", "BRANCH"})
     public ResponseEntity<Void> soldOutProduct(
             @PathVariable BranchId branchId,
             @PathVariable ProductId productId
@@ -110,6 +119,7 @@ public class BranchController {
     }
 
     @PatchMapping("/{branchId}/products/{productId}/restore-sale")
+    @RequireRole({"SYSTEM", "BRANCH"})
     public ResponseEntity<Void> restoreProduct(
             @PathVariable BranchId branchId,
             @PathVariable ProductId productId

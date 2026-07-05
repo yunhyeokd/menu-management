@@ -1,6 +1,7 @@
 package com.dozycoffee.product.presentation;
 
 import com.dozycoffee.branch.domain.BranchId;
+import com.dozycoffee.infrastructure.web.interceptor.RequireRole;
 import com.dozycoffee.product.application.dto.ProductSnapshot;
 import com.dozycoffee.product.application.dto.ProductDetailResult;
 import com.dozycoffee.product.application.dto.ProductSummaryResult;
@@ -29,6 +30,7 @@ public class ProductController {
     private final DeleteProductUseCase deleteProductUseCase;
 
     @PostMapping("")
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<ProductSummaryResponse> registerProduct(@Valid @RequestBody ProductRegisterRequest request) {
         ProductSnapshot product = registerProductUseCase.execute(request.toCommand());
         ProductSummaryResult result = ProductSummaryResult.from(product, product.tags());
@@ -36,6 +38,7 @@ public class ProductController {
     }
 
     @GetMapping("/search")
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<List<ProductSummaryResponse>> searchProducts(@ModelAttribute ProductSearchRequest request) {
         List<ProductSummaryResult> results = searchProductsUseCase.execute(request.toCommand());
         List<ProductSummaryResponse> response = results.stream().map(ProductSummaryResponse::from).toList();
@@ -43,12 +46,14 @@ public class ProductController {
     }
 
     @GetMapping("/search/{productId}")
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<ProductDetailResponse> getProduct(@PathVariable ProductId productId) {
         ProductDetailResult result = productService.findDetailById(productId);
         return ResponseEntity.ok(ProductDetailResponse.from(result));
     }
 
     @GetMapping("/sellable")
+    @RequireRole({"SYSTEM", "ADMIN", "BRANCH"})
     public ResponseEntity<List<ProductSummaryResponse>> findSellableProducts(@RequestParam BranchId branchId) {
         List<ProductSnapshot> products = findSellableProductsUseCase.execute(branchId);
         List<ProductSummaryResponse> response = products.stream()
@@ -59,6 +64,7 @@ public class ProductController {
     }
 
     @GetMapping("/sellable/{productId}")
+    @RequireRole({"SYSTEM", "ADMIN", "BRANCH"})
     public ResponseEntity<ProductDetailResponse> getSellableProduct(@PathVariable ProductId productId) {
         productService.findSellableProductById(productId);
         ProductDetailResult result = productService.findDetailById(productId);
@@ -66,30 +72,35 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}")
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<Void> modifyProduct(@PathVariable ProductId productId, @Valid @RequestBody ProductModifyRequest request) {
         updateProductProfileUseCase.execute(productId, request.toCommand());
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{productId}/activate")
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<Void> activateProduct(@PathVariable ProductId productId) {
         productService.activate(productId);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{productId}/deactivate")
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<Void> deactivateProduct(@PathVariable ProductId productId) {
         productService.deactivate(productId);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{productId}/options")
+    @RequireRole({"ADMIN"})
     public ResponseEntity<Void> replaceOptions(@PathVariable ProductId productId, @Valid @RequestBody ProductOptionsReplaceRequest request) {
         replaceProductOptionGroupsUseCase.execute(productId, request.toCommand());
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{productId}")
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<Void> deleteProduct(@PathVariable ProductId productId) {
         deleteProductUseCase.execute(productId);
         return ResponseEntity.noContent().build();

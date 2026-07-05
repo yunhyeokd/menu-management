@@ -6,9 +6,11 @@ import com.dozycoffee.auth.application.AuthenticationService;
 import com.dozycoffee.core.security.Principal;
 import com.dozycoffee.auth.presentation.dto.AuthLoginRequest;
 import com.dozycoffee.auth.presentation.dto.AuthLoginResponse;
-import com.dozycoffee.auth.presentation.dto.AuthLogoutRequest;
 import com.dozycoffee.core.session.Session;
 import com.dozycoffee.core.session.SessionId;
+import com.dozycoffee.infrastructure.security.SessionPrincipalFilter;
+import com.dozycoffee.infrastructure.web.resolver.AuthPrincipal;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,8 +37,9 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@Valid @RequestBody AuthLogoutRequest request) {
-        authSessionManager.invalidate(SessionId.of(request.sessionId()));
+    public ResponseEntity<Void> logout(@AuthPrincipal Principal principal, HttpServletRequest request) {
+        SessionId sessionId = (SessionId) request.getAttribute(SessionPrincipalFilter.SESSION_ID_ATTRIBUTE);
+        authSessionManager.invalidate(sessionId);
         return ResponseEntity.noContent().build();
     }
 }
