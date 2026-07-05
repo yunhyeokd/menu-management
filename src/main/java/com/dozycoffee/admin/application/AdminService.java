@@ -151,7 +151,7 @@ public class AdminService {
             adminRepository.save(admin);
             sessionInvalidationPort.invalidate(admin);
         } catch (AdminException e) {
-            throw new ValidationException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
+            throw new ConflictException(AdminServiceCode.ADM, AdminErrors.ALREADY_DELETED_ERROR);
         } catch (RepositoryException e) {
             throw new SystemException(AdminServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
         }

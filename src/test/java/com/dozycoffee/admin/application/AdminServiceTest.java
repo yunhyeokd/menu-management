@@ -312,15 +312,15 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 이미_소프트_삭제된_계정을_다시_삭제하면_INVALID_ADMIN_ERROR를_던진다() {
+    public void 이미_소프트_삭제된_계정을_다시_삭제하면_ALREADY_DELETED_ERROR를_던진다() {
         AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
         Admin account = AdminFixture.builder().id(adminId).build();
         account.softDelete();
         adminRepository.put(account);
 
         assertThatThrownBy(() -> adminService.softDelete(adminId))
-                .isInstanceOf(ValidationException.class)
-                .satisfies(e -> assertErrorCode(e, AdminErrors.INVALID_ADMIN_ERROR));
+                .isInstanceOf(ConflictException.class)
+                .satisfies(e -> assertErrorCode(e, AdminErrors.ALREADY_DELETED_ERROR));
     }
 
     @Test
