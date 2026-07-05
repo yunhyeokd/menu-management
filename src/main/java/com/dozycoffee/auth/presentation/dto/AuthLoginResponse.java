@@ -1,7 +1,7 @@
 package com.dozycoffee.auth.presentation.dto;
 
-import com.dozycoffee.auth.domain.Principal;
-import com.dozycoffee.core.domain.SessionId;
+import com.dozycoffee.core.security.Principal;
+import com.dozycoffee.core.session.SessionId;
 
 public record AuthLoginResponse(
         String sessionId,

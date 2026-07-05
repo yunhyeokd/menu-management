@@ -3,9 +3,9 @@ package com.dozycoffee.admin.application;
 import com.dozycoffee.admin.application.dto.*;
 import com.dozycoffee.admin.domain.*;
 import com.dozycoffee.auth.application.FakeSessionInvalidationPort;
-import com.dozycoffee.auth.application.PasswordHasher;
-import com.dozycoffee.core.application.AppException;
-import com.dozycoffee.core.application.exception.*;
+import com.dozycoffee.core.security.PasswordHasher;
+import com.dozycoffee.core.exception.base.*;
+import com.dozycoffee.core.exception.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -53,7 +53,7 @@ public class AdminServiceTest {
     }
 
     private void assertErrorCode(Throwable e, AdminErrors error) {
-        assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
+        assertThat(((ServiceException) e).getErrorCode()).isEqualTo(error.getErrorCode());
     }
 
     // ─── registerSystem ───────────────────────────────────────────────────────
@@ -312,15 +312,15 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 이미_소프트_삭제된_계정을_다시_삭제하면_INVALID_ADMIN_ERROR를_던진다() {
+    public void 이미_소프트_삭제된_계정을_다시_삭제하면_ALREADY_DELETED_ERROR를_던진다() {
         AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
         Admin account = AdminFixture.builder().id(adminId).build();
         account.softDelete();
         adminRepository.put(account);
 
         assertThatThrownBy(() -> adminService.softDelete(adminId))
-                .isInstanceOf(ValidationException.class)
-                .satisfies(e -> assertErrorCode(e, AdminErrors.INVALID_ADMIN_ERROR));
+                .isInstanceOf(ConflictException.class)
+                .satisfies(e -> assertErrorCode(e, AdminErrors.ALREADY_DELETED_ERROR));
     }
 
     @Test

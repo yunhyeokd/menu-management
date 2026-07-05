@@ -1,8 +1,8 @@
 package com.dozycoffee.product.application.service.tag;
 
-import com.dozycoffee.core.application.AppException;
-import com.dozycoffee.core.application.ServiceError;
-import com.dozycoffee.core.application.exception.SystemException;
+import com.dozycoffee.core.exception.service.ServiceException;
+import com.dozycoffee.core.exception.service.ServiceError;
+import com.dozycoffee.core.exception.service.SystemException;
 import com.dozycoffee.product.application.dto.TagData;
 import com.dozycoffee.product.application.repository.FakeProductTagRepository;
 import com.dozycoffee.product.application.repository.FakeTagRepository;
@@ -35,7 +35,7 @@ public class ProductTagServiceTest {
     }
 
     private void assertErrorCode(Throwable e, ServiceError error) {
-        assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
+        assertThat(((ServiceException) e).getErrorCode()).isEqualTo(error.getErrorCode());
     }
 
     @Test

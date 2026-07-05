@@ -3,7 +3,7 @@ package com.dozycoffee.infrastructure.adapter;
 import com.dozycoffee.branch.application.BranchProductQueryPort;
 import com.dozycoffee.branch.application.model.BranchProduct;
 import com.dozycoffee.branch.domain.BranchId;
-import com.dozycoffee.core.application.RepositoryException;
+import com.dozycoffee.core.exception.base.RepositoryException;
 import com.dozycoffee.product.application.dto.ProductSnapshot;
 import com.dozycoffee.product.application.dto.TagData;
 import com.dozycoffee.product.application.repository.ProductRepository;

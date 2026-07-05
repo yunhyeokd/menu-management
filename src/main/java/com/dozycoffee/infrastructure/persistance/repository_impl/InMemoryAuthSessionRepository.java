@@ -1,10 +1,10 @@
 package com.dozycoffee.infrastructure.persistance.repository_impl;
 
 import com.dozycoffee.auth.application.AuthSessionRepository;
-import com.dozycoffee.auth.domain.Principal;
-import com.dozycoffee.core.application.RepositoryException;
-import com.dozycoffee.core.domain.Session;
-import com.dozycoffee.core.domain.SessionId;
+import com.dozycoffee.core.security.Principal;
+import com.dozycoffee.core.exception.base.RepositoryException;
+import com.dozycoffee.core.session.Session;
+import com.dozycoffee.core.session.SessionId;
 import org.springframework.stereotype.Repository;
 
 import java.util.Map;

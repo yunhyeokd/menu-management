@@ -1,5 +1,7 @@
 package com.dozycoffee.auth.domain;
 
+import com.dozycoffee.core.security.Principal;
+
 import java.util.Objects;
 
 public class SessionPrincipal implements Principal {

@@ -1,7 +1,7 @@
 package com.dozycoffee.auth.application;
 
-import com.dozycoffee.auth.domain.Credential;
-import com.dozycoffee.core.application.exception.AuthenticationException;
+import com.dozycoffee.core.security.Credential;
+import com.dozycoffee.core.exception.service.AuthenticationException;
 
 import java.util.Map;
 import java.util.Optional;

@@ -1,6 +1,6 @@
 package com.dozycoffee.admin.application;
 
-import com.dozycoffee.core.application.ServiceError;
+import com.dozycoffee.core.exception.service.ServiceError;
 
 public enum AdminErrors implements ServiceError {
 
@@ -10,7 +10,8 @@ public enum AdminErrors implements ServiceError {
     DUPLICATE_ACCOUNT_ERROR(4, "Duplicate Account"),
     UNABLE_APPROVAL_ERROR(5, "Account is not a subject to approval"),
     AUTHENTICATION_FAILED_ERROR(6, "Authentication Failed"),
-    DUPLICATE_EMPLOYEE_NO_ERROR(7, "Duplicate Employee Number"),;
+    DUPLICATE_EMPLOYEE_NO_ERROR(7, "Duplicate Employee Number"),
+    ALREADY_DELETED_ERROR(8, "Admin Already Deleted"),;
 
     private final int errorCode;
     private final String message;

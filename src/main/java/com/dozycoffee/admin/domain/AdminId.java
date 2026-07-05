@@ -1,6 +1,6 @@
 package com.dozycoffee.admin.domain;
 
-import com.dozycoffee.core.domain.UuidIdentifier;
+import com.dozycoffee.core.id.UuidIdentifier;
 
 public class AdminId extends UuidIdentifier {
     private AdminId(String value) {

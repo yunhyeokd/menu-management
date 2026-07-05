@@ -1,6 +1,6 @@
 package com.dozycoffee.auth.application;
 
-import com.dozycoffee.core.application.ServiceError;
+import com.dozycoffee.core.exception.service.ServiceError;
 
 public enum AuthErrors implements ServiceError {
 

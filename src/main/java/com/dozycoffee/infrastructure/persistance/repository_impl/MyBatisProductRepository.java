@@ -1,7 +1,7 @@
 package com.dozycoffee.infrastructure.persistance.repository_impl;
 
 import com.dozycoffee.branch.domain.BranchId;
-import com.dozycoffee.core.application.RepositoryException;
+import com.dozycoffee.core.exception.base.RepositoryException;
 import com.dozycoffee.infrastructure.persistance.entity.ProductRow;
 import com.dozycoffee.infrastructure.persistance.mapper.ProductMapper;
 import com.dozycoffee.product.application.repository.ProductRepository;

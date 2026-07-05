@@ -2,8 +2,8 @@ package com.dozycoffee.auth.application;
 
 import org.springframework.stereotype.Service;
 
-import com.dozycoffee.auth.domain.Principal;
-import com.dozycoffee.core.application.exception.AuthorizationException;
+import com.dozycoffee.core.security.Principal;
+import com.dozycoffee.core.exception.service.AuthorizationException;
 
 import java.util.List;
 

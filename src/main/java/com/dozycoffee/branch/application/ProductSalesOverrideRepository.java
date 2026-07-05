@@ -1,6 +1,6 @@
 package com.dozycoffee.branch.application;
 
-import com.dozycoffee.core.application.RepositoryException;
+import com.dozycoffee.core.exception.base.RepositoryException;
 import com.dozycoffee.branch.domain.BranchId;
 import com.dozycoffee.branch.domain.ProductSalesOverride;
 import com.dozycoffee.product.domain.ProductId;

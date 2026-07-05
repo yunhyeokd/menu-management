@@ -1,7 +1,7 @@
 package com.dozycoffee.infrastructure.persistance.repository_impl;
 
 import com.dozycoffee.branch.domain.BranchId;
-import com.dozycoffee.core.application.RepositoryException;
+import com.dozycoffee.core.exception.base.RepositoryException;
 import com.dozycoffee.infrastructure.persistance.entity.ProductOptionGroupItemRow;
 import com.dozycoffee.infrastructure.persistance.entity.ProductTagNameRow;
 import com.dozycoffee.infrastructure.persistance.entity.ProductWithCategoryRow;

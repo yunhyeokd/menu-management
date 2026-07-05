@@ -1,8 +1,7 @@
 package com.dozycoffee.product.application.service.category;
 
-import com.dozycoffee.core.application.AppException;
-import com.dozycoffee.core.application.ServiceError;
-import com.dozycoffee.core.application.exception.*;
+import com.dozycoffee.core.exception.base.*;
+import com.dozycoffee.core.exception.service.*;
 import com.dozycoffee.product.application.dto.CategoryData;
 import com.dozycoffee.product.application.repository.FakeCategoryRepository;
 import com.dozycoffee.product.application.repository.FakeProductRepository;
@@ -38,7 +37,7 @@ public class CategoryServiceTest {
     }
 
     private void assertErrorCode(Throwable e, ServiceError error) {
-        assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
+        assertThat(((ServiceException) e).getErrorCode()).isEqualTo(error.getErrorCode());
     }
 
     // ─── create ──────────────────────────────────────────────────────────────

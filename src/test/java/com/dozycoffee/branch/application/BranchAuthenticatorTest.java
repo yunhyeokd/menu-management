@@ -1,8 +1,8 @@
 package com.dozycoffee.branch.application;
 
-import com.dozycoffee.auth.application.PasswordHasher;
-import com.dozycoffee.auth.domain.Credential;
-import com.dozycoffee.auth.domain.Principal;
+import com.dozycoffee.core.security.PasswordHasher;
+import com.dozycoffee.core.security.Credential;
+import com.dozycoffee.core.security.Principal;
 import com.dozycoffee.branch.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

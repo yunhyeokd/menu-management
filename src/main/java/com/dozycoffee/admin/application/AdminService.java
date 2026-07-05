@@ -5,11 +5,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dozycoffee.admin.application.dto.*;
 import com.dozycoffee.admin.domain.*;
-import com.dozycoffee.auth.application.PasswordHasher;
-import com.dozycoffee.auth.application.SessionInvalidationPort;
-import com.dozycoffee.core.domain.IdentifierGenerator;
-import com.dozycoffee.core.application.RepositoryException;
-import com.dozycoffee.core.application.exception.*;
+import com.dozycoffee.core.security.PasswordHasher;
+import com.dozycoffee.core.security.SessionInvalidationPort;
+import com.dozycoffee.core.id.IdentifierGenerator;
+import com.dozycoffee.core.exception.base.*;
+import com.dozycoffee.core.exception.service.*;
 
 import java.util.List;
 
@@ -151,7 +151,7 @@ public class AdminService {
             adminRepository.save(admin);
             sessionInvalidationPort.invalidate(admin);
         } catch (AdminException e) {
-            throw new ValidationException(AdminServiceCode.ADM, AdminErrors.INVALID_ADMIN_ERROR);
+            throw new ConflictException(AdminServiceCode.ADM, AdminErrors.ALREADY_DELETED_ERROR);
         } catch (RepositoryException e) {
             throw new SystemException(AdminServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
         }

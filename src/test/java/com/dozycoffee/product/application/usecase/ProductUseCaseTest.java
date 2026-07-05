@@ -1,10 +1,10 @@
 package com.dozycoffee.product.application.usecase;
 
 import com.dozycoffee.branch.domain.BranchId;
-import com.dozycoffee.core.application.AppException;
-import com.dozycoffee.core.application.ServiceError;
-import com.dozycoffee.core.application.exception.ConflictException;
-import com.dozycoffee.core.application.exception.ResourceNotFoundException;
+import com.dozycoffee.core.exception.service.ServiceException;
+import com.dozycoffee.core.exception.service.ServiceError;
+import com.dozycoffee.core.exception.service.ConflictException;
+import com.dozycoffee.core.exception.service.ResourceNotFoundException;
 import com.dozycoffee.product.application.dto.*;
 import com.dozycoffee.product.application.repository.*;
 import com.dozycoffee.product.application.service.ProductService;
@@ -88,7 +88,7 @@ public class ProductUseCaseTest {
     }
 
     private void assertErrorCode(Throwable e, ServiceError error) {
-        assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
+        assertThat(((ServiceException) e).getErrorCode()).isEqualTo(error.getErrorCode());
     }
 
     private Category defaultCategory() {

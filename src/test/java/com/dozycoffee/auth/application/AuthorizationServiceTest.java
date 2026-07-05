@@ -2,7 +2,7 @@ package com.dozycoffee.auth.application;
 
 import com.dozycoffee.admin.domain.AdminId;
 import com.dozycoffee.admin.domain.SystemAdmin;
-import com.dozycoffee.core.application.AppException;
+import com.dozycoffee.core.exception.service.ServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +23,7 @@ public class AuthorizationServiceTest {
     }
 
     private void assertErrorCode(Throwable e, AuthErrors error) {
-        assertThat(((AppException) e).getErrorCode()).isEqualTo(error.getErrorCode());
+        assertThat(((ServiceException) e).getErrorCode()).isEqualTo(error.getErrorCode());
     }
 
     @Test

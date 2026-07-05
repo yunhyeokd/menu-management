@@ -1,6 +1,6 @@
 package com.dozycoffee.product.domain;
 
-import com.dozycoffee.core.domain.UuidIdentifier;
+import com.dozycoffee.core.id.UuidIdentifier;
 
 public class TagId extends UuidIdentifier {
 
