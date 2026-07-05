@@ -62,6 +62,15 @@ public class AdminService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public AdminPrincipal findPrincipalById(AdminId adminId) {
+        try {
+            return getAdminPrincipal(adminId);
+        } catch (RepositoryException e) {
+            throw new SystemException(AdminServiceCode.ADM, AdminErrors.UNKNOWN_ERROR);
+        }
+    }
+
     public SystemAdmin registerSystem(SystemAdminRegisterCommand command) {
         try {
             adminRepository.findSystemAdmin().ifPresent(a -> {

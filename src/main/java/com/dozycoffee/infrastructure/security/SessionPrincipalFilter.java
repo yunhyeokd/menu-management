@@ -16,6 +16,7 @@ import java.util.Optional;
 public class SessionPrincipalFilter extends OncePerRequestFilter {
 
     public static final String PRINCIPAL_ATTRIBUTE = SessionPrincipalFilter.class.getName() + ".PRINCIPAL";
+    public static final String SESSION_ID_ATTRIBUTE = SessionPrincipalFilter.class.getName() + ".SESSION_ID";
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
@@ -32,9 +33,11 @@ public class SessionPrincipalFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        extractSessionId(request)
-                .flatMap(authSessionManager::findPrincipal)
-                .ifPresent(principal -> request.setAttribute(PRINCIPAL_ATTRIBUTE, principal));
+        extractSessionId(request).ifPresent(sessionId -> {
+            request.setAttribute(SESSION_ID_ATTRIBUTE, sessionId);
+            authSessionManager.findPrincipal(sessionId)
+                    .ifPresent(principal -> request.setAttribute(PRINCIPAL_ATTRIBUTE, principal));
+        });
         filterChain.doFilter(request, response);
     }
 

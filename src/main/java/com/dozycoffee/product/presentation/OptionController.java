@@ -1,5 +1,6 @@
 package com.dozycoffee.product.presentation;
 
+import com.dozycoffee.infrastructure.web.interceptor.RequireRole;
 import com.dozycoffee.product.application.dto.OptionGroupData;
 import com.dozycoffee.product.application.service.option.OptionService;
 import com.dozycoffee.product.application.usecase.DeleteOptionGroupUseCase;
@@ -24,6 +25,7 @@ public class OptionController {
     private final DeleteOptionGroupUseCase deleteOptionGroupUseCase;
 
     @GetMapping
+    @RequireRole({"SYSTEM", "ADMIN", "BRANCH"})
     public ResponseEntity<List<OptionGroupResponse>> findOptionGroups() {
         List<OptionGroupData> optionGroups = optionService.findAll();
         List<OptionGroupResponse> response = optionGroups.stream().map(OptionGroupResponse::from).toList();
@@ -31,12 +33,14 @@ public class OptionController {
     }
 
     @PostMapping
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<OptionGroupResponse> createOptionGroup(@Valid @RequestBody OptionGroupCreateRequest request) {
         OptionGroupData optionGroup = optionService.create(request.toCommand());
         return ResponseEntity.ok(OptionGroupResponse.from(optionGroup));
     }
 
     @PatchMapping("/{optionGroupId}/profile")
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<Void> updateOptionGroupProfile(
             @PathVariable OptionGroupId optionGroupId,
             @Valid @RequestBody OptionGroupProfileUpdateRequest request
@@ -46,6 +50,7 @@ public class OptionController {
     }
 
     @PatchMapping("/{optionGroupId}/items")
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<Void> updateOptionGroupItems(
             @PathVariable OptionGroupId optionGroupId,
             @Valid @RequestBody OptionGroupItemsUpdateRequest request
@@ -55,6 +60,7 @@ public class OptionController {
     }
 
     @DeleteMapping("/{optionGroupId}")
+    @RequireRole({"SYSTEM", "ADMIN"})
     public ResponseEntity<Void> deleteOptionGroup(@PathVariable OptionGroupId optionGroupId) {
         deleteOptionGroupUseCase.execute(optionGroupId);
         return ResponseEntity.noContent().build();
