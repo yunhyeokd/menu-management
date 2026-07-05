@@ -5,22 +5,26 @@ import com.dozycoffee.product.application.dto.ProductRegisterCommand;
 import com.dozycoffee.product.domain.AllergenInfo;
 import com.dozycoffee.product.domain.CategoryId;
 import com.dozycoffee.product.domain.ProductKind;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.util.HashSet;
 import java.util.List;
 
 public record ProductRegisterRequest(
-        String productKind,
-        BranchId branchId,
-        String name,
+        @NotBlank String productKind,
+        @NotNull BranchId branchId,
+        @NotBlank String name,
         String description,
         String imageUrl,
-        CategoryId categoryId,
-        Integer price,
-        Integer kcal,
-        String allergenInfo,
-        List<String> tags,
-        List<OptionGroupLinkRequest> optionGroups
+        @NotNull CategoryId categoryId,
+        @NotNull @PositiveOrZero Integer price,
+        @PositiveOrZero Integer kcal,
+        @NotBlank String allergenInfo,
+        @NotNull List<String> tags,
+        @NotNull @Valid List<OptionGroupLinkRequest> optionGroups
 ) {
 
 

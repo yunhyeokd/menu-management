@@ -5,6 +5,7 @@ import com.dozycoffee.admin.domain.Admin;
 import com.dozycoffee.admin.domain.AdminId;
 import com.dozycoffee.admin.domain.AdminPrincipal;
 import com.dozycoffee.admin.presentation.dto.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class AdminController {
     }
 
     @PostMapping
-    public ResponseEntity<AdminResponse> registerAdmin(@RequestBody AdminRegisterRequest request) {
+    public ResponseEntity<AdminResponse> registerAdmin(@Valid @RequestBody AdminRegisterRequest request) {
         Admin admin = adminService.registerAdmin(request.toCommand());
         return ResponseEntity.ok(AdminResponse.from(admin));
     }
@@ -52,7 +53,7 @@ public class AdminController {
     @PatchMapping("/{adminId}/profile")
     public ResponseEntity<AdminResponse> updateProfile(
             @PathVariable AdminId adminId,
-            @RequestBody AdminProfileUpdateRequest request
+            @Valid @RequestBody AdminProfileUpdateRequest request
     ) {
         Admin admin = adminService.updateProfile(adminId, request.toCommand());
         return ResponseEntity.ok(AdminResponse.from(admin));
@@ -61,7 +62,7 @@ public class AdminController {
     @PatchMapping("/{adminId}/password")
     public ResponseEntity<Void> changePassword(
             @PathVariable AdminId adminId,
-            @RequestBody AdminPasswordChangeRequest request
+            @Valid @RequestBody AdminPasswordChangeRequest request
     ) {
         adminService.changePassword(adminId, request.currentPassword(), request.newPassword());
         return ResponseEntity.noContent().build();

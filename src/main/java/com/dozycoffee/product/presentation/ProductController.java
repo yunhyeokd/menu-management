@@ -8,6 +8,7 @@ import com.dozycoffee.product.application.service.ProductService;
 import com.dozycoffee.product.application.usecase.*;
 import com.dozycoffee.product.domain.*;
 import com.dozycoffee.product.presentation.dto.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class ProductController {
     private final DeleteProductUseCase deleteProductUseCase;
 
     @PostMapping("")
-    public ResponseEntity<ProductSummaryResponse> registerProduct(@RequestBody ProductRegisterRequest request) {
+    public ResponseEntity<ProductSummaryResponse> registerProduct(@Valid @RequestBody ProductRegisterRequest request) {
         ProductSnapshot product = registerProductUseCase.execute(request.toCommand());
         ProductSummaryResult result = ProductSummaryResult.from(product, product.tags());
         return ResponseEntity.ok(ProductSummaryResponse.from(result));
@@ -65,7 +66,7 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}")
-    public ResponseEntity<Void> modifyProduct(@PathVariable ProductId productId, @RequestBody ProductModifyRequest request) {
+    public ResponseEntity<Void> modifyProduct(@PathVariable ProductId productId, @Valid @RequestBody ProductModifyRequest request) {
         updateProductProfileUseCase.execute(productId, request.toCommand());
         return ResponseEntity.noContent().build();
     }
@@ -83,7 +84,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}/options")
-    public ResponseEntity<Void> replaceOptions(@PathVariable ProductId productId, @RequestBody ProductOptionsReplaceRequest request) {
+    public ResponseEntity<Void> replaceOptions(@PathVariable ProductId productId, @Valid @RequestBody ProductOptionsReplaceRequest request) {
         replaceProductOptionGroupsUseCase.execute(productId, request.toCommand());
         return ResponseEntity.noContent().build();
     }

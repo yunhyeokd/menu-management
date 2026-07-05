@@ -7,6 +7,7 @@ import com.dozycoffee.product.domain.TagId;
 import com.dozycoffee.product.presentation.dto.TagCreateRequest;
 import com.dozycoffee.product.presentation.dto.TagRenameRequest;
 import com.dozycoffee.product.presentation.dto.TagResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,13 +30,13 @@ public class TagController {
     }
 
     @PostMapping
-    public ResponseEntity<TagResponse> createTag(@RequestBody TagCreateRequest request) {
+    public ResponseEntity<TagResponse> createTag(@Valid @RequestBody TagCreateRequest request) {
         TagData tag = tagService.create(request.name());
         return ResponseEntity.ok(TagResponse.from(tag));
     }
 
     @PatchMapping("/{tagId}")
-    public ResponseEntity<Void> renameTag(@PathVariable TagId tagId, @RequestBody TagRenameRequest request) {
+    public ResponseEntity<Void> renameTag(@PathVariable TagId tagId, @Valid @RequestBody TagRenameRequest request) {
         tagService.changeTagName(tagId, request.name());
         return ResponseEntity.noContent().build();
     }

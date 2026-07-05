@@ -1,11 +1,12 @@
 package com.dozycoffee.product.presentation.dto;
 
 import com.dozycoffee.product.application.dto.OptionGroupProfileUpdateCommand;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.Optional;
 
 public record OptionGroupProfileUpdateRequest(
-        String name,
+        @NotBlank String name,
         String description
 ) {
 
