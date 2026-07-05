@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -21,7 +22,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ComponentScan(
         basePackages = "com.dozycoffee",
         useDefaultFilters = false,
-        includeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Controller.class)
+        includeFilters = {
+                @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Controller.class),
+                @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = ControllerAdvice.class)
+        }
 )
 public class ServletConfig {
 

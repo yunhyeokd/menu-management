@@ -51,6 +51,8 @@ dependencies {
     // Validation
     implementation("jakarta.validation:jakarta.validation-api:3.0.2")
     implementation("org.hibernate.validator:hibernate-validator:8.0.4.Final")
+    runtimeOnly("jakarta.el:jakarta.el-api:5.0.0")
+    runtimeOnly("org.glassfish.expressly:expressly:5.0.0")
 
     // Database
     implementation("org.springframework:spring-jdbc")

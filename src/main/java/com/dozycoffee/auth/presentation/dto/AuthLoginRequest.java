@@ -1,8 +1,10 @@
 package com.dozycoffee.auth.presentation.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record AuthLoginRequest(
-        String role,
-        String id,
-        String credential
+        @NotBlank String role,
+        @NotBlank String id,
+        @NotBlank String credential
 ) {
 }

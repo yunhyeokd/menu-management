@@ -14,6 +14,7 @@ import com.dozycoffee.branch.presentation.dto.BranchProductSummaryResponse;
 import com.dozycoffee.branch.presentation.dto.BranchProfileResponse;
 import com.dozycoffee.branch.presentation.dto.BranchProfileUpdateRequest;
 import com.dozycoffee.product.domain.ProductId;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class BranchController {
 
     @PostMapping
     public ResponseEntity<BranchCreateResponse> createBranch(
-            @RequestBody BranchCreateRequest request
+            @Valid @RequestBody BranchCreateRequest request
     ) {
         BranchCreateResult result = branchService.create(request.toCommand());
         BranchCreateResponse response = BranchCreateResponse.from(result);
@@ -66,7 +67,7 @@ public class BranchController {
     @PatchMapping("/{branchId}/profile")
     public ResponseEntity<Void> updateProfile(
             @PathVariable BranchId branchId,
-            @RequestBody BranchProfileUpdateRequest request
+            @Valid @RequestBody BranchProfileUpdateRequest request
     ) {
         branchService.updateProfile(branchId, request.toCommand());
         return ResponseEntity.noContent().build();

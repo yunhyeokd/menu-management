@@ -8,6 +8,7 @@ import com.dozycoffee.product.presentation.dto.OptionGroupCreateRequest;
 import com.dozycoffee.product.presentation.dto.OptionGroupItemsUpdateRequest;
 import com.dozycoffee.product.presentation.dto.OptionGroupProfileUpdateRequest;
 import com.dozycoffee.product.presentation.dto.OptionGroupResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class OptionController {
     }
 
     @PostMapping
-    public ResponseEntity<OptionGroupResponse> createOptionGroup(@RequestBody OptionGroupCreateRequest request) {
+    public ResponseEntity<OptionGroupResponse> createOptionGroup(@Valid @RequestBody OptionGroupCreateRequest request) {
         OptionGroupData optionGroup = optionService.create(request.toCommand());
         return ResponseEntity.ok(OptionGroupResponse.from(optionGroup));
     }
@@ -38,7 +39,7 @@ public class OptionController {
     @PatchMapping("/{optionGroupId}/profile")
     public ResponseEntity<Void> updateOptionGroupProfile(
             @PathVariable OptionGroupId optionGroupId,
-            @RequestBody OptionGroupProfileUpdateRequest request
+            @Valid @RequestBody OptionGroupProfileUpdateRequest request
     ) {
         optionService.updateOptionGroupProfile(optionGroupId, request.toCommand());
         return ResponseEntity.noContent().build();
@@ -47,7 +48,7 @@ public class OptionController {
     @PatchMapping("/{optionGroupId}/items")
     public ResponseEntity<Void> updateOptionGroupItems(
             @PathVariable OptionGroupId optionGroupId,
-            @RequestBody OptionGroupItemsUpdateRequest request
+            @Valid @RequestBody OptionGroupItemsUpdateRequest request
     ) {
         optionService.updateOptionGroupItems(optionGroupId, request.toCommand());
         return ResponseEntity.noContent().build();
