@@ -74,6 +74,11 @@ dependencies {
     implementation("org.projectlombok:lombok:1.18.46")
     annotationProcessor("org.projectlombok:lombok:1.18.46")
 
+    // Swagger (springdoc-openapi 2.x = Jakarta/Spring Framework 6 line; Boot 없이 쓰려면
+    // springdoc의 자동구성 클래스가 참조하는 spring-boot-autoconfigure를 별도로 얹어야 함)
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.17")
+    implementation("org.springframework.boot:spring-boot-autoconfigure:3.5.16")
+
 }
 
 tasks.withType<JavaCompile> {

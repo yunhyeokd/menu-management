@@ -1,6 +1,7 @@
 package com.dozycoffee.infrastructure;
 
 import com.dozycoffee.infrastructure.web.ServletConfig;
+import com.dozycoffee.infrastructure.web.SwaggerWebMvcConfig;
 import jakarta.servlet.Filter;
 import org.springframework.lang.Nullable;
 import org.springframework.web.filter.DelegatingFilterProxy;
@@ -16,7 +17,7 @@ public class AppInitializer extends AbstractAnnotationConfigDispatcherServletIni
     @Nullable
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class[] { ServletConfig.class };
+        return new Class[] { ServletConfig.class, SwaggerWebMvcConfig.class };
     }
 
     @Override
