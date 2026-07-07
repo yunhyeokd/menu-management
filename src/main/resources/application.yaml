@@ -13,3 +13,8 @@ datasource:
 
 mybatis:
   mapper-locations: classpath:mapper/**/*.xml
+
+system:
+  admin:
+    username: ${SYSTEM_ADMIN_USERNAME:}
+    password: ${SYSTEM_ADMIN_PASSWORD:}
