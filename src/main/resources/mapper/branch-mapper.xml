@@ -5,7 +5,7 @@
 
     <resultMap id="branchRow" type="com.dozycoffee.infrastructure.persistance.entity.BranchRow">
         <constructor>
-            <idArg column="branch_id" javaType="Long"/>
+            <idArg column="branch_id" javaType="String"/>
             <arg column="branch_code" javaType="String"/>
             <arg column="auth_key_hash" javaType="String"/>
             <arg column="status" javaType="String"/>
@@ -28,7 +28,7 @@
     </insert>
 
     <select id="findById" resultMap="branchRow">
-        select branch_id,
+        select bin_to_uuid(branch_id) as branch_id,
                branch_code,
                auth_key_hash,
                status,
@@ -37,11 +37,11 @@
                name,
                address
         from branch_account
-        where branch_id = #{branchId}
+        where branch_id = uuid_to_bin(#{branchId})
     </select>
 
     <select id="findByCode" resultMap="branchRow">
-        select branch_id,
+        select bin_to_uuid(branch_id) as branch_id,
                branch_code,
                auth_key_hash,
                status,
@@ -54,7 +54,7 @@
     </select>
 
     <select id="findByName" resultMap="branchRow">
-        select branch_id,
+        select bin_to_uuid(branch_id) as branch_id,
                branch_code,
                auth_key_hash,
                status,
@@ -67,7 +67,7 @@
     </select>
 
     <select id="findAll" resultMap="branchRow">
-        select branch_id,
+        select bin_to_uuid(branch_id) as branch_id,
                branch_code,
                auth_key_hash,
                status,
@@ -81,7 +81,7 @@
     <delete id="deleteById">
         delete
         from branch_account
-        where branch_id = #{branchId}
+        where branch_id = uuid_to_bin(#{branchId})
     </delete>
 
 </mapper>
