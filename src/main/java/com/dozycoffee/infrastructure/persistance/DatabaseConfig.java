@@ -2,6 +2,7 @@ package com.dozycoffee.infrastructure.persistance;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.flywaydb.core.Flyway;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +42,17 @@ public class DatabaseConfig {
         hikariConfig.setMaximumPoolSize(maximumPoolSize);
         hikariConfig.setMinimumIdle(minimumIdle);
         hikariConfig.setConnectionTimeout(connectionTimeout);
-        return new HikariDataSource(hikariConfig);
+        HikariDataSource dataSource = new HikariDataSource(hikariConfig);
+
+        // 이 빈이 반환되기 전에 마이그레이션을 끝내 DataSource에 의존하는
+        // 모든 빈보다 먼저 스키마가 준비되도록 보장
+        Flyway.configure()
+                .dataSource(dataSource)
+                .locations("classpath:db/migration")
+                .load()
+                .migrate();
+
+        return dataSource;
     }
 
     @Bean

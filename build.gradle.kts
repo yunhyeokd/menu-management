@@ -61,8 +61,14 @@ dependencies {
     implementation("org.mybatis:mybatis-spring:3.0.5")
     implementation("com.zaxxer:HikariCP:7.1.0")
 
+    // DB 마이그레이션 (MySQL 8은 flyway-core만으론 동작 안 하고 flyway-mysql이 별도로 필요, 버전 일치 필수)
+    implementation("org.flywaydb:flyway-core:12.10.0")
+    implementation("org.flywaydb:flyway-mysql:12.10.0")
+
     // Security
+    // Argon2PasswordEncoder에서 내부적으로 BouncyCastle 구현체 요구
     implementation("org.springframework.security:spring-security-crypto")
+    runtimeOnly("org.bouncycastle:bcprov-jdk18on:1.84")
 
     // YAML
     implementation("org.yaml:snakeyaml:2.6")

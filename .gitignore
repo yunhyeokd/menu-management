@@ -21,4 +21,5 @@ CLAUDE.md
 .env
 .env.*
 
-sql/
+# 로컬 개발용 DB 세팅 스크립트 (docker 컨테이너/자격증명 등 로컬 환경 의존)
+scripts/
