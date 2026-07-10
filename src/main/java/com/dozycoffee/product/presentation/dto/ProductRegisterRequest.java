@@ -15,11 +15,11 @@ import java.util.List;
 
 public record ProductRegisterRequest(
         @NotBlank String productKind,
-        @NotNull BranchId branchId,
+        @NotBlank String branchId,
         @NotBlank String name,
         String description,
         String imageUrl,
-        @NotNull CategoryId categoryId,
+        @NotBlank String categoryId,
         @NotNull @PositiveOrZero Integer price,
         @PositiveOrZero Integer kcal,
         @NotBlank String allergenInfo,
@@ -31,11 +31,11 @@ public record ProductRegisterRequest(
     public ProductRegisterCommand toCommand() {
         return new ProductRegisterCommand(
                 ProductKind.of(productKind),
-                branchId,
+                BranchId.of(branchId),
                 name,
                 description,
                 imageUrl,
-                categoryId,
+                CategoryId.of(categoryId),
                 price,
                 kcal,
                 AllergenInfo.of(allergenInfo),

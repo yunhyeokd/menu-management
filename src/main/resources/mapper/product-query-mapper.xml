@@ -59,8 +59,8 @@
     <select id="findByFilter" resultMap="productWithCategoryRow">
         <include refid="productWithCategoryColumns"/>
         <where>
-            <if test="name.present">
-                AND p.name LIKE CONCAT('%', #{name.get}, '%')
+            <if test="name != null">
+                AND p.name LIKE CONCAT('%', #{name}, '%')
             </if>
             <if test="!categoryIds.isEmpty()">
                 AND p.category_id IN
@@ -100,8 +100,8 @@
                     #{k.name()}
                 </foreach>
             </if>
-            <if test="branchId.present">
-                AND p.branch_id = UUID_TO_BIN(#{branchId.get.value})
+            <if test="branchId != null">
+                AND p.branch_id = UUID_TO_BIN(#{branchId.value})
             </if>
         </where>
     </select>

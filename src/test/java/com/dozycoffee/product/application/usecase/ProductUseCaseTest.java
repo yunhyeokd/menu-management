@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -307,7 +306,7 @@ public class ProductUseCaseTest {
     @Test
     void 존재하지_않는_태그_이름으로_검색하면_빈_목록을_반환한다() {
         ProductSearchCommand command = new ProductSearchCommand(
-                Optional.empty(), List.of(), List.of("존재하지않는태그"), List.of(), List.of(), List.of(), Optional.empty()
+                null, List.of(), List.of("존재하지않는태그"), List.of(), List.of(), List.of(), null
         );
 
         List<ProductSummaryResult> result = searchProductsUseCase.execute(command);
@@ -323,7 +322,7 @@ public class ProductUseCaseTest {
         ));
 
         ProductSearchCommand command = new ProductSearchCommand(
-                Optional.empty(), List.of(), List.of(), List.of(), List.of(), List.of(), Optional.empty()
+                null, List.of(), List.of(), List.of(), List.of(), List.of(), null
         );
 
         List<ProductSummaryResult> result = searchProductsUseCase.execute(command);
@@ -341,7 +340,7 @@ public class ProductUseCaseTest {
         ));
 
         ProductSearchCommand command = new ProductSearchCommand(
-                Optional.empty(), List.of(), List.of("신제품"), List.of(), List.of(), List.of(), Optional.empty()
+                null, List.of(), List.of("신제품"), List.of(), List.of(), List.of(), null
         );
 
         List<ProductSummaryResult> result = searchProductsUseCase.execute(command);
