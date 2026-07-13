@@ -37,9 +37,12 @@ public class AdminUsernameAuthenticatorTest {
 
         adminUsernameAuthenticator = new AdminUsernameAuthenticator(adminRepository, passwordHasher);
 
-        activeAdmin = SystemAdmin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), "sysadmin", HASHED_PASSWORD);
-        AdminProfile adminProfile = AdminProfile.create("EMP001", "홍길동", "+821012345678", "admin@dozy.com");
-        pendingAdmin = Admin.create(AdminId.of("00000000-0000-0000-0000-000000000002"), "pendingadmin", HASHED_PASSWORD, adminProfile);
+        activeAdmin = AdminFixture.system().id(AdminFixture.id).username("sysadmin").password(HASHED_PASSWORD).build();
+        pendingAdmin = AdminFixture.builder()
+                .id(AdminId.of("00000000-0000-0000-0000-000000000002"))
+                .username("pendingadmin")
+                .password(HASHED_PASSWORD)
+                .build();
 
         adminRepository.put(activeAdmin);
         adminRepository.put(pendingAdmin);

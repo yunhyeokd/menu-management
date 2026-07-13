@@ -13,13 +13,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class AdminTest {
 
-    private static AdminProfile defaultProfile() {
-        return AdminProfile.create("EMP001", "홍길동", "+821012345678", "admin@dozy.com");
-    }
-
     @Test
     public void 관리자_계정을_정상_생성한다() {
-        Admin adminAccount = Admin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), "test", "password", defaultProfile());
+        Admin adminAccount = Admin.create(AdminFixture.id, "test", "password", AdminFixture.defaultProfile());
 
         assertThat(adminAccount.getUsername()).isEqualTo("test");
         assertThat(adminAccount.getRole()).isEqualTo("ADMIN");
@@ -51,15 +47,15 @@ public class AdminTest {
 
     @Test
     public void ADMIN_계정_생성시_profile이_null이면_예외가_발생한다() {
-        assertThatThrownBy(() -> Admin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), "test", "password", null))
+        assertThatThrownBy(() -> Admin.create(AdminFixture.id, "test", "password", null))
                 .isInstanceOf(AdminException.class);
     }
 
     @Test
     public void 같은_id를_가진_계정은_동등하다() {
-        AdminProfile profile = defaultProfile();
-        Admin a = Admin.of(AdminId.of("00000000-0000-0000-0000-000000000001"), "admin_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
-        Admin b = Admin.of(AdminId.of("00000000-0000-0000-0000-000000000001"), "admin_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
+        AdminProfile profile = AdminFixture.defaultProfile();
+        Admin a = Admin.of(AdminFixture.id, "admin_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
+        Admin b = Admin.of(AdminFixture.id, "admin_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
 
         assertThat(a).isEqualTo(b);
         assertThat(a.hashCode()).isEqualTo(b.hashCode());
@@ -67,8 +63,8 @@ public class AdminTest {
 
     @Test
     public void 다른_id를_가진_계정은_동등하지_않다() {
-        AdminProfile profile = defaultProfile();
-        Admin a = Admin.of(AdminId.of("00000000-0000-0000-0000-000000000001"), "admin_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
+        AdminProfile profile = AdminFixture.defaultProfile();
+        Admin a = Admin.of(AdminFixture.id, "admin_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
         Admin b = Admin.of(AdminId.of("00000000-0000-0000-0000-000000000002"), "admin_user", "password", AdminStatus.ACTIVE, Instant.now(), null, profile);
 
         assertThat(a).isNotEqualTo(b);

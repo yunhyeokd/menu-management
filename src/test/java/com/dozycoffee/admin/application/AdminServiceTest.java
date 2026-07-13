@@ -22,6 +22,8 @@ public class AdminServiceTest {
 
     private long nextAdminId = 1L;
 
+    private static final AdminId NON_EXISTENT_ID = AdminId.of("00000000-0000-0000-0000-000000000999");
+
     @BeforeEach
     public void setUp() {
         adminRepository = new FakeAdminRepository();
@@ -45,11 +47,6 @@ public class AdminServiceTest {
                 passwordHasher,
                 sessionInvalidationPort
         );
-    }
-
-    private Admin adminWithProfile(AdminId id) {
-        AdminProfile profile = AdminProfile.create("EMP001", "홍길동", "+821012345678", "admin@dozy.com");
-        return Admin.create(id, "adminuser", "password", profile);
     }
 
     private void assertErrorCode(Throwable e, AdminErrors error) {
@@ -161,7 +158,7 @@ public class AdminServiceTest {
 
     @Test
     public void 계정_생성_요청을_정상_승인한다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
+        AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.builder().id(adminId).build());
 
         adminService.approve(adminId);
@@ -172,14 +169,14 @@ public class AdminServiceTest {
 
     @Test
     public void 승인시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
-        assertThatThrownBy(() -> adminService.approve(AdminId.of("00000000-0000-0000-0000-000000000999")))
+        assertThatThrownBy(() -> adminService.approve(NON_EXISTENT_ID))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
     }
 
     @Test
     public void PENDING_상태가_아닌_계정_승인시_UNABLE_APPROVAL_ERROR를_던진다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
+        AdminId adminId = AdminFixture.id;
         Admin account = AdminFixture.builder().id(adminId).build();
         account.approve();
         adminRepository.put(account);
@@ -191,7 +188,7 @@ public class AdminServiceTest {
 
     @Test
     public void 승인중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
+        AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.builder().id(adminId).build());
         adminRepository.throwOnNextCall();
 
@@ -204,7 +201,7 @@ public class AdminServiceTest {
 
     @Test
     public void 계정_생성_요청을_정상_거절한다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
+        AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.builder().id(adminId).build());
 
         adminService.reject(adminId);
@@ -216,14 +213,14 @@ public class AdminServiceTest {
 
     @Test
     public void 거절시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
-        assertThatThrownBy(() -> adminService.reject(AdminId.of("00000000-0000-0000-0000-000000000999")))
+        assertThatThrownBy(() -> adminService.reject(NON_EXISTENT_ID))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
     }
 
     @Test
     public void PENDING_상태가_아닌_계정_거절시_UNABLE_APPROVAL_ERROR를_던진다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
+        AdminId adminId = AdminFixture.id;
         Admin account = AdminFixture.builder().id(adminId).build();
         account.approve();
         adminRepository.put(account);
@@ -237,8 +234,8 @@ public class AdminServiceTest {
 
     @Test
     public void 관리자_프로필을_정상_수정한다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
-        adminRepository.put(adminWithProfile(adminId));
+        AdminId adminId = AdminFixture.id;
+        adminRepository.put(AdminFixture.builder().id(adminId).build());
 
         Admin result = adminService.updateProfile(adminId,
                 new AdminProfileUpdateCommand("김철수", "+821099998888", "new@dozy.com"));
@@ -250,7 +247,7 @@ public class AdminServiceTest {
 
     @Test
     public void 프로필_수정시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
-        assertThatThrownBy(() -> adminService.updateProfile(AdminId.of("00000000-0000-0000-0000-000000000999"),
+        assertThatThrownBy(() -> adminService.updateProfile(NON_EXISTENT_ID,
                 new AdminProfileUpdateCommand("김철수", "+821099998888", "new@dozy.com")))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
@@ -258,8 +255,8 @@ public class AdminServiceTest {
 
     @Test
     public void 프로필_수정시_값이_유효하지_않으면_INVALID_ADMIN_ERROR를_던진다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
-        adminRepository.put(adminWithProfile(adminId));
+        AdminId adminId = AdminFixture.id;
+        adminRepository.put(AdminFixture.builder().id(adminId).build());
 
         assertThatThrownBy(() -> adminService.updateProfile(adminId,
                 new AdminProfileUpdateCommand(null, "invalid-phone", "bad-email")))
@@ -269,8 +266,8 @@ public class AdminServiceTest {
 
     @Test
     public void 프로필_수정중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
-        adminRepository.put(adminWithProfile(adminId));
+        AdminId adminId = AdminFixture.id;
+        adminRepository.put(AdminFixture.builder().id(adminId).build());
         adminRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> adminService.updateProfile(adminId,
@@ -283,7 +280,7 @@ public class AdminServiceTest {
 
     @Test
     public void 관리자_계정을_정상_소프트_삭제하고_세션을_무효화한다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
+        AdminId adminId = AdminFixture.id;
         Admin account = adminRepository.put(AdminFixture.builder().id(adminId).build());
 
         adminService.softDelete(adminId);
@@ -296,14 +293,14 @@ public class AdminServiceTest {
 
     @Test
     public void 소프트_삭제시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
-        assertThatThrownBy(() -> adminService.softDelete(AdminId.of("00000000-0000-0000-0000-000000000999")))
+        assertThatThrownBy(() -> adminService.softDelete(NON_EXISTENT_ID))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
     }
 
     @Test
     public void 시스템_계정의_id로_소프트_삭제_시도시_ADMIN_NOT_FOUND를_던진다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
+        AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.system().id(adminId).build());
 
         assertThatThrownBy(() -> adminService.softDelete(adminId))
@@ -313,7 +310,7 @@ public class AdminServiceTest {
 
     @Test
     public void 이미_소프트_삭제된_계정을_다시_삭제하면_ALREADY_DELETED_ERROR를_던진다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
+        AdminId adminId = AdminFixture.id;
         Admin account = AdminFixture.builder().id(adminId).build();
         account.softDelete();
         adminRepository.put(account);
@@ -325,7 +322,7 @@ public class AdminServiceTest {
 
     @Test
     public void 소프트_삭제중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
+        AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.builder().id(adminId).build());
         adminRepository.throwOnNextCall();
 
@@ -338,7 +335,7 @@ public class AdminServiceTest {
 
     @Test
     public void 소프트_삭제된_계정을_정상_하드_삭제한다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
+        AdminId adminId = AdminFixture.id;
         Admin account = AdminFixture.builder().id(adminId).build();
         account.softDelete();
         adminRepository.put(account);
@@ -351,14 +348,14 @@ public class AdminServiceTest {
 
     @Test
     public void 하드_삭제시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
-        assertThatThrownBy(() -> adminService.hardDelete(AdminId.of("00000000-0000-0000-0000-000000000999")))
+        assertThatThrownBy(() -> adminService.hardDelete(NON_EXISTENT_ID))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
     }
 
     @Test
     public void 소프트_삭제되지_않은_계정을_하드_삭제하면_INVALID_ADMIN_ERROR를_던진다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
+        AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.builder().id(adminId).build());
 
         assertThatThrownBy(() -> adminService.hardDelete(adminId))
@@ -368,7 +365,7 @@ public class AdminServiceTest {
 
     @Test
     public void 하드_삭제중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
+        AdminId adminId = AdminFixture.id;
         Admin account = AdminFixture.builder().id(adminId).build();
         account.softDelete();
         adminRepository.put(account);
@@ -383,7 +380,7 @@ public class AdminServiceTest {
 
     @Test
     void 비밀번호를_정상_변경한다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
+        AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.builder().id(adminId).password("hashed-currentPassword").build());
 
         adminService.changePassword(adminId, "currentPassword", "newPassword");
@@ -394,14 +391,14 @@ public class AdminServiceTest {
 
     @Test
     void 비밀번호_변경시_계정이_없으면_ADMIN_NOT_FOUND를_던진다() {
-        assertThatThrownBy(() -> adminService.changePassword(AdminId.of("00000000-0000-0000-0000-000000000999"), "any", "new"))
+        assertThatThrownBy(() -> adminService.changePassword(NON_EXISTENT_ID, "any", "new"))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
     }
 
     @Test
     void 현재_비밀번호가_틀리면_AUTHENTICATION_FAILED_ERROR를_던진다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
+        AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.builder().id(adminId).password("hashed-correctPassword").build());
 
         assertThatThrownBy(() -> adminService.changePassword(adminId, "wrongPassword", "newPassword"))
@@ -411,7 +408,7 @@ public class AdminServiceTest {
 
     @Test
     void 비밀번호_변경중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        AdminId adminId = AdminId.of("00000000-0000-0000-0000-000000000001");
+        AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.builder().id(adminId).password("hashed-currentPassword").build());
         adminRepository.throwOnNextCall();
 
