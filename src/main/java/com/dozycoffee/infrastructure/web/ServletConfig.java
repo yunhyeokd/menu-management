@@ -13,6 +13,7 @@ import com.dozycoffee.product.domain.TagId;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.web.filter.CommonsRequestLoggingFilter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -21,6 +22,17 @@ import java.util.List;
 
 @Configuration
 public class ServletConfig {
+
+    // 헤더(Authorization 세션 토큰)/페이로드(로그인 비밀번호 등)는 로그에 남기지 않는다.
+    @Bean
+    public CommonsRequestLoggingFilter requestLoggingFilter() {
+        CommonsRequestLoggingFilter filter = new CommonsRequestLoggingFilter();
+        filter.setIncludeQueryString(true);
+        filter.setIncludeClientInfo(true);
+        filter.setIncludeHeaders(false);
+        filter.setIncludePayload(false);
+        return filter;
+    }
 
     @Bean
     public PrincipalArgumentResolver principalArgumentResolver() {
