@@ -12,6 +12,7 @@ public class AllergenInfo {
     }
 
     public static AllergenInfo of(String allergensStr) {
+        if (allergensStr == null || allergensStr.isEmpty()) return new AllergenInfo(Collections.emptySet());
         Set<AllergenType> allergens = Arrays.stream(allergensStr.split(","))
                 .map(String::strip)
                 .map(AllergenType::of)

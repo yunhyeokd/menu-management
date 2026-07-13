@@ -11,6 +11,7 @@ import com.dozycoffee.product.domain.*;
 import com.dozycoffee.product.presentation.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +40,7 @@ public class ProductController {
 
     @GetMapping("/search")
     @RequireRole({"SYSTEM", "ADMIN"})
-    public ResponseEntity<List<ProductSummaryResponse>> searchProducts(@ModelAttribute ProductSearchRequest request) {
+    public ResponseEntity<List<ProductSummaryResponse>> searchProducts(@ParameterObject @ModelAttribute ProductSearchRequest request) {
         List<ProductSummaryResult> results = searchProductsUseCase.execute(request.toCommand());
         List<ProductSummaryResponse> response = results.stream().map(ProductSummaryResponse::from).toList();
         return ResponseEntity.ok(response);
