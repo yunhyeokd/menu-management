@@ -4,6 +4,7 @@ import com.dozycoffee.admin.application.AdminService;
 import com.dozycoffee.admin.application.FakeAdminRepository;
 import com.dozycoffee.admin.domain.AdminId;
 import com.dozycoffee.auth.application.FakeSessionInvalidationPort;
+import com.dozycoffee.core.security.FakePasswordHasher;
 import com.dozycoffee.core.security.PasswordHasher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,17 +21,7 @@ class SystemBootStrapperTest {
     @BeforeEach
     void setUp() {
         adminRepository = new FakeAdminRepository();
-        PasswordHasher passwordHasher = new PasswordHasher() {
-            @Override
-            public String hash(String raw) {
-                return "hashed-" + raw;
-            }
-
-            @Override
-            public boolean matches(String raw, String hash) {
-                return hash(raw).equals(hash);
-            }
-        };
+        PasswordHasher passwordHasher = new FakePasswordHasher();
         adminService = new AdminService(
                 adminRepository,
                 () -> AdminId.of(String.format("00000000-0000-0000-0000-%012d", nextAdminId++)),
