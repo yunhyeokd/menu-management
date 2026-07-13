@@ -162,7 +162,7 @@ public class ProductUseCaseTest {
     @Test
     void 상품_프로필_수정시_태그도_교체된다() {
         defaultCategory();
-        ProductId productId = ProductFixture.Base.id;
+        ProductId productId = ProductFixture.Defaults.id;
         // 서비스가 새 태그에 발급하는 순번(...001부터)과 겹치지 않도록 별도 id 사용
         Tag oldTag = tagRepository.put(TagFixture.builder()
                 .id(TagId.of("00000000-0000-0000-0000-000000000010"))
@@ -189,7 +189,7 @@ public class ProductUseCaseTest {
         OptionGroup og = savedOptionGroup(1L);
         Tag tag = tagRepository.put(TagFixture.builder().name("신제품").build());
         Product product = productRepository.put(ProductFixture.builder()
-                .id(ProductFixture.Base.id).kind(ProductKind.COMMON).branchId(null).build());
+                .id(ProductFixture.Defaults.id).kind(ProductKind.COMMON).branchId(null).build());
         productTagRepository.add(ProductTag.of(product.getId(), tag.getId(), Instant.now()));
         productOptionGroupRepository.put(ProductOptionGroup.of(product.getId(), og.getId(), true, false, Instant.now()));
 
@@ -213,7 +213,7 @@ public class ProductUseCaseTest {
         OptionGroup oldOg = savedOptionGroup(1L);
         OptionGroup newOg = savedOptionGroup(2L);
         Product product = productRepository.put(ProductFixture.builder()
-                .id(ProductFixture.Base.id).kind(ProductKind.COMMON).branchId(null).build());
+                .id(ProductFixture.Defaults.id).kind(ProductKind.COMMON).branchId(null).build());
         productOptionGroupRepository.put(ProductOptionGroup.of(product.getId(), oldOg.getId(), true, false, Instant.now()));
 
         replaceProductOptionGroupsUseCase.execute(product.getId(), List.of(
@@ -235,7 +235,7 @@ public class ProductUseCaseTest {
     @Test
     void 태그_삭제시_연결된_상품_태그도_함께_제거된다() {
         Tag tag = tagRepository.put(TagFixture.builder().name("신제품").build());
-        productTagRepository.add(ProductTag.of(ProductFixture.Base.id, tag.getId(), Instant.now()));
+        productTagRepository.add(ProductTag.of(ProductFixture.Defaults.id, tag.getId(), Instant.now()));
 
         deleteTagUseCase.execute(tag.getId());
 
@@ -264,7 +264,7 @@ public class ProductUseCaseTest {
     void 연결된_상품이_있으면_옵션그룹_삭제시_LINKED_PRODUCT_EXISTS_ERROR를_던진다() {
         OptionGroup og = savedOptionGroup(1L);
         productOptionGroupRepository.put(ProductOptionGroup.of(
-                ProductFixture.Base.id, og.getId(), true, false, Instant.now()
+                ProductFixture.Defaults.id, og.getId(), true, false, Instant.now()
         ));
 
         assertThatThrownBy(() -> deleteOptionGroupUseCase.execute(og.getId()))
@@ -279,7 +279,7 @@ public class ProductUseCaseTest {
         BranchId otherBranchId = BranchId.of("00000000-0000-0000-0000-000000000002");
 
         Product commonProduct = productRepository.put(ProductFixture.builder()
-                .id(ProductId.of("00000000-0000-0000-0000-000000000001"))
+                .id(ProductFixture.Defaults.id)
                 .status(ProductStatus.ACTIVE).kind(ProductKind.COMMON).branchId(null).build());
         Product exclusiveProduct = productRepository.put(ProductFixture.builder()
                 .id(ProductId.of("00000000-0000-0000-0000-000000000002"))
@@ -324,7 +324,7 @@ public class ProductUseCaseTest {
     @Test
     void 태그_조건_없이_검색하면_저장된_상품_목록을_반환한다() {
         productQueryRepository.add(new ProductSummaryResult(
-                ProductFixture.Base.id, "아메리카노", null, null, 3000,
+                ProductFixture.Defaults.id, "아메리카노", null, null, 3000,
                 ProductKind.COMMON, null, ProductStatus.ACTIVE, List.of()
         ));
 
@@ -342,7 +342,7 @@ public class ProductUseCaseTest {
     void 존재하는_태그_이름으로_검색하면_태그ID로_변환되어_조회에_위임된다() {
         tagRepository.put(TagFixture.builder().name("신제품").build());
         productQueryRepository.add(new ProductSummaryResult(
-                ProductFixture.Base.id, "아메리카노", null, null, 3000,
+                ProductFixture.Defaults.id, "아메리카노", null, null, 3000,
                 ProductKind.COMMON, null, ProductStatus.ACTIVE, List.of()
         ));
 

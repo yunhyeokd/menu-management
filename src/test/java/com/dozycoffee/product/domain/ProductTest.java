@@ -16,46 +16,46 @@ public class ProductTest {
     @Test
     public void 공통_상품을_정상_생성한다() {
         Product product = ProductFixture.builder()
-                .name(ProductFixture.Base.name)
-                .description(ProductFixture.Base.description)
-                .imageUrl(ProductFixture.Base.imageUrl)
-                .categoryId(ProductFixture.Base.categoryId)
-                .price(ProductFixture.Base.price)
-                .kcal(ProductFixture.Base.kcal)
-                .allergenInfo(ProductFixture.Base.allergenInfo)
+                .name(ProductFixture.Defaults.name)
+                .description(ProductFixture.Defaults.description)
+                .imageUrl(ProductFixture.Defaults.imageUrl)
+                .categoryId(ProductFixture.Defaults.categoryId)
+                .price(ProductFixture.Defaults.price)
+                .kcal(ProductFixture.Defaults.kcal)
+                .allergenInfo(ProductFixture.Defaults.allergenInfo)
                 .createCommonProduct();
 
-        assertThat(product.getName()).isEqualTo(ProductFixture.Base.name);
-        assertThat(product.getDescription()).isEqualTo(ProductFixture.Base.description);
-        assertThat(product.getImageUrl()).isEqualTo(ProductFixture.Base.imageUrl);
-        assertThat(product.getCategoryId()).isEqualTo(ProductFixture.Base.categoryId);
-        assertThat(product.getPrice()).isEqualTo(ProductFixture.Base.price);
-        assertThat(product.getKcal()).isEqualTo(ProductFixture.Base.kcal);
-        assertThat(product.getAllergenInfo()).isEqualTo(ProductFixture.Base.allergenInfo);
+        assertThat(product.getName()).isEqualTo(ProductFixture.Defaults.name);
+        assertThat(product.getDescription()).isEqualTo(ProductFixture.Defaults.description);
+        assertThat(product.getImageUrl()).isEqualTo(ProductFixture.Defaults.imageUrl);
+        assertThat(product.getCategoryId()).isEqualTo(ProductFixture.Defaults.categoryId);
+        assertThat(product.getPrice()).isEqualTo(ProductFixture.Defaults.price);
+        assertThat(product.getKcal()).isEqualTo(ProductFixture.Defaults.kcal);
+        assertThat(product.getAllergenInfo()).isEqualTo(ProductFixture.Defaults.allergenInfo);
         assertThat(product.getStatus()).isEqualTo(ProductStatus.INACTIVE);
     }
 
     @Test
     public void 지점_전용_상품을_정상_생성한다() {
         Product product = ProductFixture.builder()
-                .name(ProductFixture.Base.name)
-                .description(ProductFixture.Base.description)
-                .imageUrl(ProductFixture.Base.imageUrl)
-                .categoryId(ProductFixture.Base.categoryId)
-                .price(ProductFixture.Base.price)
-                .kcal(ProductFixture.Base.kcal)
-                .allergenInfo(ProductFixture.Base.allergenInfo)
-                .branchId(ProductFixture.Base.branchId)
+                .name(ProductFixture.Defaults.name)
+                .description(ProductFixture.Defaults.description)
+                .imageUrl(ProductFixture.Defaults.imageUrl)
+                .categoryId(ProductFixture.Defaults.categoryId)
+                .price(ProductFixture.Defaults.price)
+                .kcal(ProductFixture.Defaults.kcal)
+                .allergenInfo(ProductFixture.Defaults.allergenInfo)
+                .branchId(ProductFixture.Defaults.branchId)
                 .createBranchProduct();
 
-        assertThat(product.getName()).isEqualTo(ProductFixture.Base.name);
-        assertThat(product.getDescription()).isEqualTo(ProductFixture.Base.description);
-        assertThat(product.getImageUrl()).isEqualTo(ProductFixture.Base.imageUrl);
-        assertThat(product.getCategoryId()).isEqualTo(ProductFixture.Base.categoryId);
-        assertThat(product.getPrice()).isEqualTo(ProductFixture.Base.price);
-        assertThat(product.getKcal()).isEqualTo(ProductFixture.Base.kcal);
-        assertThat(product.getAllergenInfo()).isEqualTo(ProductFixture.Base.allergenInfo);
-        assertThat(product.getBranchId()).isEqualTo(ProductFixture.Base.branchId);
+        assertThat(product.getName()).isEqualTo(ProductFixture.Defaults.name);
+        assertThat(product.getDescription()).isEqualTo(ProductFixture.Defaults.description);
+        assertThat(product.getImageUrl()).isEqualTo(ProductFixture.Defaults.imageUrl);
+        assertThat(product.getCategoryId()).isEqualTo(ProductFixture.Defaults.categoryId);
+        assertThat(product.getPrice()).isEqualTo(ProductFixture.Defaults.price);
+        assertThat(product.getKcal()).isEqualTo(ProductFixture.Defaults.kcal);
+        assertThat(product.getAllergenInfo()).isEqualTo(ProductFixture.Defaults.allergenInfo);
+        assertThat(product.getBranchId()).isEqualTo(ProductFixture.Defaults.branchId);
         assertThat(product.getStatus()).isEqualTo(ProductStatus.INACTIVE);
     }
 
@@ -116,15 +116,15 @@ public class ProductTest {
     @Test
     public void id가_같은_상품은_동등하다() {
         ProductFixture.Builder builder = ProductFixture.builder();
-        Product product1 = builder.id(ProductId.of("00000000-0000-0000-0000-000000000001")).build();
-        Product product2 = builder.id(ProductId.of("00000000-0000-0000-0000-000000000001")).build();
+        Product product1 = builder.id(ProductFixture.Defaults.id).build();
+        Product product2 = builder.id(ProductFixture.Defaults.id).build();
         assertThat(product1).isEqualTo(product2);
     }
 
     @Test
     public void id가_다른_상품은_동등하지_않다() {
         ProductFixture.Builder builder = ProductFixture.builder();
-        Product product1 = builder.id(ProductId.of("00000000-0000-0000-0000-000000000001")).build();
+        Product product1 = builder.id(ProductFixture.Defaults.id).build();
         Product product2 = builder.id(ProductId.of("00000000-0000-0000-0000-000000000002")).build();
         assertThat(product1).isNotEqualTo(product2);
     }
@@ -134,7 +134,7 @@ public class ProductTest {
     @Test
     public void id가_null인_상품은_동등하지_않다() {
         ProductFixture.Builder builder = ProductFixture.builder();
-        Product product1 = builder.id(ProductId.of("00000000-0000-0000-0000-000000000001")).build();
+        Product product1 = builder.id(ProductFixture.Defaults.id).build();
         Product product2 = builder.id(ProductId.of("00000000-0000-0000-0000-000000000002")).createCommonProduct();
         assertThat(product1).isNotEqualTo(product2);
     }

@@ -10,7 +10,7 @@ public class ProductTagTest {
 
     @Test
     public void 상품태그를_정상_생성한다() {
-        ProductId productId = ProductFixture.Base.id;
+        ProductId productId = ProductFixture.Defaults.id;
         TagId tagId = TagFixture.Defaults.id;
 
         ProductTag productTag = ProductTag.create(productId, tagId);
@@ -22,7 +22,7 @@ public class ProductTagTest {
 
     @Test
     public void 복합키가_같은_상품태그는_동등하다() {
-        ProductId productId = ProductFixture.Base.id;
+        ProductId productId = ProductFixture.Defaults.id;
         TagId tagId = TagFixture.Defaults.id;
         Instant createdAt = Instant.now();
 
@@ -34,7 +34,7 @@ public class ProductTagTest {
 
     @Test
     public void tagId가_다른_상품태그는_동등하지_않다() {
-        ProductId productId = ProductFixture.Base.id;
+        ProductId productId = ProductFixture.Defaults.id;
         Instant createdAt = Instant.now();
 
         ProductTag productTag1 = ProductTag.of(productId, TagFixture.Defaults.id, createdAt);

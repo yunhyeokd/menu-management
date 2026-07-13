@@ -119,8 +119,8 @@ public class BranchTest {
     @Test
     public void 같은_id를_가진_지점은_동등하다() {
         Instant now = Instant.now();
-        Branch a = Branch.of(BranchId.of("00000000-0000-0000-0000-000000000001"), BranchFixture.code, BranchFixture.authKeyHash, BranchStatus.ACTIVE, now, null, BranchFixture.name, BranchFixture.address);
-        Branch b = Branch.of(BranchId.of("00000000-0000-0000-0000-000000000001"), BranchFixture.code, BranchFixture.authKeyHash, BranchStatus.ACTIVE, now, null, BranchFixture.name, BranchFixture.address);
+        Branch a = Branch.of(BranchFixture.id, BranchFixture.code, BranchFixture.authKeyHash, BranchStatus.ACTIVE, now, null, BranchFixture.name, BranchFixture.address);
+        Branch b = Branch.of(BranchFixture.id, BranchFixture.code, BranchFixture.authKeyHash, BranchStatus.ACTIVE, now, null, BranchFixture.name, BranchFixture.address);
         assertThat(a).isEqualTo(b);
         assertThat(a.hashCode()).isEqualTo(b.hashCode());
     }
@@ -128,7 +128,7 @@ public class BranchTest {
     @Test
     public void 다른_id를_가진_지점은_동등하지_않다() {
         Instant now = Instant.now();
-        Branch a = Branch.of(BranchId.of("00000000-0000-0000-0000-000000000001"), BranchFixture.code, BranchFixture.authKeyHash, BranchStatus.ACTIVE, now, null, BranchFixture.name, BranchFixture.address);
+        Branch a = Branch.of(BranchFixture.id, BranchFixture.code, BranchFixture.authKeyHash, BranchStatus.ACTIVE, now, null, BranchFixture.name, BranchFixture.address);
         Branch b = Branch.of(BranchId.of("00000000-0000-0000-0000-000000000002"), BranchFixture.code, BranchFixture.authKeyHash, BranchStatus.ACTIVE, now, null, BranchFixture.name, BranchFixture.address);
         assertThat(a).isNotEqualTo(b);
     }

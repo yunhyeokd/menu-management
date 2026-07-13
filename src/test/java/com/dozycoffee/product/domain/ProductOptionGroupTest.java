@@ -10,7 +10,7 @@ public class ProductOptionGroupTest {
 
     @Test
     public void 상품_옵션그룹을_정상_생성한다() {
-        ProductId productId = ProductFixture.Base.id;
+        ProductId productId = ProductFixture.Defaults.id;
         OptionGroupId optionGroupId = OptionGroupFixture.Defaults.id;
         boolean isRequired = true;
         boolean allowMultiple = false;
@@ -26,7 +26,7 @@ public class ProductOptionGroupTest {
 
     @Test
     public void 복합키가_같은_상품_옵션그룹은_동등하다() {
-        ProductId productId = ProductFixture.Base.id;
+        ProductId productId = ProductFixture.Defaults.id;
         OptionGroupId optionGroupId = OptionGroupFixture.Defaults.id;
         Instant createdAt = Instant.now();
 
@@ -38,7 +38,7 @@ public class ProductOptionGroupTest {
 
     @Test
     public void optionGroupId가_다른_상품_옵션그룹은_동등하지_않다() {
-        ProductId productId = ProductFixture.Base.id;
+        ProductId productId = ProductFixture.Defaults.id;
         Instant createdAt = Instant.now();
 
         ProductOptionGroup productOptionGroup1 = ProductOptionGroup.of(productId, OptionGroupFixture.Defaults.id, true, false, createdAt);

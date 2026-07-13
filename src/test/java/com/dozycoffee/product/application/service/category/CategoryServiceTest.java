@@ -198,7 +198,7 @@ public class CategoryServiceTest {
     @Test
     public void 카테고리_삭제시_연결된_상품이_비활성화된다() {
         Category category = categoryRepository.put(CategoryFixture.builder().build());
-        productRepository.put(ProductFixture.builder().id(ProductId.of("00000000-0000-0000-0000-000000000001")).categoryId(CategoryFixture.Defaults.id).status(ProductStatus.ACTIVE).build());
+        productRepository.put(ProductFixture.builder().id(ProductFixture.Defaults.id).categoryId(CategoryFixture.Defaults.id).status(ProductStatus.ACTIVE).build());
         productRepository.put(ProductFixture.builder().id(ProductId.of("00000000-0000-0000-0000-000000000002")).categoryId(CategoryFixture.Defaults.id).status(ProductStatus.ACTIVE).build());
 
         categoryService.remove(category.getId());
