@@ -13,11 +13,9 @@ public class TagTest {
 
     @Test
     public void 태그를_정상_생성한다() {
-        String name = "신제품";
+        Tag tag = TagFixture.builder().build();
 
-        Tag tag = Tag.create(TagId.of("00000000-0000-0000-0000-000000000001"), name);
-
-        assertThat(tag.getName()).isEqualTo(name);
+        assertThat(tag.getName()).isEqualTo(TagFixture.Defaults.name);
     }
 
     @ParameterizedTest
@@ -28,7 +26,7 @@ public class TagTest {
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     })
     public void 태그_생성시_태그명이_유효하지_않으면_예외를_발생시킨다(String tagName) {
-        assertThatThrownBy(() -> Tag.create(TagId.of("00000000-0000-0000-0000-000000000001"), tagName))
+        assertThatThrownBy(() -> TagFixture.builder().name(tagName).build())
                 .isInstanceOf(ProductException.class);
     }
 
@@ -37,28 +35,35 @@ public class TagTest {
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     })
     public void 태그_생성시_유효한_태그명은_정상적으로_생성된다(String tagName) {
-        assertThatNoException().isThrownBy(() -> Tag.create(TagId.of("00000000-0000-0000-0000-000000000001"), tagName));
+        assertThatNoException().isThrownBy(() -> TagFixture.builder().name(tagName).build());
     }
 
     @Test
     public void id가_같은_태그는_동등하다() {
-        Tag tag1 = Tag.of(TagId.of("00000000-0000-0000-0000-000000000001"), "신제품1", Instant.now());
-        Tag tag2 = Tag.of(TagId.of("00000000-0000-0000-0000-000000000001"), "신제품2", Instant.now());
+        Tag tag1 = TagFixture.builder().name("신제품1").build();
+        Tag tag2 = TagFixture.builder().name("신제품2").build();
         assertThat(tag1).isEqualTo(tag2);
     }
 
     @Test
     public void id가_다른_태그는_동등하지_않다() {
         Instant createdAt = Instant.now();
-        Tag tag1 = Tag.of(TagId.of("00000000-0000-0000-0000-000000000001"), "신제품1", createdAt);
-        Tag tag2 = Tag.of(TagId.of("00000000-0000-0000-0000-000000000002"), "신제품2", createdAt);
+        Tag tag1 = TagFixture.builder().name("신제품1").createdAt(createdAt).build();
+        Tag tag2 = TagFixture.builder()
+                .id(TagId.of("00000000-0000-0000-0000-000000000002"))
+                .name("신제품2")
+                .createdAt(createdAt)
+                .build();
         assertThat(tag1).isNotEqualTo(tag2);
     }
 
     @Test
     public void id가_null인_태그는_동등하지_않다() {
-        Tag tag1 = Tag.of(TagId.of("00000000-0000-0000-0000-000000000001"), "신제품1", Instant.now());
-        Tag tag2 = Tag.create(TagId.of("00000000-0000-0000-0000-000000000002"), "신제품2");
+        Tag tag1 = TagFixture.builder().name("신제품1").build();
+        Tag tag2 = TagFixture.builder()
+                .id(TagId.of("00000000-0000-0000-0000-000000000002"))
+                .name("신제품2")
+                .build();
         assertThat(tag1).isNotEqualTo(tag2);
     }
 
