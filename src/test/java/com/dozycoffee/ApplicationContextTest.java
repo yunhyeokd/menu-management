@@ -1,18 +1,15 @@
 package com.dozycoffee;
 
-import com.dozycoffee.infrastructure.RootConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringJUnitConfig(RootConfig.class)
-@WebAppConfiguration
+@SpringBootTest
 class ApplicationContextTest {
 
     @Autowired

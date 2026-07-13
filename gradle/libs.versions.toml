@@ -1,0 +1,56 @@
+[versions]
+java = "21"
+
+spring-boot = "4.1.0"
+
+# mybatis-spring-boot-starter는 아직 Spring Boot 4.x 대응 버전이 없어(Maven Central 최신 3.0.4) 수동 배선 유지
+mybatis = "3.5.19"
+mybatis-spring = "3.0.4"
+springdoc-openapi = "3.0.3"
+
+mysql-connector-j = "8.4.0"
+bouncycastle = "1.84"
+java-uuid-generator = "5.2.0"
+lombok = "1.18.46"
+
+[libraries]
+# BOM (spring-boot-dependencies가 spring-security-crypto를 포함한 대부분의 하위 라이브러리 버전을 관리함 -> spring-security-bom 별도 불필요)
+spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+
+# Starters (버전은 spring-boot-dependencies BOM이 관리 -> version 생략)
+spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+spring-boot-starter-flyway = { module = "org.springframework.boot:spring-boot-starter-flyway" }
+# spring-boot-starter-flyway는 flyway-core만 가져오고, MySQL 8은 flyway-mysql이 별도로 필요
+flyway-mysql = { module = "org.flywaydb:flyway-mysql" }
+spring-boot-starter-jdbc = { module = "org.springframework.boot:spring-boot-starter-jdbc" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+# @WebMvcTest 등 MVC 테스트 슬라이스가 Boot 4.1부터 별도 모듈로 분리됨
+spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
+
+# MyBatis (starter 부재로 core + spring 연동 라이브러리 직접 배선)
+mybatis-core = { module = "org.mybatis:mybatis", version.ref = "mybatis" }
+mybatis-spring = { module = "org.mybatis:mybatis-spring", version.ref = "mybatis-spring" }
+
+# Swagger / OpenAPI (Java 21 요구 버전, Boot 4.1 대상)
+springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc-openapi" }
+
+# Database
+mysql-connector-j = { module = "com.mysql:mysql-connector-j", version.ref = "mysql-connector-j" }
+
+# Security (spring-boot-starter-security로 대체하지 않고 단독 유지 — 자체 인증/인가 구현과 충돌 방지)
+spring-security-crypto = { module = "org.springframework.security:spring-security-crypto" }
+bouncycastle-bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
+
+# ID 생성
+java-uuid-generator = { module = "com.fasterxml.uuid:java-uuid-generator", version.ref = "java-uuid-generator" }
+
+# Lombok
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
+
+[bundles]
+mybatis = ["mybatis-core", "mybatis-spring"]
+security-crypto = ["spring-security-crypto", "bouncycastle-bcprov"]
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
