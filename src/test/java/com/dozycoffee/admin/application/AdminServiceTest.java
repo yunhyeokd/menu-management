@@ -3,6 +3,7 @@ package com.dozycoffee.admin.application;
 import com.dozycoffee.admin.application.dto.*;
 import com.dozycoffee.admin.domain.*;
 import com.dozycoffee.auth.application.FakeSessionInvalidationPort;
+import com.dozycoffee.core.security.FakePasswordHasher;
 import com.dozycoffee.core.security.PasswordHasher;
 import com.dozycoffee.core.exception.base.*;
 import com.dozycoffee.core.exception.service.*;
@@ -25,20 +26,10 @@ public class AdminServiceTest {
     private static final AdminId NON_EXISTENT_ID = AdminId.of("00000000-0000-0000-0000-000000000999");
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         adminRepository = new FakeAdminRepository();
         sessionInvalidationPort = new FakeSessionInvalidationPort();
-        passwordHasher = new PasswordHasher() {
-            @Override
-            public String hash(String raw) {
-                return "hashed-" + raw;
-            }
-
-            @Override
-            public boolean matches(String raw, String hash) {
-                return hash(raw).equals(hash);
-            }
-        };
+        passwordHasher = new FakePasswordHasher();
         nextAdminId = 1L;
 
         adminService = new AdminService(
@@ -56,7 +47,7 @@ public class AdminServiceTest {
     // ─── registerSystem ───────────────────────────────────────────────────────
 
     @Test
-    public void 시스템_관리자_계정을_정상_생성한다() {
+    void 시스템_관리자_계정을_정상_생성한다() {
         SystemAdmin result = adminService.registerSystem(
                 new SystemAdminRegisterCommand("sysadmin", "password"));
 
@@ -71,7 +62,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 시스템_관리자가_이미_존재하면_DUPLICATE_ACCOUNT_ERROR를_던진다() {
+    void 시스템_관리자가_이미_존재하면_DUPLICATE_ACCOUNT_ERROR를_던진다() {
         adminRepository.put(AdminFixture.system().username("sysadmin").build());
 
         assertThatThrownBy(() -> adminService.registerSystem(
@@ -81,7 +72,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 시스템_관리자_생성시_username이_유효하지_않으면_INVALID_ADMIN_ERROR를_던진다() {
+    void 시스템_관리자_생성시_username이_유효하지_않으면_INVALID_ADMIN_ERROR를_던진다() {
         assertThatThrownBy(() -> adminService.registerSystem(
                 new SystemAdminRegisterCommand("a", "password")))
                 .isInstanceOf(ValidationException.class)
@@ -89,7 +80,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 시스템_관리자_생성중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
+    void 시스템_관리자_생성중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         adminRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> adminService.registerSystem(
@@ -101,7 +92,7 @@ public class AdminServiceTest {
     // ─── registerAdmin ────────────────────────────────────────────────────────
 
     @Test
-    public void 사원_관리자_계정을_정상_생성한다() {
+    void 사원_관리자_계정을_정상_생성한다() {
         Admin result = adminService.registerAdmin(new AdminRegisterCommand(
                 "admin01", "password", "EMP001", "홍길동", "+821012345678", "admin@dozy.com"));
 
@@ -117,7 +108,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 사원_관리자_생성시_username이_중복되면_DUPLICATE_ACCOUNT_ERROR를_던진다() {
+    void 사원_관리자_생성시_username이_중복되면_DUPLICATE_ACCOUNT_ERROR를_던진다() {
         adminRepository.put(AdminFixture.builder().username("admin01").build());
 
         assertThatThrownBy(() -> adminService.registerAdmin(new AdminRegisterCommand(
@@ -127,7 +118,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 사원_관리자_생성시_사원번호가_중복되면_DUPLICATE_EMPLOYEE_NO_ERROR를_던진다() {
+    void 사원_관리자_생성시_사원번호가_중복되면_DUPLICATE_EMPLOYEE_NO_ERROR를_던진다() {
         adminRepository.put(AdminFixture.builder().username("other01").build());
 
         assertThatThrownBy(() -> adminService.registerAdmin(new AdminRegisterCommand(
@@ -137,7 +128,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 사원_관리자_생성시_프로필_값이_유효하지_않으면_INVALID_ADMIN_ERROR를_던진다() {
+    void 사원_관리자_생성시_프로필_값이_유효하지_않으면_INVALID_ADMIN_ERROR를_던진다() {
         assertThatThrownBy(() -> adminService.registerAdmin(new AdminRegisterCommand(
                 "admin01", "password", "EMP001", "홍길동", "invalid-phone", "admin@dozy.com")))
                 .isInstanceOf(ValidationException.class)
@@ -145,7 +136,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 사원_관리자_생성중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
+    void 사원_관리자_생성중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         adminRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> adminService.registerAdmin(new AdminRegisterCommand(
@@ -157,7 +148,7 @@ public class AdminServiceTest {
     // ─── approve ──────────────────────────────────────────────────────────────
 
     @Test
-    public void 계정_생성_요청을_정상_승인한다() {
+    void 계정_생성_요청을_정상_승인한다() {
         AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.builder().id(adminId).build());
 
@@ -168,14 +159,14 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 승인시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
+    void 승인시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
         assertThatThrownBy(() -> adminService.approve(NON_EXISTENT_ID))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
     }
 
     @Test
-    public void PENDING_상태가_아닌_계정_승인시_UNABLE_APPROVAL_ERROR를_던진다() {
+    void PENDING_상태가_아닌_계정_승인시_UNABLE_APPROVAL_ERROR를_던진다() {
         AdminId adminId = AdminFixture.id;
         Admin account = AdminFixture.builder().id(adminId).build();
         account.approve();
@@ -187,7 +178,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 승인중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
+    void 승인중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.builder().id(adminId).build());
         adminRepository.throwOnNextCall();
@@ -200,7 +191,7 @@ public class AdminServiceTest {
     // ─── reject ───────────────────────────────────────────────────────────────
 
     @Test
-    public void 계정_생성_요청을_정상_거절한다() {
+    void 계정_생성_요청을_정상_거절한다() {
         AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.builder().id(adminId).build());
 
@@ -212,14 +203,14 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 거절시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
+    void 거절시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
         assertThatThrownBy(() -> adminService.reject(NON_EXISTENT_ID))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
     }
 
     @Test
-    public void PENDING_상태가_아닌_계정_거절시_UNABLE_APPROVAL_ERROR를_던진다() {
+    void PENDING_상태가_아닌_계정_거절시_UNABLE_APPROVAL_ERROR를_던진다() {
         AdminId adminId = AdminFixture.id;
         Admin account = AdminFixture.builder().id(adminId).build();
         account.approve();
@@ -233,7 +224,7 @@ public class AdminServiceTest {
     // ─── updateProfile ────────────────────────────────────────────────────────
 
     @Test
-    public void 관리자_프로필을_정상_수정한다() {
+    void 관리자_프로필을_정상_수정한다() {
         AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.builder().id(adminId).build());
 
@@ -246,7 +237,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 프로필_수정시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
+    void 프로필_수정시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
         assertThatThrownBy(() -> adminService.updateProfile(NON_EXISTENT_ID,
                 new AdminProfileUpdateCommand("김철수", "+821099998888", "new@dozy.com")))
                 .isInstanceOf(ResourceNotFoundException.class)
@@ -254,7 +245,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 프로필_수정시_값이_유효하지_않으면_INVALID_ADMIN_ERROR를_던진다() {
+    void 프로필_수정시_값이_유효하지_않으면_INVALID_ADMIN_ERROR를_던진다() {
         AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.builder().id(adminId).build());
 
@@ -265,7 +256,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 프로필_수정중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
+    void 프로필_수정중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.builder().id(adminId).build());
         adminRepository.throwOnNextCall();
@@ -279,7 +270,7 @@ public class AdminServiceTest {
     // ─── softDelete ───────────────────────────────────────────────────────────
 
     @Test
-    public void 관리자_계정을_정상_소프트_삭제하고_세션을_무효화한다() {
+    void 관리자_계정을_정상_소프트_삭제하고_세션을_무효화한다() {
         AdminId adminId = AdminFixture.id;
         Admin account = adminRepository.put(AdminFixture.builder().id(adminId).build());
 
@@ -292,14 +283,14 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 소프트_삭제시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
+    void 소프트_삭제시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
         assertThatThrownBy(() -> adminService.softDelete(NON_EXISTENT_ID))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
     }
 
     @Test
-    public void 시스템_계정의_id로_소프트_삭제_시도시_ADMIN_NOT_FOUND를_던진다() {
+    void 시스템_계정의_id로_소프트_삭제_시도시_ADMIN_NOT_FOUND를_던진다() {
         AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.system().id(adminId).build());
 
@@ -309,7 +300,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 이미_소프트_삭제된_계정을_다시_삭제하면_ALREADY_DELETED_ERROR를_던진다() {
+    void 이미_소프트_삭제된_계정을_다시_삭제하면_ALREADY_DELETED_ERROR를_던진다() {
         AdminId adminId = AdminFixture.id;
         Admin account = AdminFixture.builder().id(adminId).build();
         account.softDelete();
@@ -321,7 +312,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 소프트_삭제중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
+    void 소프트_삭제중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.builder().id(adminId).build());
         adminRepository.throwOnNextCall();
@@ -334,7 +325,7 @@ public class AdminServiceTest {
     // ─── hardDelete ───────────────────────────────────────────────────────────
 
     @Test
-    public void 소프트_삭제된_계정을_정상_하드_삭제한다() {
+    void 소프트_삭제된_계정을_정상_하드_삭제한다() {
         AdminId adminId = AdminFixture.id;
         Admin account = AdminFixture.builder().id(adminId).build();
         account.softDelete();
@@ -347,14 +338,14 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 하드_삭제시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
+    void 하드_삭제시_계정이_존재하지_않으면_ADMIN_NOT_FOUND를_던진다() {
         assertThatThrownBy(() -> adminService.hardDelete(NON_EXISTENT_ID))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, AdminErrors.ADMIN_NOT_FOUND));
     }
 
     @Test
-    public void 소프트_삭제되지_않은_계정을_하드_삭제하면_INVALID_ADMIN_ERROR를_던진다() {
+    void 소프트_삭제되지_않은_계정을_하드_삭제하면_INVALID_ADMIN_ERROR를_던진다() {
         AdminId adminId = AdminFixture.id;
         adminRepository.put(AdminFixture.builder().id(adminId).build());
 
@@ -364,7 +355,7 @@ public class AdminServiceTest {
     }
 
     @Test
-    public void 하드_삭제중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
+    void 하드_삭제중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         AdminId adminId = AdminFixture.id;
         Admin account = AdminFixture.builder().id(adminId).build();
         account.softDelete();

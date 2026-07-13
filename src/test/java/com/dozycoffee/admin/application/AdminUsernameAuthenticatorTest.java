@@ -1,5 +1,6 @@
 package com.dozycoffee.admin.application;
 
+import com.dozycoffee.core.security.FakePasswordHasher;
 import com.dozycoffee.core.security.PasswordHasher;
 import com.dozycoffee.admin.domain.*;
 import com.dozycoffee.core.security.Credential;
@@ -27,13 +28,7 @@ public class AdminUsernameAuthenticatorTest {
     void setUp() {
         adminRepository = new FakeAdminRepository();
 
-        PasswordHasher passwordHasher = new PasswordHasher() {
-            @Override
-            public String hash(String raw) { return "hashed-" + raw; }
-
-            @Override
-            public boolean matches(String raw, String hash) { return hash(raw).equals(hash); }
-        };
+        PasswordHasher passwordHasher = new FakePasswordHasher();
 
         adminUsernameAuthenticator = new AdminUsernameAuthenticator(adminRepository, passwordHasher);
 

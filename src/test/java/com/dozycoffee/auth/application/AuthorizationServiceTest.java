@@ -1,6 +1,6 @@
 package com.dozycoffee.auth.application;
 
-import com.dozycoffee.admin.domain.AdminId;
+import com.dozycoffee.admin.domain.AdminFixture;
 import com.dozycoffee.admin.domain.SystemAdmin;
 import com.dozycoffee.core.exception.service.ServiceException;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +19,7 @@ public class AuthorizationServiceTest {
     @BeforeEach
     void setUp() {
         authorizationService = new AuthorizationService();
-        activeAdmin = SystemAdmin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), "sysadmin", "hashed-password");
+        activeAdmin = AdminFixture.system().username("sysadmin").password("hashed-password").build();
     }
 
     private void assertErrorCode(Throwable e, AuthErrors error) {

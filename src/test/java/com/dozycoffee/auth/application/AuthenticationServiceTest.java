@@ -1,6 +1,6 @@
 package com.dozycoffee.auth.application;
 
-import com.dozycoffee.admin.domain.AdminId;
+import com.dozycoffee.admin.domain.AdminFixture;
 import com.dozycoffee.admin.domain.SystemAdmin;
 import com.dozycoffee.core.security.Principal;
 import com.dozycoffee.branch.domain.Branch;
@@ -36,7 +36,7 @@ public class AuthenticationServiceTest {
 
     @BeforeEach
     void setUp() {
-        activeAdmin = SystemAdmin.create(AdminId.of("00000000-0000-0000-0000-000000000001"), "sysadmin", HASHED_PASSWORD);
+        activeAdmin = AdminFixture.system().username("sysadmin").password(HASHED_PASSWORD).build();
         activeBranch = Branch.create(BranchId.of("00000000-0000-0000-0000-000000000001"), BranchCode.of(BRANCH_CODE), HASHED_AUTH_KEY, "테스트점", "서울 강남구 테헤란로 1");
 
         AuthenticationResolver adminResolver = (id, credential) -> {
