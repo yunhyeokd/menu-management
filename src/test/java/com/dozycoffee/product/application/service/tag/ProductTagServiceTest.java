@@ -42,7 +42,7 @@ public class ProductTagServiceTest {
 
     @Test
     void 태그를_상품에_연결한다() {
-        ProductId productId = ProductFixture.Base.id;
+        ProductId productId = ProductFixture.Defaults.id;
         tagRepository.put(TagFixture.builder().name("신제품").build());
 
         List<TagData> tags = productTagService.saveTags(productId, Set.of("신제품"));
@@ -54,7 +54,7 @@ public class ProductTagServiceTest {
 
     @Test
     void 태그가_없으면_자동_생성_후_연결한다() {
-        ProductId productId = ProductFixture.Base.id;
+        ProductId productId = ProductFixture.Defaults.id;
 
         List<TagData> tags = productTagService.saveTags(productId, Set.of("새태그"));
 
@@ -68,14 +68,14 @@ public class ProductTagServiceTest {
     void 태그_연결시_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         productTagRepository.throwOnNextCall();
 
-        assertThatThrownBy(() -> productTagService.saveTags(ProductFixture.Base.id, Set.of("신제품")))
+        assertThatThrownBy(() -> productTagService.saveTags(ProductFixture.Defaults.id, Set.of("신제품")))
                 .isInstanceOf(SystemException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.UNKNOWN_ERROR));
     }
 
     @Test
     void 상품의_태그를_교체한다() {
-        ProductId productId = ProductFixture.Base.id;
+        ProductId productId = ProductFixture.Defaults.id;
         // 서비스가 새 태그에 발급하는 순번(...001부터)과 겹치지 않도록 별도 id 사용
         Tag oldTag = tagRepository.put(TagFixture.builder()
                 .id(TagId.of("00000000-0000-0000-0000-000000000010"))
@@ -92,7 +92,7 @@ public class ProductTagServiceTest {
 
     @Test
     void 상품에_연결된_모든_태그를_삭제한다() {
-        ProductId productId = ProductFixture.Base.id;
+        ProductId productId = ProductFixture.Defaults.id;
         Tag tag = tagRepository.put(TagFixture.builder().name("신제품").build());
         productTagRepository.add(ProductTag.of(productId, tag.getId(), Instant.now()));
 
@@ -104,18 +104,18 @@ public class ProductTagServiceTest {
     @Test
     void 태그에_연결된_상품_id_목록을_조회한다() {
         Tag tag = tagRepository.put(TagFixture.builder().name("신제품").build());
-        productTagRepository.add(ProductTag.of(ProductFixture.Base.id, tag.getId(), Instant.now()));
+        productTagRepository.add(ProductTag.of(ProductFixture.Defaults.id, tag.getId(), Instant.now()));
         productTagRepository.add(ProductTag.of(SECOND_PRODUCT_ID, tag.getId(), Instant.now()));
 
         List<ProductId> productIds = productTagService.findLinkedProductIds(tag.getId());
 
-        assertThat(productIds).containsExactlyInAnyOrder(ProductFixture.Base.id, SECOND_PRODUCT_ID);
+        assertThat(productIds).containsExactlyInAnyOrder(ProductFixture.Defaults.id, SECOND_PRODUCT_ID);
     }
 
     @Test
     void 태그_id로_연결된_모든_상품_태그를_삭제한다() {
         Tag tag = tagRepository.put(TagFixture.builder().name("신제품").build());
-        productTagRepository.add(ProductTag.of(ProductFixture.Base.id, tag.getId(), Instant.now()));
+        productTagRepository.add(ProductTag.of(ProductFixture.Defaults.id, tag.getId(), Instant.now()));
         productTagRepository.add(ProductTag.of(SECOND_PRODUCT_ID, tag.getId(), Instant.now()));
 
         productTagService.deleteAllByTagId(tag.getId());

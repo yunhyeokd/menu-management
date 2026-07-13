@@ -1,5 +1,6 @@
 package com.dozycoffee.branch.application;
 
+import com.dozycoffee.core.security.FakePasswordHasher;
 import com.dozycoffee.core.security.PasswordHasher;
 import com.dozycoffee.core.security.Credential;
 import com.dozycoffee.core.security.Principal;
@@ -28,18 +29,16 @@ public class BranchAuthenticatorTest {
     void setUp() {
         branchRepository = new FakeBranchRepository();
 
-        PasswordHasher passwordHasher = new PasswordHasher() {
-            @Override
-            public String hash(String raw) { return "hashed-" + raw; }
-
-            @Override
-            public boolean matches(String raw, String hash) { return hash(raw).equals(hash); }
-        };
+        PasswordHasher passwordHasher = new FakePasswordHasher();
 
         branchAuthenticator = new BranchAuthenticator(branchRepository, passwordHasher);
 
-        activeBranch = Branch.create(BranchId.of("00000000-0000-0000-0000-000000000001"), ACTIVE_CODE, HASHED_AUTH_KEY, BranchFixture.name, BranchFixture.address);
-        deletedBranch = Branch.create(BranchId.of("00000000-0000-0000-0000-000000000002"), DELETED_CODE, HASHED_AUTH_KEY, BranchFixture.name, BranchFixture.address);
+        activeBranch = BranchFixture.builder().id(BranchFixture.id).code(ACTIVE_CODE.getValue()).authKeyHash(HASHED_AUTH_KEY).build();
+        deletedBranch = BranchFixture.builder()
+                .id(BranchId.of("00000000-0000-0000-0000-000000000002"))
+                .code(DELETED_CODE.getValue())
+                .authKeyHash(HASHED_AUTH_KEY)
+                .build();
         deletedBranch.softDelete();
 
         branchRepository.put(activeBranch);

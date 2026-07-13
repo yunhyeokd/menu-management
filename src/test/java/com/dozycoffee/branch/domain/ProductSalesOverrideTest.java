@@ -1,5 +1,6 @@
 package com.dozycoffee.branch.domain;
 
+import com.dozycoffee.product.domain.ProductFixture;
 import com.dozycoffee.product.domain.ProductId;
 import org.junit.jupiter.api.Test;
 
@@ -13,8 +14,8 @@ public class ProductSalesOverrideTest {
     @Test
     public void 지점상품_오버라이드를_정상_생성한다() {
 
-        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
-        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
+        ProductId productId = ProductFixture.Defaults.id;
+        BranchId branchId = BranchFixture.id;
         ProductSalesOverrideStatus status = ProductSalesOverrideStatus.SOLD_OUT;
 
         ProductSalesOverride salesOverride = ProductSalesOverride.create(productId, branchId, status);
@@ -26,8 +27,8 @@ public class ProductSalesOverrideTest {
 
     @Test
     public void 지점상품_오버라이드_상태가_null이면_예외를_발생시킨다() {
-        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
-        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
+        ProductId productId = ProductFixture.Defaults.id;
+        BranchId branchId = BranchFixture.id;
 
         assertThatThrownBy(() -> ProductSalesOverride.create(productId, branchId, null))
                 .isInstanceOf(BranchException.class);
@@ -35,8 +36,8 @@ public class ProductSalesOverrideTest {
 
     @Test
     public void 복합키가_같은_지점상품_오버라이드는_동등하다() {
-        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
-        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
+        ProductId productId = ProductFixture.Defaults.id;
+        BranchId branchId = BranchFixture.id;
         ProductSalesOverrideStatus status = ProductSalesOverrideStatus.SOLD_OUT;
         Instant createdAt = Instant.now();
 
@@ -48,11 +49,11 @@ public class ProductSalesOverrideTest {
 
     @Test
     public void productId가_다른_지점상품_오버라이드는_동등하지_않다() {
-        BranchId branchId = BranchId.of("00000000-0000-0000-0000-000000000001");
+        BranchId branchId = BranchFixture.id;
         ProductSalesOverrideStatus status = ProductSalesOverrideStatus.SOLD_OUT;
         Instant createdAt = Instant.now();
 
-        ProductSalesOverride salesOverride1 = ProductSalesOverride.of(ProductId.of("00000000-0000-0000-0000-000000000001"), branchId, status, createdAt);
+        ProductSalesOverride salesOverride1 = ProductSalesOverride.of(ProductFixture.Defaults.id, branchId, status, createdAt);
         ProductSalesOverride salesOverride2 = ProductSalesOverride.of(ProductId.of("00000000-0000-0000-0000-000000000002"), branchId, status, createdAt);
 
         assertThat(salesOverride1).isNotEqualTo(salesOverride2);
@@ -60,11 +61,11 @@ public class ProductSalesOverrideTest {
 
     @Test
     public void branchId가_다른_지점상품_오버라이드는_동등하지_않다() {
-        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
+        ProductId productId = ProductFixture.Defaults.id;
         ProductSalesOverrideStatus status = ProductSalesOverrideStatus.SOLD_OUT;
         Instant createdAt = Instant.now();
 
-        ProductSalesOverride salesOverride1 = ProductSalesOverride.of(productId, BranchId.of("00000000-0000-0000-0000-000000000001"), status, createdAt);
+        ProductSalesOverride salesOverride1 = ProductSalesOverride.of(productId, BranchFixture.id, status, createdAt);
         ProductSalesOverride salesOverride2 = ProductSalesOverride.of(productId, BranchId.of("00000000-0000-0000-0000-000000000002"), status, createdAt);
 
         assertThat(salesOverride1).isNotEqualTo(salesOverride2);

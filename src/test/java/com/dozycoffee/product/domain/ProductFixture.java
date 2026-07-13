@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class ProductFixture {
 
-    public static class Base {
+    public static class Defaults {
         public static ProductId id = ProductId.of("00000000-0000-0000-0000-000000000001");
         public static String name = "아메리카노";
         public static String description = "아메리카노입니다.";
@@ -27,18 +27,18 @@ public class ProductFixture {
     }
 
     public static class Builder {
-        private ProductId id = Base.id;
-        private String name = Base.name;
-        private String description = Base.description;
-        private String imageUrl = Base.imageUrl;
-        private CategoryId categoryId = Base.categoryId;
-        private int price = Base.price;
-        private Integer kcal = Base.kcal;
-        private BranchId branchId = Base.branchId;
-        private AllergenInfo allergenInfo = Base.allergenInfo;
+        private ProductId id = Defaults.id;
+        private String name = Defaults.name;
+        private String description = Defaults.description;
+        private String imageUrl = Defaults.imageUrl;
+        private CategoryId categoryId = Defaults.categoryId;
+        private int price = Defaults.price;
+        private Integer kcal = Defaults.kcal;
+        private BranchId branchId = Defaults.branchId;
+        private AllergenInfo allergenInfo = Defaults.allergenInfo;
         private ProductKind kind = ProductKind.BRANCH_EXCLUSIVE;
-        private ProductStatus status = Base.status;
-        private Instant createdAt = Base.createdAt;
+        private ProductStatus status = Defaults.status;
+        private Instant createdAt = Defaults.createdAt;
 
         public Builder id(ProductId id) {
             this.id = id;

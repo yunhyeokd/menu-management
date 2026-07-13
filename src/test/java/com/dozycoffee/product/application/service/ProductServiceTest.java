@@ -73,8 +73,8 @@ public class ProductServiceTest {
         Product result = productService.register(command);
 
         assertThat(result.getName()).isEqualTo("아메리카노");
-        assertThat(result.getId()).isEqualTo(ProductFixture.Base.id);
-        assertThat(productRepository.findById(ProductFixture.Base.id)).isPresent();
+        assertThat(result.getId()).isEqualTo(ProductFixture.Defaults.id);
+        assertThat(productRepository.findById(ProductFixture.Defaults.id)).isPresent();
     }
 
     @Test
@@ -91,7 +91,7 @@ public class ProductServiceTest {
         Product result = productService.register(command);
 
         assertThat(result.getName()).isEqualTo("지점전용라떼");
-        assertThat(productRepository.findById(ProductFixture.Base.id)).isPresent();
+        assertThat(productRepository.findById(ProductFixture.Defaults.id)).isPresent();
     }
 
     @Test
@@ -144,7 +144,7 @@ public class ProductServiceTest {
     @Test
     public void 상품_필터_조회를_정상_수행한다() {
         productQueryRepository.add(new ProductSummaryResult(
-                ProductFixture.Base.id, "아메리카노", null,
+                ProductFixture.Defaults.id, "아메리카노", null,
                 new CategoryData(CategoryFixture.Defaults.id, "음료"),
                 3000, ProductKind.COMMON, null, ProductStatus.ACTIVE, List.of()
         ));
@@ -168,7 +168,7 @@ public class ProductServiceTest {
     @Test
     public void 공통_상품_프로필을_정상_수정한다() {
         defaultCategory();
-        ProductId productId = ProductFixture.Base.id;
+        ProductId productId = ProductFixture.Defaults.id;
         productRepository.put(ProductFixture.builder()
                 .id(productId).kind(ProductKind.COMMON).branchId(null).build());
         ProductProfileUpdateCommand command = new ProductProfileUpdateCommand(
@@ -197,7 +197,7 @@ public class ProductServiceTest {
 
     @Test
     public void 상품_수정시_카테고리가_없으면_CATEGORY_NOT_FOUND_ERROR를_던진다() {
-        ProductId productId = ProductFixture.Base.id;
+        ProductId productId = ProductFixture.Defaults.id;
         productRepository.put(ProductFixture.builder()
                 .id(productId).kind(ProductKind.COMMON).branchId(null).build());
         ProductProfileUpdateCommand command = new ProductProfileUpdateCommand(
@@ -215,11 +215,11 @@ public class ProductServiceTest {
     @Test
     public void 상품을_정상_삭제한다() {
         productRepository.put(ProductFixture.builder()
-                .id(ProductFixture.Base.id).kind(ProductKind.COMMON).branchId(null).build());
+                .id(ProductFixture.Defaults.id).kind(ProductKind.COMMON).branchId(null).build());
 
-        productService.deleteById(ProductFixture.Base.id);
+        productService.deleteById(ProductFixture.Defaults.id);
 
-        assertThat(productRepository.findById(ProductFixture.Base.id)).isEmpty();
+        assertThat(productRepository.findById(ProductFixture.Defaults.id)).isEmpty();
     }
 
     @Test
@@ -234,24 +234,24 @@ public class ProductServiceTest {
     @Test
     public void 상품_상태를_활성으로_변경한다() {
         productRepository.put(ProductFixture.builder()
-                .id(ProductFixture.Base.id).kind(ProductKind.COMMON).branchId(null)
+                .id(ProductFixture.Defaults.id).kind(ProductKind.COMMON).branchId(null)
                 .status(ProductStatus.INACTIVE).build());
 
-        productService.activate(ProductFixture.Base.id);
+        productService.activate(ProductFixture.Defaults.id);
 
-        assertThat(productRepository.findById(ProductFixture.Base.id).get().getStatus())
+        assertThat(productRepository.findById(ProductFixture.Defaults.id).get().getStatus())
                 .isEqualTo(ProductStatus.ACTIVE);
     }
 
     @Test
     public void 상품_상태를_비활성으로_변경한다() {
         productRepository.put(ProductFixture.builder()
-                .id(ProductFixture.Base.id).kind(ProductKind.COMMON).branchId(null)
+                .id(ProductFixture.Defaults.id).kind(ProductKind.COMMON).branchId(null)
                 .status(ProductStatus.ACTIVE).build());
 
-        productService.deactivate(ProductFixture.Base.id);
+        productService.deactivate(ProductFixture.Defaults.id);
 
-        assertThat(productRepository.findById(ProductFixture.Base.id).get().getStatus())
+        assertThat(productRepository.findById(ProductFixture.Defaults.id).get().getStatus())
                 .isEqualTo(ProductStatus.INACTIVE);
     }
 

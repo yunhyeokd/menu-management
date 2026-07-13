@@ -4,9 +4,7 @@ import com.dozycoffee.admin.domain.AdminFixture;
 import com.dozycoffee.admin.domain.SystemAdmin;
 import com.dozycoffee.core.security.Principal;
 import com.dozycoffee.branch.domain.Branch;
-
-import com.dozycoffee.branch.domain.BranchCode;
-import com.dozycoffee.branch.domain.BranchId;
+import com.dozycoffee.branch.domain.BranchFixture;
 import com.dozycoffee.core.exception.service.ServiceException;
 import com.dozycoffee.core.session.Session;
 import com.dozycoffee.core.session.SessionId;
@@ -35,7 +33,7 @@ public class AuthSessionManagerTest {
     @BeforeEach
     void setUp() {
         activeAdmin = AdminFixture.system().username("sysadmin").password(HASHED_PASSWORD).build();
-        activeBranch = Branch.create(BranchId.of("00000000-0000-0000-0000-000000000001"), BranchCode.of(BRANCH_CODE), HASHED_AUTH_KEY, "테스트점", "서울 강남구 테헤란로 1");
+        activeBranch = BranchFixture.builder().code(BRANCH_CODE).authKeyHash(HASHED_AUTH_KEY).name("테스트점").address("서울 강남구 테헤란로 1").build();
 
         sessionRepository = new FakeAuthSessionRepository();
         AtomicInteger counter = new AtomicInteger(1);
