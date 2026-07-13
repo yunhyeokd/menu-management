@@ -25,6 +25,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ProductUseCaseTest {
 
+    private static final ProductId NON_EXISTENT_PRODUCT_ID = ProductId.of("00000000-0000-0000-0000-000000000999");
+    private static final TagId NON_EXISTENT_TAG_ID = TagId.of("00000000-0000-0000-0000-000000000999");
+    private static final OptionGroupId NON_EXISTENT_OPTION_GROUP_ID = OptionGroupId.of("00000000-0000-0000-0000-000000000999");
+
     private FakeProductRepository productRepository;
     private FakeProductQueryRepository productQueryRepository;
     private FakeCategoryRepository categoryRepository;
@@ -91,7 +95,7 @@ public class ProductUseCaseTest {
     }
 
     private Category defaultCategory() {
-        return categoryRepository.put(Category.of(CategoryId.of("00000000-0000-0000-0000-000000000001"), "음료", Instant.now()));
+        return categoryRepository.put(CategoryFixture.builder().name("음료").build());
     }
 
     private void defaultBranch() {
@@ -99,12 +103,11 @@ public class ProductUseCaseTest {
     }
 
     private OptionGroup savedOptionGroup(long id) {
-        String sid = String.format("00000000-0000-0000-0000-%012d", id);
-        return optionGroupRepository.put(OptionGroup.of(
-                OptionGroupId.of(sid), "옵션" + id, null,
-                List.of(OptionItem.of("기본", null, 0, Instant.now())),
-                Instant.now()
-        ));
+        OptionGroupId optionGroupId = OptionGroupId.of(String.format("00000000-0000-0000-0000-%012d", id));
+        return optionGroupRepository.put(OptionGroupFixture.builder()
+                .id(optionGroupId)
+                .name("옵션" + id)
+                .build());
     }
 
     // ─── RegisterCommonProduct ────────────────────────────────────────────────
@@ -116,7 +119,7 @@ public class ProductUseCaseTest {
 
         ProductSnapshot result = registerProductUseCase.execute(new ProductRegisterCommand(
                 ProductKind.COMMON, null,
-                "아메리카노", null, null, CategoryId.of("00000000-0000-0000-0000-000000000001"), 3000, null, null,
+                "아메리카노", null, null, CategoryFixture.Defaults.id, 3000, null, null,
                 Set.of("신제품"), List.of(new OptionGroupLinkCommand(og.getId(), true, false))
         ));
 
@@ -134,7 +137,7 @@ public class ProductUseCaseTest {
         ProductSnapshot result = registerProductUseCase.execute(new ProductRegisterCommand(
                 ProductKind.BRANCH_EXCLUSIVE, BranchId.of("00000000-0000-0000-0000-000000000001"),
                 "지점전용라떼", null, null,
-                CategoryId.of("00000000-0000-0000-0000-000000000001"), 4500, null, null,
+                CategoryFixture.Defaults.id, 4500, null, null,
                 Set.of("프리미엄"), List.of()
         ));
 
@@ -148,8 +151,8 @@ public class ProductUseCaseTest {
 
         assertThatThrownBy(() -> registerProductUseCase.execute(new ProductRegisterCommand(
                 ProductKind.COMMON, null,
-                "아메리카노", null, null, CategoryId.of("00000000-0000-0000-0000-000000000001"), 3000, null, null,
-                Set.of(), List.of(new OptionGroupLinkCommand(OptionGroupId.of("00000000-0000-0000-0000-000000000999"), true, false))
+                "아메리카노", null, null, CategoryFixture.Defaults.id, 3000, null, null,
+                Set.of(), List.of(new OptionGroupLinkCommand(NON_EXISTENT_OPTION_GROUP_ID, true, false))
         )))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
@@ -159,15 +162,19 @@ public class ProductUseCaseTest {
     @Test
     void 상품_프로필_수정시_태그도_교체된다() {
         defaultCategory();
-        ProductId productId = ProductId.of("00000000-0000-0000-0000-000000000001");
-        Tag oldTag = tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000010"), "구태그", Instant.now()));
+        ProductId productId = ProductFixture.Base.id;
+        // 서비스가 새 태그에 발급하는 순번(...001부터)과 겹치지 않도록 별도 id 사용
+        Tag oldTag = tagRepository.put(TagFixture.builder()
+                .id(TagId.of("00000000-0000-0000-0000-000000000010"))
+                .name("구태그")
+                .build());
         Product product = productRepository.put(ProductFixture.builder()
                 .id(productId).kind(ProductKind.COMMON).branchId(null).build());
         productTagRepository.add(ProductTag.of(product.getId(), oldTag.getId(), Instant.now()));
 
         ProductSnapshot result = updateProductProfileUseCase.execute(productId, new ProductProfileUpdateCommand(
                 "라떼", null, null,
-                CategoryId.of("00000000-0000-0000-0000-000000000001"), 4000, null, null, Set.of("신태그")
+                CategoryFixture.Defaults.id, 4000, null, null, Set.of("신태그")
         ));
 
         assertThat(result.tags()).hasSize(1);
@@ -180,9 +187,9 @@ public class ProductUseCaseTest {
     @Test
     void 상품_삭제시_태그와_옵션그룹_연결도_함께_제거된다() {
         OptionGroup og = savedOptionGroup(1L);
-        Tag tag = tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000010"), "신제품", Instant.now()));
+        Tag tag = tagRepository.put(TagFixture.builder().name("신제품").build());
         Product product = productRepository.put(ProductFixture.builder()
-                .id(ProductId.of("00000000-0000-0000-0000-000000000001")).kind(ProductKind.COMMON).branchId(null).build());
+                .id(ProductFixture.Base.id).kind(ProductKind.COMMON).branchId(null).build());
         productTagRepository.add(ProductTag.of(product.getId(), tag.getId(), Instant.now()));
         productOptionGroupRepository.put(ProductOptionGroup.of(product.getId(), og.getId(), true, false, Instant.now()));
 
@@ -195,7 +202,7 @@ public class ProductUseCaseTest {
 
     @Test
     void 상품_삭제시_상품이_없으면_PRODUCT_NOT_FOUND_ERROR를_던진다() {
-        assertThatThrownBy(() -> deleteProductUseCase.execute(ProductId.of("00000000-0000-0000-0000-000000000999")))
+        assertThatThrownBy(() -> deleteProductUseCase.execute(NON_EXISTENT_PRODUCT_ID))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
@@ -206,7 +213,7 @@ public class ProductUseCaseTest {
         OptionGroup oldOg = savedOptionGroup(1L);
         OptionGroup newOg = savedOptionGroup(2L);
         Product product = productRepository.put(ProductFixture.builder()
-                .id(ProductId.of("00000000-0000-0000-0000-000000000001")).kind(ProductKind.COMMON).branchId(null).build());
+                .id(ProductFixture.Base.id).kind(ProductKind.COMMON).branchId(null).build());
         productOptionGroupRepository.put(ProductOptionGroup.of(product.getId(), oldOg.getId(), true, false, Instant.now()));
 
         replaceProductOptionGroupsUseCase.execute(product.getId(), List.of(
@@ -219,7 +226,7 @@ public class ProductUseCaseTest {
 
     @Test
     void 옵션그룹_교체시_상품이_없으면_PRODUCT_NOT_FOUND_ERROR를_던진다() {
-        assertThatThrownBy(() -> replaceProductOptionGroupsUseCase.execute(ProductId.of("00000000-0000-0000-0000-000000000999"), List.of()))
+        assertThatThrownBy(() -> replaceProductOptionGroupsUseCase.execute(NON_EXISTENT_PRODUCT_ID, List.of()))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
@@ -227,8 +234,8 @@ public class ProductUseCaseTest {
 
     @Test
     void 태그_삭제시_연결된_상품_태그도_함께_제거된다() {
-        Tag tag = tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000010"), "신제품", Instant.now()));
-        productTagRepository.add(ProductTag.of(ProductId.of("00000000-0000-0000-0000-000000000001"), tag.getId(), Instant.now()));
+        Tag tag = tagRepository.put(TagFixture.builder().name("신제품").build());
+        productTagRepository.add(ProductTag.of(ProductFixture.Base.id, tag.getId(), Instant.now()));
 
         deleteTagUseCase.execute(tag.getId());
 
@@ -238,7 +245,7 @@ public class ProductUseCaseTest {
 
     @Test
     void 태그_삭제시_태그가_없으면_TAG_NOT_FOUND_ERROR를_던진다() {
-        assertThatThrownBy(() -> deleteTagUseCase.execute(TagId.of("00000000-0000-0000-0000-000000000999")))
+        assertThatThrownBy(() -> deleteTagUseCase.execute(NON_EXISTENT_TAG_ID))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
@@ -257,7 +264,7 @@ public class ProductUseCaseTest {
     void 연결된_상품이_있으면_옵션그룹_삭제시_LINKED_PRODUCT_EXISTS_ERROR를_던진다() {
         OptionGroup og = savedOptionGroup(1L);
         productOptionGroupRepository.put(ProductOptionGroup.of(
-                ProductId.of("00000000-0000-0000-0000-000000000001"), og.getId(), true, false, Instant.now()
+                ProductFixture.Base.id, og.getId(), true, false, Instant.now()
         ));
 
         assertThatThrownBy(() -> deleteOptionGroupUseCase.execute(og.getId()))
@@ -284,7 +291,7 @@ public class ProductUseCaseTest {
                 .id(ProductId.of("00000000-0000-0000-0000-000000000004"))
                 .status(ProductStatus.INACTIVE).kind(ProductKind.COMMON).branchId(null).build());
         productQueryRepository.putTags(commonProduct.getId(),
-                List.of(new TagData(TagId.of("00000000-0000-0000-0000-000000000010"), "신제품")));
+                List.of(new TagData(TagFixture.Defaults.id, "신제품")));
 
         List<ProductSnapshot> result = findSellableProductsUseCase.execute(branchId);
 
@@ -317,7 +324,7 @@ public class ProductUseCaseTest {
     @Test
     void 태그_조건_없이_검색하면_저장된_상품_목록을_반환한다() {
         productQueryRepository.add(new ProductSummaryResult(
-                ProductId.of("00000000-0000-0000-0000-000000000001"), "아메리카노", null, null, 3000,
+                ProductFixture.Base.id, "아메리카노", null, null, 3000,
                 ProductKind.COMMON, null, ProductStatus.ACTIVE, List.of()
         ));
 
@@ -333,9 +340,9 @@ public class ProductUseCaseTest {
 
     @Test
     void 존재하는_태그_이름으로_검색하면_태그ID로_변환되어_조회에_위임된다() {
-        tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000010"), "신제품", Instant.now()));
+        tagRepository.put(TagFixture.builder().name("신제품").build());
         productQueryRepository.add(new ProductSummaryResult(
-                ProductId.of("00000000-0000-0000-0000-000000000001"), "아메리카노", null, null, 3000,
+                ProductFixture.Base.id, "아메리카노", null, null, 3000,
                 ProductKind.COMMON, null, ProductStatus.ACTIVE, List.of()
         ));
 

@@ -14,11 +14,9 @@ public class CategoryTest {
 
     @Test
     public void 카테고리를_정상_생성한다() {
-        String name = "커피";
+        Category category = CategoryFixture.builder().build();
 
-        Category category = Category.create(CategoryId.of("00000000-0000-0000-0000-000000000001"), name);
-
-        assertThat(category.getName()).isEqualTo(name);
+        assertThat(category.getName()).isEqualTo(CategoryFixture.Defaults.name);
     }
 
     @ParameterizedTest
@@ -29,29 +27,36 @@ public class CategoryTest {
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     })
     public void 카테고리_생성시_카테고리명이_유효하지_않으면_예외를_발생시킨다(String categoryName) {
-        assertThatThrownBy(() -> Category.create(CategoryId.of("00000000-0000-0000-0000-000000000001"), categoryName))
+        assertThatThrownBy(() -> CategoryFixture.builder().name(categoryName).build())
                 .isInstanceOf(ProductException.class);
     }
 
     @Test
     public void id가_같은_카테고리는_동등하다() {
-        Category category1 = Category.of(CategoryId.of("00000000-0000-0000-0000-000000000001"), "커피1", Instant.now());
-        Category category2 = Category.of(CategoryId.of("00000000-0000-0000-0000-000000000001"), "커피2", Instant.now());
+        Category category1 = CategoryFixture.builder().name("커피1").build();
+        Category category2 = CategoryFixture.builder().name("커피2").build();
         assertThat(category1).isEqualTo(category2);
     }
 
     @Test
     public void id가_다른_카테고리는_동등하지_않다() {
         Instant createdAt = Instant.now();
-        Category category1 = Category.of(CategoryId.of("00000000-0000-0000-0000-000000000001"), "커피1", createdAt);
-        Category category2 = Category.of(CategoryId.of("00000000-0000-0000-0000-000000000002"), "커피1", createdAt);
+        Category category1 = CategoryFixture.builder().name("커피1").createdAt(createdAt).build();
+        Category category2 = CategoryFixture.builder()
+                .id(CategoryId.of("00000000-0000-0000-0000-000000000002"))
+                .name("커피1")
+                .createdAt(createdAt)
+                .build();
         assertThat(category1).isNotEqualTo(category2);
     }
 
     @Test
     public void id가_null인_카테고리는_동등하지_않다() {
-        Category category1 = Category.of(CategoryId.of("00000000-0000-0000-0000-000000000001"), "커피1", Instant.now());
-        Category category2 = Category.create(CategoryId.of("00000000-0000-0000-0000-000000000002"), "커피1");
+        Category category1 = CategoryFixture.builder().name("커피1").build();
+        Category category2 = CategoryFixture.builder()
+                .id(CategoryId.of("00000000-0000-0000-0000-000000000002"))
+                .name("커피1")
+                .build();
         assertThat(category1).isNotEqualTo(category2);
     }
 

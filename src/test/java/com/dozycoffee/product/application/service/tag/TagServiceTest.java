@@ -6,17 +6,20 @@ import com.dozycoffee.product.application.dto.TagData;
 import com.dozycoffee.product.application.repository.FakeTagRepository;
 import com.dozycoffee.product.application.service.ProductErrors;
 import com.dozycoffee.product.domain.Tag;
+import com.dozycoffee.product.domain.TagFixture;
 import com.dozycoffee.product.domain.TagId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Instant;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class TagServiceTest {
+
+    private static final TagId NON_EXISTENT_ID = TagId.of("00000000-0000-0000-0000-000000000999");
+    private static final TagId SECOND_ID = TagId.of("00000000-0000-0000-0000-000000000002");
 
     private FakeTagRepository tagRepository;
     private TagService tagService;
@@ -46,10 +49,9 @@ public class TagServiceTest {
 
     @Test
     public void 태그_생성시_이름이_중복되면_DUPLICATE_TAG_NAME_ERROR를_던진다() {
-        String tagName = "신제품";
-        tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000001"), tagName, Instant.now()));
+        tagRepository.put(TagFixture.builder().build());
 
-        assertThatThrownBy(() -> tagService.create(tagName))
+        assertThatThrownBy(() -> tagService.create(TagFixture.Defaults.name))
                 .isInstanceOf(ConflictException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.DUPLICATE_TAG_NAME_ERROR));
     }
@@ -65,17 +67,16 @@ public class TagServiceTest {
 
     @Test
     public void 태그_생성중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        String tagName = "신제품";
         tagRepository.throwOnNextCall();
 
-        assertThatThrownBy(() -> tagService.create(tagName))
+        assertThatThrownBy(() -> tagService.create(TagFixture.Defaults.name))
                 .isInstanceOf(SystemException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.UNKNOWN_ERROR));
     }
 
     @Test
     public void 태그_이름을_정상_변경한다() {
-        Tag tag = tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000001"), "신제품", Instant.now()));
+        Tag tag = tagRepository.put(TagFixture.builder().build());
         String newTagName = "추천";
 
         tagService.changeTagName(tag.getId(), newTagName);
@@ -85,9 +86,9 @@ public class TagServiceTest {
 
     @Test
     public void 태그_이름_변경시_새_이름이_중복되면_DUPLICATE_TAG_NAME_ERROR를_던진다() {
-        Tag tag = tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000001"), "신제품", Instant.now()));
+        Tag tag = tagRepository.put(TagFixture.builder().build());
         String duplicatedName = "추천";
-        tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000002"), duplicatedName, Instant.now()));
+        tagRepository.put(TagFixture.builder().id(SECOND_ID).name(duplicatedName).build());
 
         assertThatThrownBy(() -> tagService.changeTagName(tag.getId(), duplicatedName))
                 .isInstanceOf(ConflictException.class)
@@ -96,14 +97,14 @@ public class TagServiceTest {
 
     @Test
     public void 태그_이름_변경시_대상_태그가_존재하지_않으면_TAG_NOT_FOUND_ERROR를_던진다() {
-        assertThatThrownBy(() -> tagService.changeTagName(TagId.of("00000000-0000-0000-0000-000000000999"), "추천"))
+        assertThatThrownBy(() -> tagService.changeTagName(NON_EXISTENT_ID, "추천"))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.TAG_NOT_FOUND_ERROR));
     }
 
     @Test
     public void 태그_이름_변경시_새_이름이_유효하지_않으면_INVALID_TAG_ERROR를_던진다() {
-        Tag tag = tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000001"), "신제품", Instant.now()));
+        Tag tag = tagRepository.put(TagFixture.builder().build());
         String invalidName = "";
 
         assertThatThrownBy(() -> tagService.changeTagName(tag.getId(), invalidName))
@@ -113,7 +114,7 @@ public class TagServiceTest {
 
     @Test
     public void 태그_이름_변경중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        Tag tag = tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000001"), "신제품", Instant.now()));
+        Tag tag = tagRepository.put(TagFixture.builder().build());
         tagRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> tagService.changeTagName(tag.getId(), "추천"))
@@ -123,8 +124,8 @@ public class TagServiceTest {
 
     @Test
     public void 태그_전체_목록을_조회한다() {
-        tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000001"), "신제품", Instant.now()));
-        tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000002"), "추천", Instant.now()));
+        tagRepository.put(TagFixture.builder().build());
+        tagRepository.put(TagFixture.builder().id(SECOND_ID).name("추천").build());
 
         List<TagData> tags = tagService.findAll();
 
@@ -149,17 +150,17 @@ public class TagServiceTest {
 
     @Test
     public void 이름으로_태그를_검색한다() {
-        tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000001"), "신제품", Instant.now()));
-        tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000002"), "추천", Instant.now()));
+        tagRepository.put(TagFixture.builder().build());
+        tagRepository.put(TagFixture.builder().id(SECOND_ID).name("추천").build());
 
         List<TagData> tags = tagService.searchByName("신제");
 
-        assertThat(tags).extracting(TagData::name).containsExactly("신제품");
+        assertThat(tags).extracting(TagData::name).containsExactly(TagFixture.Defaults.name);
     }
 
     @Test
     public void 이름으로_검색시_일치하는_태그가_없으면_빈_목록을_반환한다() {
-        tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000001"), "신제품", Instant.now()));
+        tagRepository.put(TagFixture.builder().build());
 
         List<TagData> tags = tagService.searchByName("존재하지않음");
 
@@ -170,14 +171,14 @@ public class TagServiceTest {
     public void 이름으로_태그_검색중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
         tagRepository.throwOnNextCall();
 
-        assertThatThrownBy(() -> tagService.searchByName("신제품"))
+        assertThatThrownBy(() -> tagService.searchByName(TagFixture.Defaults.name))
                 .isInstanceOf(SystemException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.UNKNOWN_ERROR));
     }
 
     @Test
     public void 태그를_정상_삭제한다() {
-        Tag tag = tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000001"), "신제품", Instant.now()));
+        Tag tag = tagRepository.put(TagFixture.builder().build());
 
         tagService.remove(tag.getId());
 
@@ -186,14 +187,14 @@ public class TagServiceTest {
 
     @Test
     public void 태그_삭제시_대상_태그가_존재하지_않으면_TAG_NOT_FOUND_ERROR를_던진다() {
-        assertThatThrownBy(() -> tagService.remove(TagId.of("00000000-0000-0000-0000-000000000999")))
+        assertThatThrownBy(() -> tagService.remove(NON_EXISTENT_ID))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .satisfies(e -> assertErrorCode(e, ProductErrors.TAG_NOT_FOUND_ERROR));
     }
 
     @Test
     public void 태그_삭제중_레포지토리_오류가_발생하면_UNKNOWN_ERROR를_던진다() {
-        Tag tag = tagRepository.put(Tag.of(TagId.of("00000000-0000-0000-0000-000000000001"), "신제품", Instant.now()));
+        Tag tag = tagRepository.put(TagFixture.builder().build());
         tagRepository.throwOnNextCall();
 
         assertThatThrownBy(() -> tagService.remove(tag.getId()))
