@@ -11,29 +11,15 @@ import com.dozycoffee.product.domain.OptionGroupId;
 import com.dozycoffee.product.domain.ProductId;
 import com.dozycoffee.product.domain.TagId;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.format.FormatterRegistry;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
 @Configuration
-@EnableWebMvc
-@ComponentScan(
-        basePackages = "com.dozycoffee",
-        useDefaultFilters = false,
-        includeFilters = {
-                @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Controller.class),
-                @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = ControllerAdvice.class)
-        }
-)
 public class ServletConfig {
 
     @Bean

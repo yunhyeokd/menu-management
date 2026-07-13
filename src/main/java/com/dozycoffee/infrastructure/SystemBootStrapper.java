@@ -3,12 +3,14 @@ package com.dozycoffee.infrastructure;
 import com.dozycoffee.admin.application.AdminService;
 import com.dozycoffee.admin.application.dto.SystemAdminRegisterCommand;
 import com.dozycoffee.core.exception.service.ConflictException;
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+// MenuSystemApplication.main()에서 SpringApplication.run() 완료 후 명시적으로 호출한다.
+// 컨텍스트 리프레시(Flyway 마이그레이션 포함)가 전부 끝난 뒤여야 안전하게 DB에 쓸 수 있기 때문에
+// @PostConstruct로 두지 않는다 (리프레시 도중에는 스키마 준비 순서가 보장되지 않음).
 @Component
 public class SystemBootStrapper {
 
@@ -28,7 +30,6 @@ public class SystemBootStrapper {
         this.password = password;
     }
 
-    @PostConstruct
     public void bootstrap() {
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
             log.info("SYSTEM_ADMIN_USERNAME/PASSWORD 미설정, 시스템 관리자 부트스트랩을 스킵합니다");

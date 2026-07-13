@@ -1,89 +1,61 @@
 
 plugins {
-    id("java")
-    id("war")
+    java
+    alias(libs.plugins.spring.boot)
 }
 
 group = "com.dozycoffee"
 version = "1.0-SNAPSHOT"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(libs.versions.java.asProvider().get().toInt()))
+    }
 }
 
 repositories {
     mavenCentral()
 }
 
-
-
 dependencies {
 
-    // BOM
-    implementation(platform("org.springframework:spring-framework-bom:6.2.19"))
-    implementation(platform("org.springframework.security:spring-security-bom:6.5.11"))
-    testImplementation(platform("org.junit:junit-bom:6.0.0"))
-    implementation(platform("com.fasterxml.jackson:jackson-bom:2.22.0"))
-
-    // DI
-    implementation("org.springframework:spring-context")
-
-    // Logging
-    implementation("org.slf4j:slf4j-api:2.0.18")
-    implementation("ch.qos.logback:logback-classic:1.5.37")
-
-    // Test
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("org.assertj:assertj-core:3.27.7")
-    testImplementation("org.springframework:spring-test")
-
-    // Jackson
-    implementation("com.fasterxml.jackson.core:jackson-databind")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    // BOM (spring-security-crypto 포함 대부분의 하위 라이브러리 버전을 여기서 관리)
+    implementation(platform(libs.spring.boot.dependencies))
+    testImplementation(platform(libs.spring.boot.dependencies))
 
     // Web
-    compileOnly("jakarta.servlet:jakarta.servlet-api:6.0.0")
-    testImplementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
-    implementation("org.springframework:spring-webmvc")
+    implementation(libs.spring.boot.starter.web)
 
     // Validation
-    implementation("jakarta.validation:jakarta.validation-api:3.0.2")
-    implementation("org.hibernate.validator:hibernate-validator:8.0.4.Final")
-    runtimeOnly("jakarta.el:jakarta.el-api:5.0.0")
-    runtimeOnly("org.glassfish.expressly:expressly:5.0.0")
+    implementation(libs.spring.boot.starter.validation)
 
-    // Database
-    implementation("org.springframework:spring-jdbc")
-    implementation("com.mysql:mysql-connector-j:8.4.0")
-    implementation("org.mybatis:mybatis:3.5.19")
-    implementation("org.mybatis:mybatis-spring:3.0.5")
-    implementation("com.zaxxer:HikariCP:7.1.0")
+    // Database / MyBatis (mybatis-spring-boot-starter가 아직 Boot 4.x를 지원하지 않아 core+spring 직접 배선)
+    implementation(libs.spring.boot.starter.jdbc)
+    implementation(libs.bundles.mybatis)
+    runtimeOnly(libs.mysql.connector.j)
 
-    // DB 마이그레이션 (MySQL 8은 flyway-core만으론 동작 안 하고 flyway-mysql이 별도로 필요, 버전 일치 필수)
-    implementation("org.flywaydb:flyway-core:12.10.0")
-    implementation("org.flywaydb:flyway-mysql:12.10.0")
+    // DB 마이그레이션 (MySQL 8은 flyway-core만으론 동작 안 하고 flyway-mysql이 별도로 필요)
+    implementation(libs.spring.boot.starter.flyway)
+    runtimeOnly(libs.flyway.mysql)
 
-    // Security
+    // Security (spring-boot-starter-security 미사용 — 자체 인증/인가 구현과 충돌 방지)
     // Argon2PasswordEncoder에서 내부적으로 BouncyCastle 구현체 요구
-    implementation("org.springframework.security:spring-security-crypto")
-    runtimeOnly("org.bouncycastle:bcprov-jdk18on:1.84")
-
-    // YAML
-    implementation("org.yaml:snakeyaml:2.6")
+    implementation(libs.bundles.security.crypto)
 
     // UUID v7
-    implementation("com.fasterxml.uuid:java-uuid-generator:5.2.0")
+    implementation(libs.java.uuid.generator)
 
     // Lombok
-    implementation("org.projectlombok:lombok:1.18.46")
-    annotationProcessor("org.projectlombok:lombok:1.18.46")
+    implementation(libs.lombok)
+    annotationProcessor(libs.lombok)
 
-    // Swagger (springdoc-openapi 2.x = Jakarta/Spring Framework 6 line; Boot 없이 쓰려면
-    // springdoc의 자동구성 클래스가 참조하는 spring-boot-autoconfigure를 별도로 얹어야 함)
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.17")
-    implementation("org.springframework.boot:spring-boot-autoconfigure:3.5.16")
+    // Swagger
+    implementation(libs.springdoc.openapi.starter.webmvc.ui)
+
+    // Test
+    testImplementation(libs.spring.boot.starter.test)
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
 }
 
