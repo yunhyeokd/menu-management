@@ -123,6 +123,29 @@ class BranchControllerTest extends MockMvcIntegrationTest {
     }
 
     @Test
+    void soft_delete된_지점을_hard_delete하면_204를_반환하고_완전히_삭제된다() throws Exception {
+        BranchId id = branchIdGenerator.generate();
+        Branch branch = BranchFixture.builder()
+                .id(id)
+                .code(uniqueBranchCode())
+                .name("테스트지점" + uniqueSuffix())
+                .build();
+        branchRepository.save(branch);
+        String sessionId = issueSession("system-1", "SYSTEM");
+
+        mockMvc.perform(delete("/branches/{branchId}", id.getValue())
+                        .header("Authorization", "Bearer " + sessionId))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(delete("/branches/{branchId}/hard", id.getValue())
+                        .header("Authorization", "Bearer " + sessionId))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/branches/{branchId}", id.getValue()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void SYSTEM_권한으로_프로필을_수정하면_이름과_주소가_바뀐다() throws Exception {
         BranchId id = branchIdGenerator.generate();
         Branch branch = BranchFixture.builder()
