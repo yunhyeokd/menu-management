@@ -141,13 +141,11 @@ CREATE TABLE IF NOT EXISTS `product_option_group`
 
 CREATE TABLE IF NOT EXISTS `product_sales_override`
 (
-    `product_sales_override_id` BINARY(16)  NOT NULL,
     `branch_id`                 BINARY(16)  NOT NULL,
     `product_id`                BINARY(16)  NOT NULL,
     `status`                    VARCHAR(30) NOT NULL COMMENT 'hidden | sold_out',
     `created_at`                DATETIME    NOT NULL,
-    PRIMARY KEY (`product_sales_override_id`),
-    CONSTRAINT `uq_product_sales_override` UNIQUE (`branch_id`, `product_id`),
+    PRIMARY KEY (`branch_id`, `product_id`),
     CONSTRAINT `fk_product_sales_override_branch`
         FOREIGN KEY (`branch_id`) REFERENCES `branch_account` (`branch_id`)
             ON DELETE CASCADE,
