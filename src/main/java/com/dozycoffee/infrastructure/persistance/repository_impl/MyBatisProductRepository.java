@@ -4,8 +4,8 @@ import com.dozycoffee.branch.domain.BranchId;
 import com.dozycoffee.core.exception.base.RepositoryException;
 import com.dozycoffee.infrastructure.persistance.entity.ProductRow;
 import com.dozycoffee.infrastructure.persistance.mapper.ProductMapper;
-import com.dozycoffee.product.application.repository.ProductRepository;
-import com.dozycoffee.product.domain.*;
+import com.dozycoffee.catalog.application.repository.ProductRepository;
+import com.dozycoffee.catalog.domain.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

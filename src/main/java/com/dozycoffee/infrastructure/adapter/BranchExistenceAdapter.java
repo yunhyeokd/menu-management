@@ -3,7 +3,7 @@ package com.dozycoffee.infrastructure.adapter;
 import com.dozycoffee.branch.application.BranchRepository;
 import com.dozycoffee.branch.domain.BranchId;
 import com.dozycoffee.core.exception.base.RepositoryException;
-import com.dozycoffee.product.application.repository.BranchExistencePort;
+import com.dozycoffee.catalog.application.repository.BranchExistencePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

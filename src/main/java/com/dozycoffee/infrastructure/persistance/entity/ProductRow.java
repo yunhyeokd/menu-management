@@ -1,7 +1,7 @@
 package com.dozycoffee.infrastructure.persistance.entity;
 
 import com.dozycoffee.branch.domain.BranchId;
-import com.dozycoffee.product.domain.*;
+import com.dozycoffee.catalog.domain.*;
 
 import java.time.Instant;
 

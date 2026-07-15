@@ -3,10 +3,10 @@ package com.dozycoffee.infrastructure.persistance.repository_impl;
 import com.dozycoffee.core.exception.base.RepositoryException;
 import com.dozycoffee.infrastructure.persistance.entity.ProductOptionGroupRow;
 import com.dozycoffee.infrastructure.persistance.mapper.ProductOptionGroupMapper;
-import com.dozycoffee.product.application.repository.ProductOptionGroupRepository;
-import com.dozycoffee.product.domain.OptionGroupId;
-import com.dozycoffee.product.domain.ProductId;
-import com.dozycoffee.product.domain.ProductOptionGroup;
+import com.dozycoffee.catalog.application.repository.ProductOptionGroupRepository;
+import com.dozycoffee.catalog.domain.OptionGroupId;
+import com.dozycoffee.catalog.domain.ProductId;
+import com.dozycoffee.catalog.domain.ProductOptionGroup;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

@@ -27,6 +27,14 @@
           AND product_id = UUID_TO_BIN(#{productId})
     </select>
 
+    <select id="findAllByBranchId" resultMap="productSalesOverrideRow">
+        SELECT BIN_TO_UUID(product_id) AS product_id,
+               BIN_TO_UUID(branch_id) AS branch_id,
+               status, created_at
+        FROM product_sales_override
+        WHERE branch_id = UUID_TO_BIN(#{branchId})
+    </select>
+
     <delete id="deleteByBranchIdAndProductId">
         DELETE FROM product_sales_override
         WHERE branch_id = UUID_TO_BIN(#{branchId})

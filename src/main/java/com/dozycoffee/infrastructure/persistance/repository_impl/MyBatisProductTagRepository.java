@@ -4,11 +4,11 @@ import com.dozycoffee.core.exception.base.RepositoryException;
 import com.dozycoffee.infrastructure.persistance.entity.ProductTagRow;
 import com.dozycoffee.infrastructure.persistance.entity.TagRow;
 import com.dozycoffee.infrastructure.persistance.mapper.ProductTagMapper;
-import com.dozycoffee.product.application.repository.ProductTagRepository;
-import com.dozycoffee.product.domain.ProductId;
-import com.dozycoffee.product.domain.ProductTag;
-import com.dozycoffee.product.domain.Tag;
-import com.dozycoffee.product.domain.TagId;
+import com.dozycoffee.catalog.application.repository.ProductTagRepository;
+import com.dozycoffee.catalog.domain.ProductId;
+import com.dozycoffee.catalog.domain.ProductTag;
+import com.dozycoffee.catalog.domain.Tag;
+import com.dozycoffee.catalog.domain.TagId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

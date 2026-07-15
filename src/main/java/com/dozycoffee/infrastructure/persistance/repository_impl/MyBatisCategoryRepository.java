@@ -3,9 +3,9 @@ package com.dozycoffee.infrastructure.persistance.repository_impl;
 import com.dozycoffee.core.exception.base.RepositoryException;
 import com.dozycoffee.infrastructure.persistance.entity.CategoryRow;
 import com.dozycoffee.infrastructure.persistance.mapper.CategoryMapper;
-import com.dozycoffee.product.application.repository.CategoryRepository;
-import com.dozycoffee.product.domain.Category;
-import com.dozycoffee.product.domain.CategoryId;
+import com.dozycoffee.catalog.application.repository.CategoryRepository;
+import com.dozycoffee.catalog.domain.Category;
+import com.dozycoffee.catalog.domain.CategoryId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

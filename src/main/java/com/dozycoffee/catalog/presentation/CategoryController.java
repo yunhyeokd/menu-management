@@ -1,0 +1,72 @@
+package com.dozycoffee.catalog.presentation;
+
+import com.dozycoffee.infrastructure.web.interceptor.RequireRole;
+import com.dozycoffee.catalog.application.dto.CategoryData;
+import com.dozycoffee.catalog.application.service.category.CategoryService;
+import com.dozycoffee.catalog.domain.CategoryId;
+import com.dozycoffee.catalog.presentation.dto.CategoryCreateRequest;
+import com.dozycoffee.catalog.presentation.dto.CategoryResponse;
+import com.dozycoffee.catalog.presentation.dto.CategoryUpdateRequest;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/categories")
+@RequiredArgsConstructor
+public class CategoryController {
+
+    private final CategoryService categoryService;
+
+    @GetMapping
+    @RequireRole({"SYSTEM", "ADMIN", "BRANCH"})
+    public ResponseEntity<List<CategoryResponse>> searchCategory(
+            @RequestParam(required = false) String name
+    ) {
+        List<CategoryData> categories = (name == null || name.isBlank()) ? categoryService.findAll() : categoryService.searchByName(name);
+        List<CategoryResponse> response = categories.stream().map(CategoryResponse::from).toList();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{categoryId}")
+    @RequireRole({"SYSTEM", "ADMIN", "BRANCH"})
+    public ResponseEntity<CategoryResponse> getCategory(
+            @PathVariable CategoryId categoryId
+    ) {
+        CategoryData category = categoryService.findById(categoryId);
+        CategoryResponse response = CategoryResponse.from(category);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping
+    @RequireRole({"SYSTEM", "ADMIN"})
+    public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryCreateRequest request) {
+        CategoryData result = categoryService.create(request.name());
+        CategoryResponse response = CategoryResponse.from(result);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{categoryId}")
+    @RequireRole({"SYSTEM", "ADMIN"})
+    public ResponseEntity<CategoryResponse> updateCategory(
+            @PathVariable CategoryId categoryId,
+            @Valid @RequestBody CategoryUpdateRequest request
+    ) {
+        CategoryData category = categoryService.updateName(categoryId, request.name());
+        CategoryResponse response = CategoryResponse.from(category);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{categoryId}")
+    @RequireRole({"SYSTEM", "ADMIN"})
+    public ResponseEntity<Void> deleteCategory(
+            @PathVariable CategoryId categoryId
+    ) {
+        categoryService.remove(categoryId);
+        return ResponseEntity.ok().build();
+    }
+
+}

@@ -1,7 +1,7 @@
 package com.dozycoffee.infrastructure.persistance.entity;
 
-import com.dozycoffee.product.domain.Tag;
-import com.dozycoffee.product.domain.TagId;
+import com.dozycoffee.catalog.domain.Tag;
+import com.dozycoffee.catalog.domain.TagId;
 
 import java.time.Instant;
 
