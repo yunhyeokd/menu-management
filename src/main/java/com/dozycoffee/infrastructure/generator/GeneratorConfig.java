@@ -4,10 +4,10 @@ import com.dozycoffee.admin.domain.AdminId;
 import com.dozycoffee.branch.domain.BranchId;
 import com.dozycoffee.core.id.IdentifierGenerator;
 import com.dozycoffee.core.session.SessionId;
-import com.dozycoffee.product.domain.CategoryId;
-import com.dozycoffee.product.domain.OptionGroupId;
-import com.dozycoffee.product.domain.ProductId;
-import com.dozycoffee.product.domain.TagId;
+import com.dozycoffee.catalog.domain.CategoryId;
+import com.dozycoffee.catalog.domain.OptionGroupId;
+import com.dozycoffee.catalog.domain.ProductId;
+import com.dozycoffee.catalog.domain.TagId;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -6,9 +6,9 @@ import com.dozycoffee.infrastructure.persistance.entity.ProductOptionGroupItemRo
 import com.dozycoffee.infrastructure.persistance.entity.ProductTagNameRow;
 import com.dozycoffee.infrastructure.persistance.entity.ProductWithCategoryRow;
 import com.dozycoffee.infrastructure.persistance.mapper.ProductQueryMapper;
-import com.dozycoffee.product.application.dto.*;
-import com.dozycoffee.product.application.repository.ProductQueryRepository;
-import com.dozycoffee.product.domain.*;
+import com.dozycoffee.catalog.application.dto.*;
+import com.dozycoffee.catalog.application.repository.ProductQueryRepository;
+import com.dozycoffee.catalog.domain.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

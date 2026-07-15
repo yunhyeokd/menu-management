@@ -1,9 +1,9 @@
 package com.dozycoffee.infrastructure.persistance.entity;
 
 import com.dozycoffee.branch.domain.BranchId;
-import com.dozycoffee.branch.domain.ProductSalesOverride;
-import com.dozycoffee.branch.domain.ProductSalesOverrideStatus;
-import com.dozycoffee.product.domain.ProductId;
+import com.dozycoffee.catalog.domain.ProductId;
+import com.dozycoffee.catalog.domain.override.ProductSalesOverride;
+import com.dozycoffee.catalog.domain.override.ProductSalesOverrideStatus;
 
 import java.time.Instant;
 

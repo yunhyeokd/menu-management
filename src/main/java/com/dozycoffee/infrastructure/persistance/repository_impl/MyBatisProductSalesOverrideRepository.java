@@ -1,15 +1,16 @@
 package com.dozycoffee.infrastructure.persistance.repository_impl;
 
-import com.dozycoffee.branch.application.ProductSalesOverrideRepository;
 import com.dozycoffee.branch.domain.BranchId;
-import com.dozycoffee.branch.domain.ProductSalesOverride;
+import com.dozycoffee.catalog.application.repository.ProductSalesOverrideRepository;
+import com.dozycoffee.catalog.domain.ProductId;
+import com.dozycoffee.catalog.domain.override.ProductSalesOverride;
 import com.dozycoffee.core.exception.base.RepositoryException;
 import com.dozycoffee.infrastructure.persistance.entity.ProductSalesOverrideRow;
 import com.dozycoffee.infrastructure.persistance.mapper.ProductSalesOverrideMapper;
-import com.dozycoffee.product.domain.ProductId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -27,6 +28,13 @@ public class MyBatisProductSalesOverrideRepository implements ProductSalesOverri
     public Optional<ProductSalesOverride> findByBranchIdAndProductId(BranchId branchId, ProductId productId) throws RepositoryException {
         return productSalesOverrideMapper.findByBranchIdAndProductId(branchId.getValue(), productId.getValue())
                 .map(ProductSalesOverrideRow::toProductSalesOverride);
+    }
+
+    @Override
+    public List<ProductSalesOverride> findAllByBranchId(BranchId branchId) throws RepositoryException {
+        return productSalesOverrideMapper.findAllByBranchId(branchId.getValue()).stream()
+                .map(ProductSalesOverrideRow::toProductSalesOverride)
+                .toList();
     }
 
     @Override

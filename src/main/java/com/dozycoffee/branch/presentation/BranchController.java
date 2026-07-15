@@ -1,20 +1,16 @@
 package com.dozycoffee.branch.presentation;
 
-import com.dozycoffee.branch.application.BranchOperationService;
 import com.dozycoffee.branch.application.BranchService;
 import com.dozycoffee.branch.application.dto.BranchAuthKeyReissueResult;
 import com.dozycoffee.branch.application.dto.BranchCreateResult;
-import com.dozycoffee.branch.application.model.BranchProduct;
 import com.dozycoffee.branch.domain.Branch;
 import com.dozycoffee.branch.domain.BranchId;
 import com.dozycoffee.branch.presentation.dto.BranchAuthKeyReissueResponse;
 import com.dozycoffee.branch.presentation.dto.BranchCreateRequest;
 import com.dozycoffee.branch.presentation.dto.BranchCreateResponse;
-import com.dozycoffee.branch.presentation.dto.BranchProductSummaryResponse;
 import com.dozycoffee.branch.presentation.dto.BranchProfileResponse;
 import com.dozycoffee.branch.presentation.dto.BranchProfileUpdateRequest;
 import com.dozycoffee.infrastructure.web.interceptor.RequireRole;
-import com.dozycoffee.product.domain.ProductId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +24,6 @@ import java.util.List;
 public class BranchController {
 
     private final BranchService branchService;
-    private final BranchOperationService branchOperationService;
 
     @PostMapping
     @RequireRole({"SYSTEM", "ADMIN"})
@@ -84,48 +79,6 @@ public class BranchController {
         BranchAuthKeyReissueResult result = branchService.reissueAuthKey(branchId);
         BranchAuthKeyReissueResponse response = BranchAuthKeyReissueResponse.from(result);
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/{branchId}/products")
-    @RequireRole({"SYSTEM", "BRANCH"})
-    public ResponseEntity<List<BranchProductSummaryResponse>> findOverridableProducts(
-            @PathVariable BranchId branchId
-    ) {
-        List<BranchProduct> products = branchOperationService.findOverridableProducts(branchId);
-        List<BranchProductSummaryResponse> response = products.stream()
-                .map(BranchProductSummaryResponse::from)
-                .toList();
-        return ResponseEntity.ok(response);
-    }
-
-    @PatchMapping("/{branchId}/products/{productId}/hide")
-    @RequireRole({"SYSTEM", "BRANCH"})
-    public ResponseEntity<Void> hideProduct(
-            @PathVariable BranchId branchId,
-            @PathVariable ProductId productId
-    ) {
-        branchOperationService.hideSale(branchId, productId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/{branchId}/products/{productId}/sold-out")
-    @RequireRole({"SYSTEM", "BRANCH"})
-    public ResponseEntity<Void> soldOutProduct(
-            @PathVariable BranchId branchId,
-            @PathVariable ProductId productId
-    ) {
-        branchOperationService.soldOut(branchId, productId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/{branchId}/products/{productId}/restore-sale")
-    @RequireRole({"SYSTEM", "BRANCH"})
-    public ResponseEntity<Void> restoreProduct(
-            @PathVariable BranchId branchId,
-            @PathVariable ProductId productId
-    ) {
-        branchOperationService.restoreSale(branchId, productId);
-        return ResponseEntity.noContent().build();
     }
 
 }

@@ -1,8 +1,8 @@
 package com.dozycoffee.infrastructure.persistance.entity;
 
-import com.dozycoffee.product.domain.OptionGroupId;
-import com.dozycoffee.product.domain.ProductId;
-import com.dozycoffee.product.domain.ProductOptionGroup;
+import com.dozycoffee.catalog.domain.OptionGroupId;
+import com.dozycoffee.catalog.domain.ProductId;
+import com.dozycoffee.catalog.domain.ProductOptionGroup;
 
 import java.time.Instant;
 

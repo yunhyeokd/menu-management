@@ -1,0 +1,68 @@
+package com.dozycoffee.catalog.presentation;
+
+import com.dozycoffee.infrastructure.web.interceptor.RequireRole;
+import com.dozycoffee.catalog.application.dto.OptionGroupData;
+import com.dozycoffee.catalog.application.service.option.OptionService;
+import com.dozycoffee.catalog.application.usecase.DeleteOptionGroupUseCase;
+import com.dozycoffee.catalog.domain.OptionGroupId;
+import com.dozycoffee.catalog.presentation.dto.OptionGroupCreateRequest;
+import com.dozycoffee.catalog.presentation.dto.OptionGroupItemsUpdateRequest;
+import com.dozycoffee.catalog.presentation.dto.OptionGroupProfileUpdateRequest;
+import com.dozycoffee.catalog.presentation.dto.OptionGroupResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/options")
+@RequiredArgsConstructor
+public class OptionController {
+
+    private final OptionService optionService;
+    private final DeleteOptionGroupUseCase deleteOptionGroupUseCase;
+
+    @GetMapping
+    @RequireRole({"SYSTEM", "ADMIN", "BRANCH"})
+    public ResponseEntity<List<OptionGroupResponse>> findOptionGroups() {
+        List<OptionGroupData> optionGroups = optionService.findAll();
+        List<OptionGroupResponse> response = optionGroups.stream().map(OptionGroupResponse::from).toList();
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping
+    @RequireRole({"SYSTEM", "ADMIN"})
+    public ResponseEntity<OptionGroupResponse> createOptionGroup(@Valid @RequestBody OptionGroupCreateRequest request) {
+        OptionGroupData optionGroup = optionService.create(request.toCommand());
+        return ResponseEntity.ok(OptionGroupResponse.from(optionGroup));
+    }
+
+    @PatchMapping("/{optionGroupId}/profile")
+    @RequireRole({"SYSTEM", "ADMIN"})
+    public ResponseEntity<Void> updateOptionGroupProfile(
+            @PathVariable OptionGroupId optionGroupId,
+            @Valid @RequestBody OptionGroupProfileUpdateRequest request
+    ) {
+        optionService.updateOptionGroupProfile(optionGroupId, request.toCommand());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{optionGroupId}/items")
+    @RequireRole({"SYSTEM", "ADMIN"})
+    public ResponseEntity<Void> updateOptionGroupItems(
+            @PathVariable OptionGroupId optionGroupId,
+            @Valid @RequestBody OptionGroupItemsUpdateRequest request
+    ) {
+        optionService.updateOptionGroupItems(optionGroupId, request.toCommand());
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{optionGroupId}")
+    @RequireRole({"SYSTEM", "ADMIN"})
+    public ResponseEntity<Void> deleteOptionGroup(@PathVariable OptionGroupId optionGroupId) {
+        deleteOptionGroupUseCase.execute(optionGroupId);
+        return ResponseEntity.noContent().build();
+    }
+}

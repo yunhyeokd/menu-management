@@ -1,6 +1,6 @@
 package com.dozycoffee.infrastructure.persistance.entity;
 
-import com.dozycoffee.product.domain.OptionItem;
+import com.dozycoffee.catalog.domain.OptionItem;
 
 import java.time.Instant;
 
