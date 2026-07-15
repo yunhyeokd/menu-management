@@ -6,6 +6,7 @@ import java.time.Instant;
 
 public record OptionItemRow(
         String optionGroupId,
+        int position,
         String name,
         String description,
         int price,

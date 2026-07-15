@@ -15,6 +15,7 @@
     <resultMap id="optionItemRow" type="com.dozycoffee.infrastructure.persistance.entity.OptionItemRow">
         <constructor>
             <arg name="optionGroupId" column="option_group_id" javaType="String"/>
+            <arg name="position"      column="position"        javaType="_int"/>
             <arg name="name"          column="name"            javaType="String"/>
             <arg name="description"   column="description"     javaType="String"/>
             <arg name="price"         column="price"           javaType="_int"/>
@@ -31,8 +32,8 @@
     </insert>
 
     <insert id="insertItem">
-        INSERT INTO option_item (option_group_id, name, description, price, created_at)
-        VALUES (UUID_TO_BIN(#{optionGroupId}), #{name}, #{description}, #{price}, #{createdAt})
+        INSERT INTO option_item (option_group_id, position, name, description, price, created_at)
+        VALUES (UUID_TO_BIN(#{optionGroupId}), #{position}, #{name}, #{description}, #{price}, #{createdAt})
     </insert>
 
     <delete id="deleteItemsByGroupId">
@@ -46,9 +47,10 @@
     </select>
 
     <select id="findItemsByGroupId" resultMap="optionItemRow">
-        SELECT BIN_TO_UUID(option_group_id) AS option_group_id, name, description, price, created_at
+        SELECT BIN_TO_UUID(option_group_id) AS option_group_id, position, name, description, price, created_at
         FROM option_item
         WHERE option_group_id = UUID_TO_BIN(#{optionGroupId})
+        ORDER BY position ASC
     </select>
 
     <select id="findAll" resultMap="optionGroupRow">

@@ -26,8 +26,9 @@ public class MyBatisOptionGroupRepository implements OptionGroupRepository {
     public void save(OptionGroup optionGroup) throws RepositoryException {
         optionGroupMapper.upsert(toGroupRow(optionGroup));
         optionGroupMapper.deleteItemsByGroupId(optionGroup.getId().getValue());
-        for (OptionItem item : optionGroup.getItems()) {
-            optionGroupMapper.insertItem(toItemRow(optionGroup.getId().getValue(), item));
+        List<OptionItem> items = optionGroup.getItems();
+        for (int position = 0; position < items.size(); position++) {
+            optionGroupMapper.insertItem(toItemRow(optionGroup.getId().getValue(), position, items.get(position)));
         }
     }
 
@@ -64,7 +65,7 @@ public class MyBatisOptionGroupRepository implements OptionGroupRepository {
         );
     }
 
-    private static OptionItemRow toItemRow(String optionGroupId, OptionItem item) {
-        return new OptionItemRow(optionGroupId, item.getName(), item.getDescription(), item.getPrice(), item.getCreatedAt());
+    private static OptionItemRow toItemRow(String optionGroupId, int position, OptionItem item) {
+        return new OptionItemRow(optionGroupId, position, item.getName(), item.getDescription(), item.getPrice(), item.getCreatedAt());
     }
 }
