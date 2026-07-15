@@ -70,13 +70,13 @@ CREATE TABLE IF NOT EXISTS `option_group`
 
 CREATE TABLE IF NOT EXISTS `option_item`
 (
-    `option_item_id`  BINARY(16)   NOT NULL,
     `option_group_id` BINARY(16)   NOT NULL,
+    `position`        INT          NOT NULL,
     `name`            VARCHAR(255) NOT NULL,
     `description`     TEXT         NULL,
     `price`           INT          NOT NULL,
     `created_at`      DATETIME     NOT NULL,
-    PRIMARY KEY (`option_item_id`),
+    PRIMARY KEY (`option_group_id`, `position`),
     CONSTRAINT `fk_option_item_option_group`
         FOREIGN KEY (`option_group_id`) REFERENCES `option_group` (`option_group_id`)
             ON DELETE CASCADE
